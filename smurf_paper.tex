@@ -1,0 +1,240 @@
+%------------------------------------------------------------------------------
+% SMURF Paper
+%------------------------------------------------------------------------------
+
+\documentclass[useAMS,usenatbib,usegraphicx,nofootinbib]{mn2e}
+
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{natbib}
+\usepackage{rotating}
+
+% --- Some user defined macros ------------------------------------------------
+\newcommand{\apj}{\rm ApJ}
+\newcommand{\apjl}{\rm ApJL}
+\newcommand{\apjs}{\rm ApJS}
+\newcommand{\aaps}{\rm A$\&$AS}
+\newcommand{\aap}{\rm A$\&$A}
+\newcommand{\aapr}{\rm A$\&$AR}
+\newcommand{\mnras}{\rm MNRAS}
+\newcommand{\aj}{\rm Astron. J.}
+\newcommand{\araa}{\rm ARAA}
+\newcommand{\nat}{\rm Nature}
+\newcommand{\pasj}{\rm PASJ}
+\newcommand{\pasp}{\rm Publ. Astron. Soc. Pac.}
+\newcommand{\ASP}{\rm ASP COnference Series}
+\newcommand{\CASP}{\rm Comm. Astrophys. Space Phys.}
+\newcommand{\astroph}{\rm astro-ph/}
+
+\newcommand{\snr}{SNR}
+
+\newcommand{\scuba}{SCUBA-2}
+
+\def\lsim{\mathrel{\lower2.5pt\vbox{\lineskip=0pt\baselineskip=0pt
+           \hbox{$<$}\hbox{$\sim$}}}}
+
+ \def\gsim{\mathrel{\lower2.5pt\vbox{\lineskip=0pt\baselineskip=0pt
+           \hbox{$>$}\hbox{$\sim$}}}}
+
+
+% ----------------------------------------------------------------------------
+
+\title[SMURF: an iterative map-maker for SCUBA-2]{The Sub-Millimetre User
+Reduction Facility: an iterative map-maker for SCUBA-2}
+
+\author[Edward~L.~Chapin~et~al.]{
+  \parbox[t]{\textwidth}{
+    Edward~L.~Chapin$^{1}$\thanks{E-mail:~echapin@phas.ubc.ca},
+    David~S.~Berry$^{2}$,
+    Andrew~G.~Gibb$^{1}$,
+    Tim~Jenness$^{2}$,
+    Douglas~Scott$^{1}$
+  }
+  \\
+  \\
+  $^{1}$Dept. of Physics \& Astronomy, University of British Columbia,
+  6224 Agricultural Road, Vancouver, B.C. V6T 1Z1, Canada\\
+  $^{2}$JointAstronomy Centre, 660 N. A‘oh ̄ k ̄ Place, University Park, Hilo, Hawaii 96720, USA}
+
+\begin{document}
+
+\label{firstpage}
+
+\maketitle
+
+\begin{abstract}
+  We describe the Sub-Millimetre User Reduction Facility (SMURF), an
+  iterative map-maker that was developed for the Submillimetre Common
+  User Bolometer Array 2 (SCUBA-2).
+\end{abstract}
+
+
+\begin{keywords}
+bla, bla, bla
+\end{keywords}
+
+%------------------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+%------------------------------------------------------------------------------
+
+The Submillimetre Common User Bolometer Array 2
+\citep[\scuba,][]{holland2006} is a new instrument for the the 15-m
+James Clerk Maxwell Telescope (JCMT) on Mauna Kea, Hawai'i. The camera
+can simultaneously image the sky in two broad bands centered over 450
+and 850\,\micron. Ultimately, the instrument will also be equipped
+with a fourier transform spectrometer (FTS), and a polarimeter
+(POL). This paper describes the Submillimetre User Reduction Facility,
+SMURF, a software package for reducing the imaging data, with an
+emphasis on data taken during the SCUBA-2 Shared Risk Observing period
+(S2SRO) which took place from February to April of 2010. The reduction
+of FTS and POL data will be described at a later date once these
+additional instruments have been commissioned.
+
+Over the last twenty years, the submillimetre band (defined here to be
+200--1000\,\micron) has revolutionized several important areas of
+astrophysics: helping to characterize the early stages of
+star-formation by identifying the dense, cold regions in molecular
+clouds where stars may eventually form; discovering through blind
+surveys the locations and surface density of a class of massive
+star-forming galaxies in the early Universe, now referred to as
+submillimetre galaxies, or SMGs; and finding debris disks around
+nearby stars, the early stages of planet formation.
+
+The most common source of emission at these wavelengths in the
+Universe is the thermal emission from cool dust.
+
+
+Styles of map-making: maximum likelihood
+\citep[e.g.,][]{patanchon2008}; iterative -- see \citet{johnstone2000}
+implementation of \citet{wright1996} to remove chop,
+\citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA
+analysis \citep[e.g.][]{laurent2005,scott2008}.
+
+Since \scuba\ will ultimately have nearly 10,000 working bolometers,
+considerably larger than any other existing ground, or space-spaced
+bolometer cameras, SMURF has been designed to use a less accurate,
+though faster and less memory-intensive iterative approach that
+attempts to model and remove most of the correlated signal components,
+and then regrid the residuals signals. This method is closest in
+spirit to the Comprehensive Reduction Utility for SHARC-2
+\citep[CRUSH,][]{kovacs2008}.
+
+
+%------------------------------------------------------------------------------
+\section{Data Properties}
+\label{sec:data}
+%------------------------------------------------------------------------------
+
+\subsection{How \scuba\ takes measurements}
+
+A brief summary of the instrument hitting on topics that will be
+discussed later: TES operation; base temperature and pixel heaters to
+compensate for sky variations; measuring flatfields; sample rate; scan
+speed to move astronomical sources of interest to higher frequencies
+in the time series.
+
+\subsection{\scuba\ shared-risk observations}
+
+This paper will be focussed on S2SRO: only one subarray at each
+wavelength; fridge oscillations; working detectors.
+
+
+%------------------------------------------------------------------------------
+\section{The SMURF Algorithm}
+\label{sec:data}
+%------------------------------------------------------------------------------
+
+Describe the bolometer signal model, and with the help of a flow-chart
+show the basic procedure that SMURF follows.
+
+\subsection{Data cleaning}
+We basically need to correct steps and apply the flatfield correction.
+
+
+
+
+\subsection{Correlated low-frequency noise}
+At the end of the day, we iteratively fit and remove the common-mode
+signal, and then any residual noise is removed with an iterative
+high-pass filter. Here are the components that we know about:
+
+\subsubsection{Fridge oscillations}
+Talk about the fridge oscillation and how there might be residuals
+correlated with things like the pattern of G or Tc.
+
+\subsubsection{Sky noise}
+Do we even see sky noise? Can show some results for the combined 450
+and 850\,\micron\ joint PCA analysis.
+
+\subsubsection{Magnetic field pickup}
+Show that it occasionally appears in the dark squids.
+
+
+
+
+\subsection{Noise estimation}
+
+Measure a white noise level from the power spectrum for each detector
+to use as a weight. In the map, use weighted standard error to
+estimate noise. This is accurate for a single pixel, but there is
+still spatially correlated noise in the maps which we can show with
+some figures.
+
+
+\subsection{Model degeneracies}
+
+Introduce the topic of model degeneracies here, but defer their
+solution to the example sections.
+
+
+%------------------------------------------------------------------------------
+\section{Examples}
+\label{sec:data}
+%------------------------------------------------------------------------------
+
+\subsection{Point source}
+Reduce a calibrator. Describe the use of a zero mask around the
+source. Compare with \citet{wiebe2009} who used the same method to
+constrain a maximum-likelihood map with poor cross-linking.
+
+\subsection{Deep blind survey}
+Heavy initial filtering, and only iteratively solve for map and
+common-mode with edge constraints.
+
+
+\subsection{Bright extended emission}
+The hardest thing to do with SCUBA-2 at the moment. Try to generate a
+source/background mask to assist the map solution based on thresholds
+in \snr.
+
+%------------------------------------------------------------------------------
+\section{Summary and future work}
+\label{sec:summary}
+%------------------------------------------------------------------------------
+
+\scuba\ is being re-commissioned. Maybe we will have some initial data
+on fridge performance? If both it, and sky noise are relatively
+well-behaved, might be able to restrict filtering to lower frequencies
+and get larger-scale structures.
+
+Larger array footprint also helps.
+
+
+%------------------------------------------------------------------------------
+\section{Acknowledgements}
+%------------------------------------------------------------------------------
+
+
+%------------------------------------------------------------------------------
+\bibliographystyle{mn2e}
+\bibliography{mn-jour,refs}
+%------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+\appendix
+\section[]{This is an appendix}
+%------------------------------------------------------------------------------
+
+
+\end{document}
