@@ -109,7 +109,7 @@ Styles of map-making: maximum likelihood
 \citep[e.g.,][]{patanchon2008}; iterative -- see \citet{johnstone2000}
 implementation of \citet{wright1996} to remove chop,
 \citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA
-analysis \citep[e.g.][]{laurent2005,scott2008}.
+analysis \citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
 
 Since \scuba\ will ultimately have nearly 10,000 working bolometers,
 considerably larger than any other existing ground, or space-spaced
@@ -139,6 +139,11 @@ in the time series.
 This paper will be focussed on S2SRO: only one subarray at each
 wavelength; fridge oscillations; working detectors.
 
+Show some time series.
+
+Show power spectra.
+
+Show cross-spectra to emphasize how correlated things are?
 
 %------------------------------------------------------------------------------
 \section{The SMURF Algorithm}
@@ -148,9 +153,24 @@ wavelength; fridge oscillations; working detectors.
 Describe the bolometer signal model, and with the help of a flow-chart
 show the basic procedure that SMURF follows.
 
-\subsection{Data cleaning}
-We basically need to correct steps and apply the flatfield correction.
+We express the signal observed by the $i$th bolometer as a function of time,
+\begin{equation}
+B_i(t) = E(t)[ A(t) + N(t) ] + C(t)
+\end{equation}
+where $A(t)$ is the time-varying astronomical signal produced by
+scanning the telescope across sources, $C(t)$ is a common signal
+observed by all of the detectors, $E(t)$ is the time-varying
+extinction, which is a function of the telescope elevation and
+observing conditions, and $N(t)$ represents all other noise terms. The
+common-mode, $C(t)$ has a strong 
 
+\subsection{Data cleaning}
+
+\subsubsection{Step correction}
+
+\subsubsection{Flatfields using heater ramps}
+
+\subsubsection{Flatfields using the common-mode signal}
 
 
 
@@ -190,7 +210,7 @@ solution to the example sections.
 
 %------------------------------------------------------------------------------
 \section{Examples}
-\label{sec:data}
+\label{sec:examples}
 %------------------------------------------------------------------------------
 
 \subsection{Point source}
