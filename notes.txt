@@ -1,0 +1,17 @@
+Analysis and data sets for SMURF paper
+======================================
+
+Dark observations:
+
+../fridge_day
+
+
+
+
+Good weather:
+
+
+
+
+Bad weather:
+
