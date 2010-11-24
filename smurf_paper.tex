@@ -35,6 +35,7 @@
 % common acronyms etc.
 \newcommand{\snr}{SNR}
 \newcommand{\scuba}{SCUBA-2}
+\newcommand{\rms}{RMS}
 
 % these are approximately less-than and greater-than symbols
 \def\lsim{\mathrel{\lower2.5pt\vbox{\lineskip=0pt\baselineskip=0pt
@@ -92,7 +93,7 @@ chicken, chicken: chicken, chicken: chicken -- chicken
 \item minimize excess whitespace around the figure to optimize usage of space
 \item ensure a decent line thickness
 \item use a Times font for labels with a thickness that resembles the
-  text in the body. The font size should be the same as the main body
+  text in the body. The font size should be similar to the main body
   text or larger
 \item avoid using colour unless it is necessary for emphasis
 \end{itemize}
@@ -220,11 +221,11 @@ Show cross-spectra to emphasize how correlated things are?
 
 \begin{figure}
 \centering
-\includegraphics[width=0.99\linewidth]{bolos_point_mix.pdf}
+\includegraphics[width=\linewidth]{bolos_point_mix.pdf}
 \caption{A comparison between single bolometer time series in each
   band (top two plots), with the mixing chamber temperature and
   azimuth/elevation pointing offsets. There is a strong correlation
-  between the bolometers and the roughly $\sim$30\,s oscillation in
+  between the bolometers and the roughly $\sim$25\,s oscillation in
   the fridge, but not with the telescope motion. Also note that the
   total power in this primary signal is similar at both 450 and
   850\,\micron, pointing to an internal rather than an external
@@ -303,6 +304,26 @@ The primary goal of map-making is to model and remove
 $\mathbf{n}^\mathrm{f}_i$ and $\mathbf{c}^\mathrm{f}_i$ from the
 time-series. By re-gridding the remaining data we can then hope to
 approach the theoretical noise limit in the map.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{dimm.pdf}
+\caption{Typical map-making algorithm. Raw data (stored in multiple
+  files) are read and concatenated into continuous time series. A
+  pre-processing stage repairs DC steps, applies a flatfield
+  correction, identifies and removes the noisiest bolometers, and
+  flags large spikes. The iterative portion then begins: estimating
+  and removing the common-mode signal; applying the extinction
+  correction; high-pass filtering to remove residual independent
+  low-frequency noise; estimating the map by re-gridding the data; and
+  finally measuring the noise in the residual time series. If the
+  \rms\ has converged, the final map is written to disk. Otherwise any
+  multiplicative factors that may have been applied to the data are
+  inverted (e.g., extinction correction and relative gains measured
+  during the common-mode calculation), and each additive component is
+  added back into the time series and re-estimated in turn.}
+\label{fig:dimm}
+\end{figure}
 
 %-------------------------------------------------
 \subsection{Model components}
