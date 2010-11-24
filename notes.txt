@@ -1,17 +1,16 @@
+
+Directory layout
+================
+
+The main paper is in the current directory, and I've added a plots
+subdirectory. My thought is that we should store all of the scripts
+(IDL, shell scripts + KAPPA whatever) here so that it's relatively
+straightforward to re-make plots later.
+
+
+
 Analysis and data sets for SMURF paper
 ======================================
 
-Dark observations:
-
-../fridge_day
-
-
-
-
-Good weather:
-
-
-
-
-Bad weather:
-
+Edit this section to list the raw data that are needed to run the
+scripts in the plots subdirectory.
