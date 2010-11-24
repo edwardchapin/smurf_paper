@@ -5,7 +5,7 @@ Directory layout
 The main paper is in the current directory, and I've added a plots
 subdirectory. My thought is that we should store all of the scripts
 (IDL, shell scripts + KAPPA whatever) here so that it's relatively
-straightforward to re-make plots later.
+straightforward to re-make plots later, but not all of the raw data.
 
 
 
@@ -14,3 +14,5 @@ Analysis and data sets for SMURF paper
 
 Edit this section to list the raw data that are needed to run the
 scripts in the plots subdirectory.
+
+20091214_00015: scan of Uranus, used files 2 and 3

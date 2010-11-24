@@ -11,6 +11,8 @@ r2a = (180d/!DPI)*3600d
 ; first, compare s4a, s8d, and mixtemp, and scan position
 
 if 0 then begin
+  ; these are concatenations of files 2 & 3 and then run through
+  ; sc2clean with dimmconfig.lis
   fxread, datadir+'s4a20091214_00015_con_clean.fits', data450, header
   fxread, datadir+'s8d20091214_00015_con_clean.fits', data850, header
   state = scuba2_readstate( datadir+'state_20091214_00015.tst' )

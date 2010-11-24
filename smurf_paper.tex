@@ -86,15 +86,18 @@ chicken, chicken: chicken, chicken: chicken -- chicken
 \label{sec:intro}
 %------------------------------------------------------------------------------
 
-Guideline for figures:
+\textbf{Guideline for figures:}
 
 \begin{itemize}
 \item minimize excess whitespace around the figure to optimize usage of space
 \item ensure a decent line thickness
-\item use a times font for labels with a thickness that resembles the
+\item use a Times font for labels with a thickness that resembles the
   text in the body. The font size should be the same as the main body
   text or larger
+\item avoid using colour unless it is necessary for emphasis
 \end{itemize}
+
+\textbf{start intro here...}
 
 The Submillimetre Common User Bolometer Array 2
 \citep[\scuba,][]{holland2006} is a new instrument for the the 15-m
@@ -140,7 +143,13 @@ Bolocam Galactic Plane Survey \citep{aguirre2010}.
 \label{sec:data}
 %------------------------------------------------------------------------------
 
+My thought is that this section would give the basics about how
+SCUBA-2 works, and then more specific details for the S2SRO
+observations.
+
+%--------------------------------------------------
 \subsection{How \scuba\ takes measurements}
+%--------------------------------------------------
 
 Before describing the data-reduction algorithm in detail, we summarize
 the basic strategy used to make measurements with SCUBA-2.
@@ -156,27 +165,27 @@ telescope, atmospheric fluctuations, and astronomical sources).
 
 In contrast, SCUBA-2 belongs to a new generation of cameras that uses
 superconducting transition-edge sensors (TESs, like ACT, SPT,
-MUSTANG). These devices are held at the critical temperature, $T_C$,
-below which the material becomes a superconductor, and above which it
-becomes a normal conductor. Within this transition, tiny temperature
-fluctuations can produce huge changes in impedence. The devices are
-operated with a voltage bias, so that thermal fluctuations produce
-changing currents, which in turn generate changing local magnetic
-fields. Chains of superconducting quantum interference devices
-(SQUIDs) are used to amplify these signals, ultimately providing a
-larger changing current that may be digitized. Like the NTD
-thermistor-based cameras, SCUBA-2 is cooled in order to be background
-limited. However, a superior over-all sensitivity on a per-bolometer
-basis is achieved through its improved responsivity (similar to an
-improved quantum efficiency for a CCD).
+MUSTANG). These devices are held at the critical temperature,
+$T_\mathrm{C}$, below which the material becomes a superconductor, and
+above which it becomes a normal conductor. Within this transition,
+tiny temperature fluctuations can produce huge changes in
+impedence. The devices are operated with a voltage bias, so that
+thermal fluctuations produce changing currents, which in turn generate
+changing local magnetic fields. Chains of superconducting quantum
+interference devices (SQUIDs) are used to amplify these signals,
+ultimately providing a larger changing current that may be
+digitized. Like the NTD thermistor-based cameras, SCUBA-2 is cooled in
+order to be background limited. However, a superior over-all
+sensitivity on a per-bolometer basis is achieved through its improved
+responsivity (similar to an improved quantum efficiency for a CCD).
 
 The load on the detectors can vary substatially, both from thermal
 sources within and outside the SCUBA-2 cryostat. In order to operate
 the camera across a broad dynamic range of conditions, it is therefore
 necessary to thermally control the focal plane. This is achieved by
-providing a fridge {\em base temperature}, $T_B$ that is well-below
-$T_C$, and then using heaters that are connected to each bolometer to
-place the array in to transition.
+providing a fridge {\em base temperature}, $T_\mathrm{B}$ that is
+well-below $T_\mathrm{C}$, and then using heaters that are connected
+to each bolometer to place the array in to transition.
 
 The focal plane is divided into four quadrants, each filled with 32
 column $\times$ 40 row sub-arrays labelled s4a--s4d at 450\,\micron,
@@ -195,7 +204,9 @@ $\epsilon R$, SCUBA-2 posesses an internal flatfield source.
 
 For further detail see...
 
+%-------------------------------------------------
 \subsection{\scuba\ shared-risk observations}
+%-------------------------------------------------
 
 This paper will be focussed on S2SRO: only one subarray at each
 wavelength; fridge oscillations; working detectors (and variation from
@@ -214,68 +225,25 @@ Show cross-spectra to emphasize how correlated things are?
   band (top two plots), with the mixing chamber temperature and
   azimuth/elevation pointing offsets. There is a strong correlation
   between the bolometers and the roughly $\sim$30\,s oscillation in
-  the fridge, but not with the telescope motion.}
+  the fridge, but not with the telescope motion. Also note that the
+  total power in this primary signal is similar at both 450 and
+  850\,\micron, pointing to an internal rather than an external
+  source.}
 \label{fig:bolos_mix}
 \end{figure}
 
-
-%------------------------------------------------------------------------------
-\section{The SMURF Algorithm}
-\label{sec:data}
-%------------------------------------------------------------------------------
-
-Describe the bolometer signal model, and with the help of a flow-chart
-show the basic procedure that SMURF follows.
-
-We express the signal observed by the $i$th bolometer as a function of time,
-\begin{equation}
-B_i(t) = G_i[E_i(t) A_i(t) + N_i(t)]
-\end{equation}
-where $A(t)$ is the time-varying signal produced by scanning the
-telescope across astronomical sources, $E(t)$ is the time-varying
-extinction, which is a function of the telescope elevation and
-atmospheric conditions, and $N_i(t)$ represents sources of noise. The
-two terms in square brackets, as written, have units of power
-delivered to the detectors (pW). The scale factor $G_i$ converts this
-effective power to the digitized units recorded on disk (DAC).
-
-In practice, $G_i$ is further factored into two components: $G_i = R_i
-D$. The responsivity, $R_i$, gives the change in current as a function
-of power fluctuations (A\,pW$^{-1}$). There is then a final (and
-constant across all bolometers) conversion factor from current to DAC
-units, $D$ (DAC/A).
-
-
-
-\subsection{Data cleaning}
-
-\subsubsection{Step correction}
-
-\subsubsection{Flatfields}
-\label{sec:flatfields}
-
-\begin{itemize}
-
-\item Heater ramps
-
-\item common-mode signal amplitude
-
-\item astronomical sources
-
-\item flat-field source
-
-
-\end{itemize}
-
-
-\subsection{Correlated low-frequency noise}
-At the end of the day, we iteratively fit and remove the common-mode
-signal, and then any residual noise is removed with an iterative
-high-pass filter. Here are the components that we know about:
-
 \subsubsection{Fridge oscillations}
-Talk about the fridge oscillation and how there might be residuals
-correlated with things like the pattern of G or Tc.
+As shown in Fig.~\ref{fig:bolos_mix}, the dominant signal in both
+bands is clearly an oscillation in the fridge base temperature as
+evidenced by the low-resolution mixing chamber thermometer. The total
+power delivered to the bolometers is comparable at each wavelength,
+further suggesting a source internal to the cryostat, rather than an
+external optical load. Finally, there is no obvious correspondance
+with either the azimuth or elevation motion.
+
+Show what's left over when we remove the common-mode, and the
+correlation of the resulting signal with patterns in $G$ and
+$T_\mathrm{C}$ across the array.
 
 \subsubsection{Sky noise}
 Do we even see sky noise? Can show some results for the combined 450
@@ -284,23 +252,144 @@ and 850\,\micron\ joint PCA analysis.
 \subsubsection{Magnetic field pickup}
 Show that it occasionally appears in the dark squids.
 
+\subsubsection{Line features}
 
+The power spectra also show some narrower line features (many
+correlated across the array). Even though we largely ignore them worth
+some mention.
+
+%------------------------------------------------------------------------------
+\section{The SMURF Algorithm}
+\label{sec:algorithm}
+%------------------------------------------------------------------------------
+
+Describe the bolometer signal model, and with the help of a flow-chart
+show the basic procedure that SMURF follows.
+
+We express the signal observed by the $i$th bolometer as a function of time,
+\begin{equation}
+\mathbf{b}_i(t) = g_i[\mathbf{e}_i(t) \mathbf{a}_i(t) + \mathbf{n}_i(t)]
+\end{equation}
+where $\mathbf{a}(t)$ is the time-varying signal produced by scanning
+the telescope across astronomical sources, $\mathbf{e}(t)$ is the
+time-varying extinction, which is a function of the telescope
+elevation and atmospheric conditions, and $\mathbf{n}_i(t)$ represents
+sources of noise. The two terms in square brackets, as written, have
+units of power delivered to the detectors (pW). The scale factor $g_i$
+converts this effective power to the digitized units recorded on disk
+(DAC), and in this formulation is assumed to be constant in time.
+
+In practice, $g_i$ is further factored into two components: $g_i = r_i
+d$. The responsivity, $r_i$, gives the change in current as a function
+of power fluctuations (A\,pW$^{-1}$). There is then a final (and
+constant across all bolometers) conversion factor from current to DAC
+units, $d$ (DAC/A).
+
+As for the noise, $\mathbf{n}_i(t)$, we break it down into several
+components,
+%
+\begin{equation}
+  \mathbf{n}_i(t) = \mathbf{n}^\mathrm{w}_i(t) + \mathbf{n}^\mathrm{f}_i(t) +
+  \mathbf{n}^\mathrm{c}(t),
+\end{equation}
+%
+where $\mathbf{n}^\mathrm{w}_i(t)$ is uncorrelated white (thermal)
+noise, $\mathbf{n}^\mathrm{f}_i(t)$ is low-frequency noise that is
+\emph{not} correlated from bolometer-to-bolometer, and
+$\mathbf{n}^\mathrm{c}(t)$ is a (predominantly low-frequency)
+correlated or \emph{common-mode} component.
+
+The primary goal of map-making is to model and remove
+$\mathbf{n}^\mathrm{f}_i$ and $\mathbf{c}^\mathrm{f}_i$ from the
+time-series. By re-gridding the remaining data we can then hope to
+approach the theoretical noise limit in the map.
+
+%-------------------------------------------------
+\subsection{Model components}
+%-------------------------------------------------
+
+Give details about each model component, roughly in the order they are
+calculated.
+
+\subsection{Common-mode estimation}
+
+DSB
+
+We estimate the common-mode, remove it from the time series, use it to
+flag bad bits of data, check for time-varying bolometer
+responsivities... what doesn't it do?!
+
+\subsection{Iterative filtering}
+
+EC
+
+The FFT filter can do high/low-pass filtering. We can also do notches
+and whitening.
+
+TJ
+
+We also have the SMO median filter that's useful for very short scans
+because edge effects don't matter so much.
 
 
 \subsection{Noise estimation}
 
 Measure a white noise level from the power spectrum for each detector
-to use as a weight. In the map, use weighted standard error to
-estimate noise. This is accurate for a single pixel, but there is
-still spatially correlated noise in the maps which we can show with
-some figures.
+to use as a weight.
 
+\subsection{Map estimation}
+
+In the map, use weighted standard error to estimate noise. This is
+accurate for a single pixel, but there is still spatially correlated
+noise in the maps which we can show with some figures.
 
 \subsection{Model degeneracies}
 
 Introduce the topic of model degeneracies here, but defer their
 solution to the example sections.
 
+%-------------------------------------------------
+\subsection{Data cleaning}
+%-------------------------------------------------
+
+Since we can do most of this stuff either as a pre-processing step or
+iteratively, I thinks this goes in a generic-sounding subsection. This
+can go here, or perhaps earlier?
+
+\subsubsection{Time-domain de-spiking}
+
+DSB
+
+\subsubsection{Step correction}
+
+DSB
+
+\subsubsection{Gap filling / apodization}
+
+DSB
+
+Discuss gap filling, ``new'' window function method, also apodization
+and start/end polynomial continuity stuff. Should reference CMB
+literature (namely Stompor et al.).
+
+\subsubsection{Flatfields}
+\label{sec:flatfields}
+
+TJ
+
+Discuss heater ramps, normalizing off the common-mode signal
+amplitude, astronomical sources, and the internal flatfield source.
+
+\subsubsection{Additional bad bolometer rejection}
+
+TJ
+
+Measuring the noise power spectra and throwing away outliers. Data
+flagged bad by the DA system.
+
+\subsubsection{Map-based despiking}
+
+EC
 
 %------------------------------------------------------------------------------
 \section{Examples}
@@ -320,7 +409,7 @@ common-mode with edge constraints.
 \subsection{Bright extended emission}
 The hardest thing to do with SCUBA-2 at the moment. Try to generate a
 source/background mask to assist the map solution based on thresholds
-in \snr.
+in \snr. Compare with BOLOCAM stuff.
 
 %------------------------------------------------------------------------------
 \section{Summary and future work}
@@ -334,6 +423,9 @@ and get larger-scale structures.
 
 Larger array footprint also helps.
 
+Talk about potential of Pascale et al. method to get closer to
+max-likelihood map solution (handle maps at constant scan angles with
+weights in Fourier space separately).
 
 %------------------------------------------------------------------------------
 \section{Acknowledgements}
