@@ -1,0 +1,16 @@
+# Generic file extensions to ignore
+
+*~
+*.aux
+*.bbl
+*.blg
+*.log
+
+# ignore .fits and .sdf files to avoid tonnes of binary data
+
+*.fits
+*.sdf
+
+# specific files
+
+smurf_paper.pdf
