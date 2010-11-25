@@ -205,6 +205,8 @@ $\epsilon R$, SCUBA-2 posesses an internal flatfield source.
 
 For further detail see...
 
+\subsubsection{Scan strategy}
+
 %-------------------------------------------------
 \subsection{\scuba\ shared-risk observations}
 %-------------------------------------------------
@@ -264,8 +266,22 @@ some mention.
 \label{sec:algorithm}
 %------------------------------------------------------------------------------
 
-Describe the bolometer signal model, and with the help of a flow-chart
+\begin{itemize}
+
+\item Describe the bolometer signal model, and with the help of a flow-chart
 show the basic procedure that SMURF follows.
+
+\item Discuss SMURF configurability
+
+\item Some sort of proof/demonstration showing why the algorithm works
+
+\item Discuss performance (execution time, memory, disk usage etc.)
+
+\item Where do you get SMURF/starlink, usage of NDF
+
+\item Talk about pipeline?
+
+\end{itemize}
 
 We express the signal observed by the $i$th bolometer as a function of time,
 \begin{equation}
@@ -311,17 +327,17 @@ approach the theoretical noise limit in the map.
 \caption{Typical map-making algorithm. Raw data (stored in multiple
   files) are read and concatenated into continuous time series. A
   pre-processing stage repairs DC steps, applies a flatfield
-  correction, identifies and removes the noisiest bolometers, and
-  flags large spikes. The iterative portion then begins: estimating
-  and removing the common-mode signal; applying the extinction
-  correction; high-pass filtering to remove residual independent
-  low-frequency noise; estimating the map by re-gridding the data; and
-  finally measuring the noise in the residual time series. If the
-  \rms\ has converged, the final map is written to disk. Otherwise any
-  multiplicative factors that may have been applied to the data are
-  inverted (e.g., extinction correction and relative gains measured
-  during the common-mode calculation), and each additive component is
-  added back into the time series and re-estimated in turn.}
+  correction, and identifies and removes the noisiest bolometers. The
+  iterative portion then begins: estimating and removing the
+  common-mode signal; applying the extinction correction; high-pass
+  filtering to remove residual independent low-frequency noise;
+  estimating the map by re-gridding the data; and finally measuring
+  the noise in the residual time series. If the \rms\ has converged,
+  the final map is written to disk. Otherwise any multiplicative
+  factors that may have been applied to the data are inverted (e.g.,
+  extinction correction and relative gains measured during the
+  common-mode calculation), and each additive component is added back
+  into the time series and re-estimated in turn.}
 \label{fig:dimm}
 \end{figure}
 
@@ -392,7 +408,7 @@ DSB
 
 Discuss gap filling, ``new'' window function method, also apodization
 and start/end polynomial continuity stuff. Should reference CMB
-literature (namely Stompor et al.).
+literature -- in particular look at \citet{stompor2002}.
 
 \subsubsection{Flatfields}
 \label{sec:flatfields}
