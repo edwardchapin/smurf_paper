@@ -1,6 +1,7 @@
 ;-------------------------------------------------------------------------------
-; some basic plots showing bolometer time series and correlation with
-; the fridge oscialltions
+; Some basic plots showing bolometer time series and correlation with
+; the fridge oscialltions. Also show some basic power spectra. To
+; generate the input files, run prepdata.sh in ../data
 ;-------------------------------------------------------------------------------
 
 datadir = '../data/'
@@ -8,11 +9,9 @@ datadir = '../data/'
 day2sec = 24d*3600d
 r2a = (180d/!DPI)*3600d
 
-; first, compare s4a, s8d, and mixtemp, and scan position
+; first, compare s4a, s8d, and mixtemp, and scan position ----------------------
 
 if 0 then begin
-  ; these are concatenations of files 2 & 3 and then run through
-  ; sc2clean with dimmconfig.lis
   fxread, datadir+'s4a20091214_00015_con_clean.fits', data450, header
   fxread, datadir+'s8d20091214_00015_con_clean.fits', data850, header
   state = scuba2_readstate( datadir+'state_20091214_00015.tst' )
