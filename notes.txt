@@ -15,4 +15,5 @@ Analysis and data sets for SMURF paper
 Edit this section to list the raw data that are needed to run the
 scripts in the plots subdirectory.
 
-20091214_00015: scan of Uranus, used files 2 and 3
+20091214_00015: scan of Uranus from cookbook example
+20100313_00029: Wayne's debris disk from cookbook example

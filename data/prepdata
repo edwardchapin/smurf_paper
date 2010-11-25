@@ -1,0 +1,89 @@
+#!/bin/tcsh
+#+
+#  Script for preparing data for plots. Currently set up to run on octopus,
+#  but you can fiddle dataroot which is the path to a tree resembling
+# /jcmtdata/raw/scuba2 at JAC
+#
+
+set dataroot = /scuba2
+set msg = quiet
+
+# the following outputs are used by intro.pro ---------------------------------
+
+# Uranus data from cookbook
+#set obsdate = 20091214
+#set obsnum = 00015
+#set subfile = "000[23]"
+
+# Wayne's debris disk from cookbook
+set obsdate = 20100313
+set obsnum = 00029
+set subfile = "000[345]"
+
+echo "*** Processing $obsdate $obsnum ***"
+
+echo "    Concatenating..."
+
+$SMURF_DIR/sc2concat \
+    $dataroot/s4a/$obsdate/$obsnum/s4a$obsdate\_$obsnum\_"$subfile" \
+    s4a$obsdate\_$obsnum\_con msg_filter=$msg
+
+$SMURF_DIR/sc2concat \
+    $dataroot/s8d/$obsdate/$obsnum/s8d$obsdate\_$obsnum\_"$subfile" \
+    s8d$obsdate\_$obsnum\_con msg_filter=$msg
+
+
+echo "    Cleaning..."
+
+$SMURF_DIR/sc2clean s4a$obsdate\_$obsnum\_con s4a$obsdate\_$obsnum\_con_clean \
+    config=^$STARLINK_DIR/share/smurf/dimmconfig.lis msg_filter=$msg
+
+$SMURF_DIR/sc2clean s8d$obsdate\_$obsnum\_con s8d$obsdate\_$obsnum\_con_clean \
+    config=^$STARLINK_DIR/share/smurf/dimmconfig.lis msg_filter=$msg
+
+
+echo "    Removing common-mode..."
+
+$SMURF_DIR/sc2clean s4a$obsdate\_$obsnum\_con s4a$obsdate\_$obsnum\_con_nocom \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,compreprocess=1"' \
+    msg_filter=$msg
+
+$SMURF_DIR/sc2clean s8d$obsdate\_$obsnum\_con s8d$obsdate\_$obsnum\_con_nocom \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,compreprocess=1"' \
+    msg_filter=$msg
+
+
+echo "    Convert to FITS..."
+
+if( -e s4a$obsdate\_$obsnum\_con_clean.fits ) then
+  rm s4a$obsdate\_$obsnum\_con_clean.fits
+endif
+
+$CONVERT_DIR/ndf2fits s4a$obsdate\_$obsnum\_con_clean \
+    s4a$obsdate\_$obsnum\_con_clean.fits msg_filter=$msg
+
+if( -e s8d$obsdate\_$obsnum\_con_clean.fits ) then
+  rm s8d$obsdate\_$obsnum\_con_clean.fits
+endif
+
+$CONVERT_DIR/ndf2fits s8d$obsdate\_$obsnum\_con_clean \
+    s8d$obsdate\_$obsnum\_con_clean.fits msg_filter=$msg
+
+if( -e s4a$obsdate\_$obsnum\_con_nocom.fits ) then
+  rm s4a$obsdate\_$obsnum\_con_nocom.fits
+endif
+
+$CONVERT_DIR/ndf2fits s4a$obsdate\_$obsnum\_con_nocom \
+    s4a$obsdate\_$obsnum\_con_nocom.fits msg_filter=$msg
+
+if( -e s8d$obsdate\_$obsnum\_con_nocom.fits ) then
+  rm s8d$obsdate\_$obsnum\_con_nocom.fits
+endif
+
+$CONVERT_DIR/ndf2fits s8d$obsdate\_$obsnum\_con_nocom \
+    s8d$obsdate\_$obsnum\_con_nocom.fits msg_filter=$msg
+
+
+echo "    Getting JCMTState..."
+
+$SMURF_DIR/jcmtstate2cat s4a$obsdate\_$obsnum\_con > state_$obsdate\_$obsnum.tst
