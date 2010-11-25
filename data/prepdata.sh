@@ -43,3 +43,7 @@ endif
 
 $CONVERT_DIR/ndf2fits s8d20091214_00015_con_clean \
     s8d20091214_00015_con_clean.fits msg_filter=$msg
+
+echo "    Getting JCMTState..."
+
+$SMURF_DIR/jcmtstate2cat s4a20091214_00015_con > state_20091214_00015.tst
