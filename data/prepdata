@@ -45,11 +45,11 @@ $SMURF_DIR/sc2clean s8d$obsdate\_$obsnum\_con s8d$obsdate\_$obsnum\_con_clean \
 echo "    Removing common-mode..."
 
 $SMURF_DIR/sc2clean s4a$obsdate\_$obsnum\_con s4a$obsdate\_$obsnum\_con_nocom \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,compreprocess=1"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,compreprocess=1,com.boxcar=0"' \
     msg_filter=$msg
 
 $SMURF_DIR/sc2clean s8d$obsdate\_$obsnum\_con s8d$obsdate\_$obsnum\_con_nocom \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,compreprocess=1"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,compreprocess=1,com.boxcar=0"' \
     msg_filter=$msg
 
 

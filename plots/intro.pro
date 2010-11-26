@@ -25,7 +25,7 @@ lightblue=12
 
 cs = 1.5
 
-if 0 then begin
+if 1 then begin
   ; cookbook uranus
   ;obs = '20091214_00015'
 
@@ -43,6 +43,7 @@ endif
 
 t = state.rts_end
 t = (t - min(t))*day2sec
+nt = n_elements(t)
 
 set_plot,'ps'
 
@@ -61,6 +62,15 @@ b850 = data850[thex,they,*]
 nc450 = nocom450[thex,they,*]
 nc850 = nocom850[thex,they,*]
 
+; common mode
+
+com450 = b450 - nc450
+com850 = b850 - nc850
+
+com450[nt-1] = com450[nt-2]
+com850[nt-1] = com850[nt-2]
+
+
 xl = 0.15
 xr = 0.99
 
@@ -78,6 +88,7 @@ plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='Power (pW)', ystyle=1, $
       charthick=!p.thick,xrange=xrange,yrange=[min(b450),max(b450)]
 oplot, t, nc450, color=128
 oplot, t, b450
+;oplot, t, com450, color=128, linestyle=2
 axis, xaxis=0, xstyle=1, xrange=xrange, xtickname=label
 axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
 xyouts, pos[0]+xt, pos[1]+yt, '450 Bolo', charsize=cs, charthick=!p.thick,$
@@ -88,6 +99,7 @@ plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='Power (pW)', /noerase, $
       ystyle=1, charthick=!p.thick,xrange=xrange,yrange=[min(b850),max(b850)]
 oplot, t, nc850, color=128
 oplot, t, b850
+;oplot, t, com850, color=128, linestyle=2
 axis, xaxis=0, xstyle=1, xrange=xrange, xtickname=label
 axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
 xyouts, pos[0]+xt, pos[1]+yt, '850 Bolo', charsize=cs, charthick=!p.thick,$
@@ -127,12 +139,15 @@ device, /close
 
 ; power spectra ----------------------------------------------------------------
 
+col = [grey,red,green,blue]
+
 cs = 1.5
 
-nt = n_elements(t)
-df = 1d / (max(t)/double(nt))
+srate = 1d / (max(t)/double(nt))
 nf = nt / 2
-freq = (df/2d)*dindgen(nf)/double(nf)
+freq = (srate/2d)*dindgen(nf)/double(nf)
+df = srate / nt
+
 
 x450 = [ 3,10,16,22];,28]
 y450 = [30,13,16,31];,10]
@@ -140,7 +155,7 @@ y450 = [30,13,16,31];,10]
 x850 = [ 5,13,16,25]
 y850 = [10,10,16,20]
 
-box = 10
+box = round(0.1/df) ; width of boxcar in Hz / freq. step size
 
 device, filename='pspec.eps', xsize=20, ysize=20, /color, $
         bits_per_pixel=24
@@ -151,8 +166,8 @@ xr = 0.99
 yscl = 0.89
 yoff = 0.09
 
-xrange = [0.5,max(freq)]
-yrange = [1d-7,1d-3]
+xrange = [0.1,max(freq)]
+yrange = [2d-10,1.5d-4]
 
 pos = [xl,0.5*yscl+yoff,xr, 1.0*yscl+yoff]
 
@@ -167,13 +182,25 @@ mycolour
 
 for i=0, n_elements(x450)-1 do begin
   f = fft(data450[x450[i],y450[i],*])
-  p = nt*abs(f)^2d
-  oplot, freq, smooth(p,box), color=3-i, thick=1., linestyle=1
+  p = (abs(f)^2d)/df
+  oplot, freq, smooth(p,box), color=col[i], linestyle=1
 
   f = fft(nocom450[x450[i],y450[i],*])
-  p = nt*abs(f)^2d
-  oplot, freq, smooth(p,box), color=3-i
+  p = (abs(f)^2d)/df
+  oplot, freq, smooth(p,box), color=col[i]
 endfor
+
+; common-mode power spectrum
+f = fft(com450)
+p = (abs(f)^2d)/df
+oplot, freq, smooth(p,box), color=white, thick=!p.thick*3.
+oplot, freq, smooth(p,box), color=black, thick=!p.thick*1.
+
+; reference noise value
+oplot, [1d-10,1d10], 1d-7*[1.,1.], linestyle=2, thick=!p.thick*3.,color=white
+oplot, [1d-10,1d10], 1d-7*[1.,1.], linestyle=2, color=black
+
+axis, yaxis=1, yrange=yrange, ytickname=label
 
 pos = [xl,0.0*yscl+yoff,xr, 0.5*yscl+yoff]
 
@@ -189,13 +216,25 @@ axis, xaxis=0, xstyle=1, xrange=xrange, xtitle='Frequency (Hz)', $
 mycolour
 for i=0, n_elements(x850)-1 do begin
   f = fft(data850[x850[i],y850[i],*])
-  p = nt*abs(f)^2d
-  oplot, freq, smooth(p,box), color=3-i, thick=1, linestyle=1
+  p = (abs(f)^2d)/df
+  oplot, freq, smooth(p,box), color=col[i], linestyle=1
 
   f = fft(nocom850[x450[i],y450[i],*])
-  p = nt*abs(f)^2d
-  oplot, freq, smooth(p,box), color=3-i
+  p = (abs(f)^2d)/df
+  oplot, freq, smooth(p,box), color=col[i]
 endfor
+
+; common-mode power spectrum
+f = fft(com850)
+p = (abs(f)^2d)/df
+oplot, freq, smooth(p,box), color=white, thick=!p.thick*3.
+oplot, freq, smooth(p,box), color=black, thick=!p.thick*1.
+
+; reference noise value
+oplot, [1d-10,1d10], 1d-8*[1.,1.], linestyle=2, thick=!p.thick*3.,color=white
+oplot, [1d-10,1d10], 1d-8*[1.,1.], linestyle=2, color=black
+
+axis, yaxis=1, yrange=yrange, ytickname=label
 
 device, /close
 
