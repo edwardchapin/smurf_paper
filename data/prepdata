@@ -87,3 +87,24 @@ $CONVERT_DIR/ndf2fits s8d$obsdate\_$obsnum\_con_nocom \
 echo "    Getting JCMTState..."
 
 $SMURF_DIR/jcmtstate2cat s4a$obsdate\_$obsnum\_con > state_$obsdate\_$obsnum.tst
+
+
+echo "    Copy out QUALITY at single time slice as a mask..."
+
+if( -e mask_s4a.fits ) then
+  rm mask_s4a.fits
+endif
+
+if( -e mask_s8d.fits ) then
+  rm mask_s8d.fits
+endif
+
+$KAPPA_DIR/ndfcopy "s4a$obsdate\_$obsnum\_con_nocom(,,1000)" mask_s4a \
+    comp=qual trim trimwcs
+
+$KAPPA_DIR/ndfcopy "s8d$obsdate\_$obsnum\_con_nocom(,,1000)" mask_s8d \
+    comp=qual trim trimwcs
+
+$CONVERT_DIR/ndf2fits mask_s4a mask_s4a.fits
+
+$CONVERT_DIR/ndf2fits mask_s8d mask_s8d.fits
