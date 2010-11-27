@@ -20,12 +20,13 @@ purple=10
 white=11
 lightblue=12
 
+micron = '!7'+!gr.mu+'!6m'
 
 ; first, compare s4a, s8d, and mixtemp, and scan position ----------------------
 
 cs = 1.5
 
-if 1 then begin
+if 0 then begin
   ; cookbook uranus
   ;obs = '20091214_00015'
 
@@ -91,8 +92,8 @@ oplot, t, b450
 ;oplot, t, com450, color=128, linestyle=2
 axis, xaxis=0, xstyle=1, xrange=xrange, xtickname=label
 axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
-xyouts, pos[0]+xt, pos[1]+yt, '450 Bolo', charsize=cs, charthick=!p.thick,$
-        /normal
+xyouts, pos[0]+xt, pos[1]+yt, '450'+micron, charsize=cs, $
+        charthick=!p.thick, /normal
 
 pos = [xl,0.5*yscl+yoff,xr, 0.75*yscl+yoff]
 plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='Power (pW)', /noerase, $
@@ -102,8 +103,8 @@ oplot, t, b850
 ;oplot, t, com850, color=128, linestyle=2
 axis, xaxis=0, xstyle=1, xrange=xrange, xtickname=label
 axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
-xyouts, pos[0]+xt, pos[1]+yt, '850 Bolo', charsize=cs, charthick=!p.thick,$
-        /normal
+xyouts, pos[0]+xt, pos[1]+yt, '850'+micron, charsize=cs, $
+        charthick=!p.thick, /normal
 
 pos = [xl,0.25*yscl+yoff,xr, 0.5*yscl+yoff]
 m = state.sc2_mixtemp
@@ -180,6 +181,31 @@ plot, [0], [0], /xlog, /ylog, xrange=xrange, $
 
 mycolour
 
+; legend
+xyouts, 0.85, pos[3]-0.04, '450'+micron, charsize=cs, charthick=!p.thick, $
+        /normal
+
+xt = 0.6
+yt = 0.43 ;0.90
+
+dx = 0.025
+dy = 0.03
+
+for i=0, 3 do begin
+  plots, xt+[i*dx,(i+1)*dx],      yt*[1.,1.], linestyle=1.,color=col[i], /normal
+  plots, xt+[i*dx,(i+1)*dx], (yt-dy)*[1.,1.], linestyle=0.,color=col[i], /normal
+endfor
+plots, xt+[0,4*dx], (yt-2*dy)*[1.,1.], color=black, /normal
+
+xyouts, xt+5*dx, yt-0.005, 'raw bolos', charsize=cs, charthick=!p.thick, $
+        /normal
+xyouts, xt+5*dx, (yt-dy)-0.005, 'com cleaned', charsize=cs, $
+        charthick=!p.thick, /normal
+xyouts, xt+5*dx, (yt-2*dy)-0.005, 'common-mode', charsize=cs, $
+        charthick=!p.thick, /normal
+
+
+; power spectra
 for i=0, n_elements(x450)-1 do begin
   f = fft(data450[x450[i],y450[i],*])
   p = (abs(f)^2d)/df
@@ -214,6 +240,13 @@ axis, xaxis=0, xstyle=1, xrange=xrange, xtitle='Frequency (Hz)', $
       charsize=cs, charthick=!p.thick
 
 mycolour
+
+; legend
+xyouts, 0.85, pos[3]-0.04, '850'+micron, charsize=cs, charthick=!p.thick, $
+        /normal
+
+
+; power spectra
 for i=0, n_elements(x850)-1 do begin
   f = fft(data850[x850[i],y850[i],*])
   p = (abs(f)^2d)/df
