@@ -231,14 +231,43 @@ Show cross-spectra to emphasize how correlated things are?
   the fridge, but not with the telescope motion. Also note that the
   total power in this primary signal is similar at both 450 and
   850\,\micron, pointing to an internal rather than an external
-  source.}
+  source. The grey signals overplotted in the top-two panels show the
+  residual time-series after removing the common-mode signal. This
+  operation shows: (i) that most of the low-frequency signal is common
+  to all of the bolometers; and (ii) the non-correlated, and
+  predominantly white noise at 450\,\micron\ is significantly larger
+  than at 850\,\micron.}
 \label{fig:bolos_mix}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{pspec.pdf}
-\caption{Power spectra}
+\caption{Bolometer power spectral densities. Four representative
+  bolometers have been selected from each sub-array, and the
+  flat-fielded (but otherwise raw) PSDs are shown as coloured dotted
+  lines (the blue signals are for the same time series as those shown
+  in Fig.~\ref{fig:bolos_mix}). Horizontal dotted lines at $5 \times
+  10^{-8}$ and $5 \times 10^{-9}$\,pW\,Hz$^{-1}$ at 450 and
+  850\,\micron\ respectively, give the approximate white-noise
+  levels. There are broad line features in the PSDs at both
+  wavelengths above $\sim$35\,Hz. From $\sim$50\,Hz up to the Nyquist
+  frequency, the gradual roll-off of the anti-aliasing filter is also
+  evident.  At lower frequencies, the bolometer signals exhibit clear
+  $1/f$ knees at approximately 2 and 4\,Hz at 450 and
+  850\,\micron. The solid black lines are the PSDs of the common-mode
+  signals at each wavelength, and the solid coloured lines show the
+  PSDs of the bolometers once the common-mode is removed. These
+  residual signals have significantly lower $1/f$ knees, approximately
+  0.4 and 2\,Hz at 450 and 850\,\micron. Finally, the dashed black
+  lines show the spectral shape produced by a point source, assuming
+  that the telescope is slewing at 200\,arcsec\,sec$^{-1}$ (typical
+  for S2SRO); for reference, the top horizontal axis shows the
+  conversion from frequency to angular scale. We can see that the line
+  features may add significant noise on the scale of the PSF. We also
+  see that, for this scan velocity, the low-frequency noise begins to
+  dominate on scales of approximately 8.3 and 1.7\,arcmin; these scales
+  are comparable to the array footprint.}
 \label{fig:pspec}
 \end{figure}
 
@@ -271,8 +300,35 @@ some mention.
 \begin{figure*}
 \centering
 \includegraphics[width=\linewidth]{pca.pdf}
-\caption{The first six modes from a principal component analysis of
-  the combined 450 and 850\,\micron\ time-series bolometer data.}
+\caption{The first six modes from a principal component analysis,
+  ordered by decreasing significance, of the combined 450 and
+  850\,\micron\ time-series bolometer data. For each component, the
+  top plot shows the time series of the eigenvector, normalized by its
+  \rms. The bottom coloured panels show the eigenvalues for the
+  bolometers at each wavelength (the amplitude of the eigenvector in
+  the time series). For reference, both the mean, $\bar{\lambda}$, and
+  \rms, $\lambda_\mathrm{rms}$, eigenvalues for the bolometers in each
+  subarray are also shown. The first two components have comparable
+  amplitudes, and dominate by at least a factor of 10 any other
+  components of the time series. We suspect that they are caused by
+  atmospheric variations (expected to be brighter at 450\,\micron),
+  and fridge oscillations (expected to be comparable at each
+  wavelength). However, the two eigenvectors do not necessarily map
+  directly to these physical sources under this interpretation; rather
+  they are two \emph{different} linear combinations of the underlying
+  physical signals that give rise to statistically uncorrelated
+  components. The third component accurately reproduces an apparent
+  data-acquisition glitch that appears only at 450\,\micron\ (see
+  Section ???). The fourth component is a ...\,Hz line feature only
+  observed in column 15 of the 450\,\micron\ subarray. The fifth
+  component shows a series of steps and glitches that appear
+  predominantly along the bottom-left edge of the 850\,\micron\
+  subarray where the bolometers are only tenuously locked. Finally,
+  the sixth component is degenerating into a less significant, and
+  more randomly scattered signal across the focal plane. Subsequent
+  components follow this trend, and would generally be kept in a
+  PCA-cleaning procedure.}
+
 \label{fig:pca}
 \end{figure*}
 
