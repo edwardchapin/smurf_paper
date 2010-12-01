@@ -4,13 +4,24 @@
 
 pre='./2band_'
 datadir='../data/'
+
+; debris disk
 obs = '20100313_00029'
 
-ncomp = 32    ; single component plots (up to this value)
-nrem = 1      ; number of components to remove
-dobigplot = 1 ; do the big plots?
+; uranus
+;obs = '20091214_00015'
 
-if 1 then begin
+; lockman
+;obs = '20100311_00065'
+
+ncomp = 16    ; single component plots (up to this value)
+nrem = 0      ; number of components to remove
+dobigplot = 0 ; do the big plots?
+
+micron = '!7'+!gr.mu+'!6m'
+day2sec = 24d*3600d
+
+if 0 then begin
 
   ; load bolo data and mask
   fxread, datadir+'s8d'+obs+'_con_clean.fits', data8, head8
@@ -18,6 +29,10 @@ if 1 then begin
 
   fxread, datadir+'mask_s8d.fits', mask8, mhead4
   fxread, datadir+'mask_s4a.fits', mask4, mhead4
+
+  state = scuba2_readstate( datadir+'state_'+obs+'.tst' )
+  t = state.rts_end
+  t = (t - min(t))*day2sec
 
   ; check that good masked data don't have NaNs
   nx = n_elements( data4[*,0,0] )
@@ -49,15 +64,17 @@ if 1 then begin
   ind4 = where(mask4)
   ind8 = where(mask8)
 
-  themin = min([n_elements(ind4),n_elements(ind8)])
+  if fact ne 1 then begin
+    themin = min([n_elements(ind4),n_elements(ind8)])
 
-  m = mask4*0
-  for i=0, themin/fact-1 do m[ind4[i*fact]] = 1
-  mask4 = m
+    m = mask4*0
+    for i=0, themin/fact-1 do m[ind4[i*fact]] = 1
+    mask4 = m
 
-  m = mask8*0
-  for i=0, themin/fact-1 do m[ind8[i*fact]] = 1
-  mask8 = m
+    m = mask8*0
+    for i=0, themin/fact-1 do m[ind8[i*fact]] = 1
+    mask8 = m
+  endif
 
   ; combine data from each band into one set and merge masks
 
@@ -132,12 +149,23 @@ if 1 then begin
   print, 'Saving PCA data...'
   save, data4, data8, mask4, mask8, head4, head8, $
         valbad, nx, ny, nbolo, nt, df, freq, newdata, nt, xg, yg, n, c, eof, $
-        pc, $
+        pc, t, xg4, yg4, $
         filename=pre+'data.sav'
 endif else begin
   print, 'Restoring PCA data...'
   restore,pre+'data.sav'
 endelse
+
+; flip sign of eigenvectors so that eigenvalues are positive
+for i=0, n-1 do begin
+  lambda = mean( pc[*,i] )
+
+  if( lambda lt 0 ) then begin
+    pc[*,i] = -pc[*,i]
+    eof[i,*] = -eof[i,*]
+  endif
+
+endfor
 
 ; dimensions for the big combined array
 nxb = nx*2
@@ -162,7 +190,7 @@ endif
 set_plot,'ps'
 
 if dobigplot then begin
-  print, "Doing large plots..."
+  print, "Doing large plots:"
 
   loadct, 0
 
@@ -173,6 +201,8 @@ if dobigplot then begin
   ;sx = 3
   sx = 4
   sy = 4
+
+  print, 'Bolos...'
 
   !p.multi=[0,sx,sy]
   device, filename=pre+'bolos.ps', xsize=27.94, ysize=21.59
@@ -188,6 +218,8 @@ if dobigplot then begin
 
   device,/close
 
+  print, 'Modes...'
+
   !p.multi=[0,1,1]
   !p.multi=[0,sx,sy]
   device, filename=pre+'modes.ps'
@@ -199,21 +231,25 @@ if dobigplot then begin
 
   device,/close
 
-  !p.multi=[0,1,1]
-  !p.multi=[0,sx,sy]
-  device, filename=pre+'bolos_clean.ps'
+  if nrem gt 0 then begin
+    print, 'Bolos_clean...'
 
-  for i=0, n-1 do begin
-    if xg[i] ge nx then array='s8d' $
-    else array='s4a'
+    !p.multi=[0,1,1]
+    !p.multi=[0,sx,sy]
+    device, filename=pre+'bolos_clean.ps'
 
-    plot, newdata_pca[xg[i],yg[i],*], xtitle="Sample #", $
-          ytitle="Raw Cleaned Data", $
-          title=array+strcompress(xg[i]+1)+strcompress(yg[i]+1), $
-          psym=5, ystyle=1, symsize=0.01, yrange=[-0.05,0.05], xstyle=1
-  endfor
+    for i=0, n-1 do begin
+      if xg[i] ge nx then array='s8d' $
+      else array='s4a'
 
-  device,/close
+      plot, newdata_pca[xg[i],yg[i],*], xtitle="Sample #", $
+            ytitle="Raw Cleaned Data", $
+            title=array+strcompress(xg[i]+1)+strcompress(yg[i]+1), $
+            psym=5, ystyle=1, symsize=0.01, yrange=[-0.05,0.05], xstyle=1
+    endfor
+
+    device,/close
+  endif
 
 endif
 
@@ -221,15 +257,18 @@ print, "Doing fast maps up to component", ncomp
 
 !p.multi=0
 
-device, filename=pre+'eigenmap.ps', $
-        xsize=2.*38./3., ysize=40./3., bits_per_pixel=8, $
-        /color
-
 !p.thick=3.
 !x.thick=3.
 !y.thick=3.
 
+cs = 1.5
+
 for thecomp=0, ncomp-1 do begin
+
+  device, filename=pre+'eigenmap'+strcompress(thecomp+1,/remove_all)+'.eps', $
+          xsize=20, ysize=20, bits_per_pixel=8, /color, $
+          /encapsulated
+
   print, thecomp, ' / ', ncomp
   compstr = strcompress(thecomp+1,/remove_all)
 
@@ -272,31 +311,98 @@ for thecomp=0, ncomp-1 do begin
   maxval = m + 2*sig
   minval = m - 2*sig
 
-  ;maxval = max(eigenmap[i])
-  ;minval = min(eigenmap[i])
-
   eigenmap[j] = 0 ; 1d30
 
-  pos =[0.1,0.1,0.75,0.95]
-  plot,[0],[0], xrange=[0,nxb], yrange=[0,nyb], pos=pos, $
-       xstyle=5, ystyle=5, title='Eigenmap Mode = '+compstr, $
-       charthick=!p.thick
+  ;pos =[0.1,0.1,0.75,0.95]
 
-  loadct,13
-  tvscale, eigenmap, /noint, minval=minval, maxval=maxval, pos=pos
+  loadct, 0
+
+  lambda = ['450','850']+micron
+
+  width = 0.355
+  xoff = 0.14
 
   labels=strarr(30)+' '
 
-  axis, xaxis=0, xrange=[0,nxb], xstyle=1, charthick=3.
-  axis, xaxis=1, xrange=[0,nxb], xstyle=1, charthick=3., xtickname=labels
-  axis, yaxis=0, yrange=[0,nyb], xstyle=1, charthick=3.
-  axis, yaxis=1, yrange=[0,nyb], ystyle=1, charthick=3., ytickname=labels
+  loadct, 0
+  pos = [xoff,0.65,xoff+2*width,0.92]
+  plot, t, eof[thecomp,*], xstyle=1, ystyle=1, pos=pos, $
+        ytitle='Eigenvector', charsize=cs, charthick=!p.thick, $
+        xtitle='Time (s)', yrange=[-0.025,0.025]
 
-  cbar, minval, maxval, pos, 0.05, 0.05
+  xyouts, 0.02, 0.95, 'Component'+strcompress(thecomp+1), charsize=cs*2, $
+          charthick=!p.thick, /normal
+
+  for i=0, 1 do begin
+
+    pos = [xoff+width*i,0.08,xoff+width*[i+1],0.53]
+
+    plot,[0],[0], xrange=[0,nx], yrange=[0,ny], pos=pos, $
+         xstyle=5, ystyle=5, $; title=lambda[i], $
+         charthick=!p.thick, /noerase, charsize=cs
+
+    loadct, 13
+    tvlct, r, g, b, /get
+    r[255] = 255 & g[255] = 255 & b[255] = 255 ; set 255th element to white
+    tvlct, r, g, b
+
+    map = eigenmap[i*nx:(i+1)*nx-1,*]
+    ind = where(map eq 0)
+    ;map[ind] = minval
+
+    themap = bytscl( map, min=minval, max=maxval, top=254 )
+    themap[ind] = 255
+
+    tvscale, themap, /noint, minval=0, maxval=255, pos=pos
+
+    cbar, minval, maxval, pos, 0.01, 0.02, $
+          title='!7'+!gr.lambda+'!6'+' (pW)', cs=cs
+
+    loadct, 0
+    axis, xaxis=0, xrange=[0,nx], xstyle=1, charthick=3., xtitle = 'Column', $
+          charsize=cs
+    axis, xaxis=1, xrange=[0,nx], xstyle=1, charthick=3., xtickname=labels
+    if i eq 0 then begin
+      axis, yaxis=0, yrange=[0,ny], xstyle=1, charthick=3., ytitle='Row', $
+            charsize=cs
+    endif else begin
+      axis, yaxis=0, yrange=[0,ny], xstyle=1, charthick=3., ytickname=labels
+    endelse
+
+    axis, yaxis=1, yrange=[0,ny], ystyle=1, charthick=3., ytickname=labels
+
+    xyouts, 1, 37, lambda[i], charsize=cs, charthick=!p.thick*5., color=255
+    xyouts, 1, 37, lambda[i], charsize=cs, charthick=!p.thick, color=0
+
+    if( i eq 0 ) then begin
+      d = pc[0:n_elements(xg4)-1,thecomp]
+    endif else begin
+      d = pc[n_elements(xg4):n_elements(xg)-1,thecomp]
+    endelse
+
+    m = mean(d)
+    sig = sqrt( mean(d^2d) )
+
+    xyouts, 1,34, '!7'+!gr.lambda+'!6 = '+string(m,format='(F6.3)')+ ' pW', $
+            charsize=cs, charthick=!p.thick*5., color=255
+    plots, [1,2], [36,36], thick=!p.thick*5, color=255
+    xyouts, 1,31, '!7'+!gr.lambda+'!6!drms!n = '+ $
+            string(sig,format='(F6.3)')+ ' pW', $
+            charsize=cs, charthick=!p.thick*5., color=255
+
+    xyouts, 1,34, '!7'+!gr.lambda+'!6 = '+string(m,format='(F6.3)')+ ' pW', $
+            charsize=cs, charthick=!p.thick, color=0
+    plots, [1,2], [36,36]
+    xyouts, 1,31, '!7'+!gr.lambda+'!6!drms!n = '+ $
+            string(sig,format='(F6.3)')+ ' pW', $
+            charsize=cs, charthick=!p.thick, color=0
+  endfor
+
+  device, /close
 
 endfor
 
-device, /close
+
 
 loadct,3
 

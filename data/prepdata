@@ -8,7 +8,11 @@
 set dataroot = /scuba2
 set msg = quiet
 
-# the following outputs are used by intro.pro ---------------------------------
+# extra cleaning parameters
+set clean_extra = "spikethresh=5,spikebox=50"
+
+
+# the following outputs are used by intro.pro and pca2band.pro -----------------
 
 # Uranus data from cookbook
 #set obsdate = 20091214
@@ -18,93 +22,59 @@ set msg = quiet
 # Wayne's debris disk from cookbook
 set obsdate = 20100313
 set obsnum = 00029
-set subfile = "000[345]"
+set subfile = "001[345]"
+
+# Some Lockman data
+#set obsdate = 20100311
+#set obsnum = 00065
+#set subfile = "000[345]"
 
 echo "*** Processing $obsdate $obsnum ***"
 
-echo "    Concatenating..."
+foreach lambda (s4a s8d)
+    echo "--- $lambda ---"
 
-$SMURF_DIR/sc2concat \
-    $dataroot/s4a/$obsdate/$obsnum/s4a$obsdate\_$obsnum\_"$subfile" \
-    s4a$obsdate\_$obsnum\_con msg_filter=$msg
+    echo "    Concatenating..."
 
-$SMURF_DIR/sc2concat \
-    $dataroot/s8d/$obsdate/$obsnum/s8d$obsdate\_$obsnum\_"$subfile" \
-    s8d$obsdate\_$obsnum\_con msg_filter=$msg
+    set basename = $lambda$obsdate\_$obsnum
 
+    $SMURF_DIR/sc2concat \
+        $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+        $lambda$obsdate\_$obsnum\_con msg_filter=$msg
 
-echo "    Cleaning..."
+    echo "    Cleaning..."
 
-$SMURF_DIR/sc2clean s4a$obsdate\_$obsnum\_con s4a$obsdate\_$obsnum\_con_clean \
-    config=^$STARLINK_DIR/share/smurf/dimmconfig.lis msg_filter=$msg
+    $SMURF_DIR/sc2clean $basename\_con \
+        $basename\_con_clean \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra'"' msg_filter=$msg
 
-$SMURF_DIR/sc2clean s8d$obsdate\_$obsnum\_con s8d$obsdate\_$obsnum\_con_clean \
-    config=^$STARLINK_DIR/share/smurf/dimmconfig.lis msg_filter=$msg
+    echo "    Removing common-mode..."
 
+    $SMURF_DIR/sc2clean $basename\_con \
+        $basename\_con_nocom \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.boxcar=0,com.gain_box=600000"' \
+        msg_filter=$msg
 
-echo "    Removing common-mode..."
+    echo "    Copy out QUALITY at single time slice as a mask..."
 
-$SMURF_DIR/sc2clean s4a$obsdate\_$obsnum\_con s4a$obsdate\_$obsnum\_con_nocom \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,compreprocess=1,com.boxcar=0"' \
-    msg_filter=$msg
+    $KAPPA_DIR/ndfcopy "$basename\_con_nocom(,,1000)" \
+        mask_$lambda comp=qual trim trimwcs msg_filter=$msg
 
-$SMURF_DIR/sc2clean s8d$obsdate\_$obsnum\_con s8d$obsdate\_$obsnum\_con_nocom \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,compreprocess=1,com.boxcar=0"' \
-    msg_filter=$msg
+    echo "    Convert to FITS..."
 
+    $CONVERT_DIR/ndf2fits $basename\_con_clean \
+        \!$basename\_con_clean.fits msg_filter=$msg
 
-echo "    Convert to FITS..."
+    $CONVERT_DIR/ndf2fits $lambda$obsdate\_$obsnum\_con_nocom \
+        \!$basename\_con_nocom.fits msg_filter=$msg
 
-if( -e s4a$obsdate\_$obsnum\_con_clean.fits ) then
-  rm s4a$obsdate\_$obsnum\_con_clean.fits
-endif
+    $CONVERT_DIR/ndf2fits mask_$lambda \!mask_$lambda.fits msg_filter=$msg
 
-$CONVERT_DIR/ndf2fits s4a$obsdate\_$obsnum\_con_clean \
-    s4a$obsdate\_$obsnum\_con_clean.fits msg_filter=$msg
-
-if( -e s8d$obsdate\_$obsnum\_con_clean.fits ) then
-  rm s8d$obsdate\_$obsnum\_con_clean.fits
-endif
-
-$CONVERT_DIR/ndf2fits s8d$obsdate\_$obsnum\_con_clean \
-    s8d$obsdate\_$obsnum\_con_clean.fits msg_filter=$msg
-
-if( -e s4a$obsdate\_$obsnum\_con_nocom.fits ) then
-  rm s4a$obsdate\_$obsnum\_con_nocom.fits
-endif
-
-$CONVERT_DIR/ndf2fits s4a$obsdate\_$obsnum\_con_nocom \
-    s4a$obsdate\_$obsnum\_con_nocom.fits msg_filter=$msg
-
-if( -e s8d$obsdate\_$obsnum\_con_nocom.fits ) then
-  rm s8d$obsdate\_$obsnum\_con_nocom.fits
-endif
-
-$CONVERT_DIR/ndf2fits s8d$obsdate\_$obsnum\_con_nocom \
-    s8d$obsdate\_$obsnum\_con_nocom.fits msg_filter=$msg
-
+end
 
 echo "    Getting JCMTState..."
 
-$SMURF_DIR/jcmtstate2cat s4a$obsdate\_$obsnum\_con > state_$obsdate\_$obsnum.tst
+$SMURF_DIR/jcmtstate2cat s4a$obsdate\_$obsnum\_con > \
+    state_$obsdate\_$obsnum.tst
 
 
-echo "    Copy out QUALITY at single time slice as a mask..."
-
-if( -e mask_s4a.fits ) then
-  rm mask_s4a.fits
-endif
-
-if( -e mask_s8d.fits ) then
-  rm mask_s8d.fits
-endif
-
-$KAPPA_DIR/ndfcopy "s4a$obsdate\_$obsnum\_con_nocom(,,1000)" mask_s4a \
-    comp=qual trim trimwcs
-
-$KAPPA_DIR/ndfcopy "s8d$obsdate\_$obsnum\_con_nocom(,,1000)" mask_s8d \
-    comp=qual trim trimwcs
-
-$CONVERT_DIR/ndf2fits mask_s4a mask_s4a.fits
-
-$CONVERT_DIR/ndf2fits mask_s8d mask_s8d.fits

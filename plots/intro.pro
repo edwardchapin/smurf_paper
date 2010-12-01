@@ -26,12 +26,17 @@ micron = '!7'+!gr.mu+'!6m'
 
 cs = 1.5
 
+loadct, 0
+
 if 0 then begin
   ; cookbook uranus
   ;obs = '20091214_00015'
 
   ; cookbook debris disk
   obs = '20100313_00029'
+
+  ; lockman
+  ;obs = '20100311_00065'
 
   fxread, datadir+'s4a'+obs+'_con_clean.fits', data450, header
   fxread, datadir+'s8d'+obs+'_con_clean.fits', data850, header
@@ -55,7 +60,8 @@ set_plot,'ps'
 device, filename='bolos_point_mix.eps', /encapsulated, xsize=20., $
         ysize=30.
 
-thex = 16 & they = 15
+;thex = 16 & they = 15
+thex = 18 & they = 22
 
 b450 = data450[thex,they,*]
 b850 = data850[thex,they,*]
@@ -110,8 +116,8 @@ pos = [xl,0.25*yscl+yoff,xr, 0.5*yscl+yoff]
 m = state.sc2_mixtemp
 m = m-mean(m)
 plot, t, m*1d3, xstyle=5, charsize=cs, pos=pos, ystyle=1,$
-      ytitle='Temperature (DAC)', /noerase, charthick=!p.thick, $
-      yrange=[-0.09,0.13]
+      ytitle='Temperature (mK)', /noerase, charthick=!p.thick, $
+      yrange=[-0.07 ,0.07 ]
 axis, xaxis=0, xstyle=1, xrange=xrange, xtickname=label
 axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
 xyouts, pos[0]+xt, pos[1]+yt, 'Mixing Chamber', charsize=cs,$
@@ -150,11 +156,14 @@ freq = (srate/2d)*dindgen(nf)/double(nf)
 df = srate / nt
 
 
-x450 = [ 3,10,16,22];,28]
-y450 = [30,13,16,31];,10]
+x450 = [ 3,10,16,thex];,28]
+y450 = [30,13,16,they];,10]
 
-x850 = [ 5,13,16,25]
-y850 = [10,10,16,20]
+;x850 = [ 5,13,16,thex]
+;y850 = [10,10,16,they]
+
+x850 = [ 4,31,25,thex]
+y850 = [16,20,32,they]
 
 box = round(0.1/df) ; width of boxcar in Hz / freq. step size
 
@@ -164,8 +173,10 @@ device, filename='pspec.eps', xsize=20, ysize=20, /color, $
 xl = 0.14
 xr = 0.99
 
-yscl = 0.89
+yscl = 0.845
 yoff = 0.09
+
+vel = 200.  ; arcsec/sec
 
 xrange = [0.1,max(freq)]
 yrange = [2d-10,1.5d-4]
@@ -175,9 +186,17 @@ pos = [xl,0.5*yscl+yoff,xr, 1.0*yscl+yoff]
 loadct,0
 
 plot, [0], [0], /xlog, /ylog, xrange=xrange, $
-      yrange=yrange, xstyle=1, ystyle=1, $
+      yrange=yrange, xstyle=5, ystyle=1, $
       ytitle='PSD (pW!u2!n Hz!u-1!n)', $
       charsize=cs, charthick=!p.thick, pos=pos, xtickname=label
+
+thetarange = (1/xrange)*vel/60.
+
+axis, xaxis=1, xrange=thetarange, xstyle=1, xtitle='Angular scale (arcmin)', $
+      charsize=cs, charthick=!p.thick
+
+axis, xaxis=0, xrange=xrange, xstyle=1, xtickname=label
+
 
 mycolour
 
@@ -196,6 +215,7 @@ for i=0, 3 do begin
   plots, xt+[i*dx,(i+1)*dx], (yt-dy)*[1.,1.], linestyle=0.,color=col[i], /normal
 endfor
 plots, xt+[0,4*dx], (yt-2*dy)*[1.,1.], color=black, /normal
+plots, xt+[0,4*dx], (yt-3*dy)*[1.,1.], color=black, linestyle=2, /normal
 
 xyouts, xt+5*dx, yt-0.005, 'raw bolos', charsize=cs, charthick=!p.thick, $
         /normal
@@ -203,9 +223,11 @@ xyouts, xt+5*dx, (yt-dy)-0.005, 'com cleaned', charsize=cs, $
         charthick=!p.thick, /normal
 xyouts, xt+5*dx, (yt-2*dy)-0.005, 'common-mode', charsize=cs, $
         charthick=!p.thick, /normal
+xyouts, xt+5*dx, (yt-3*dy)-0.005, 'PSF', charsize=cs, $
+        charthick=!p.thick, /normal
 
 
-; power spectra
+; 450 power spectra
 for i=0, n_elements(x450)-1 do begin
   f = fft(data450[x450[i],y450[i],*])
   p = (abs(f)^2d)/df
@@ -216,17 +238,22 @@ for i=0, n_elements(x450)-1 do begin
   oplot, freq, smooth(p,box), color=col[i]
 endfor
 
-; common-mode power spectrum
+; 450 PSF
+fwhm_f = vel / 7.5
+psf = 1d-6 * exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) )
+oplot, freq, psf, linestyle=2, color=black
+
+; 450 common-mode power spectrum
 f = fft(com450)
 p = (abs(f)^2d)/df
 oplot, freq, smooth(p,box), color=white, thick=!p.thick*3.
 oplot, freq, smooth(p,box), color=black, thick=!p.thick*1.
 
-; reference noise value
-oplot, [1d-10,1d10], 1d-7*[1.,1.], linestyle=2, thick=!p.thick*3.,color=white
-oplot, [1d-10,1d10], 1d-7*[1.,1.], linestyle=2, color=black
+; 450 reference noise value
+oplot, [1d-10,1d10], 5d-8*[1.,1.], linestyle=1, thick=!p.thick*3.,color=white
+oplot, [1d-10,1d10], 5d-8*[1.,1.], linestyle=1, color=black
 
-axis, yaxis=1, yrange=yrange, ytickname=label
+axis, yaxis=1, yrange=yrange, ytickname=label, ystyle=1
 
 pos = [xl,0.0*yscl+yoff,xr, 0.5*yscl+yoff]
 
@@ -245,29 +272,33 @@ mycolour
 xyouts, 0.85, pos[3]-0.04, '850'+micron, charsize=cs, charthick=!p.thick, $
         /normal
 
-
-; power spectra
+; 850 power spectra
 for i=0, n_elements(x850)-1 do begin
   f = fft(data850[x850[i],y850[i],*])
   p = (abs(f)^2d)/df
   oplot, freq, smooth(p,box), color=col[i], linestyle=1
 
-  f = fft(nocom850[x450[i],y450[i],*])
+  f = fft(nocom850[x850[i],y850[i],*])
   p = (abs(f)^2d)/df
   oplot, freq, smooth(p,box), color=col[i]
 endfor
 
-; common-mode power spectrum
+; 850 common-mode power spectrum
 f = fft(com850)
 p = (abs(f)^2d)/df
 oplot, freq, smooth(p,box), color=white, thick=!p.thick*3.
 oplot, freq, smooth(p,box), color=black, thick=!p.thick*1.
 
-; reference noise value
-oplot, [1d-10,1d10], 1d-8*[1.,1.], linestyle=2, thick=!p.thick*3.,color=white
-oplot, [1d-10,1d10], 1d-8*[1.,1.], linestyle=2, color=black
+; 850 PSF
+fwhm_f = vel / 14.5
+psf = 1d-7 * exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) )
+oplot, freq, psf, linestyle=2, color=black
 
-axis, yaxis=1, yrange=yrange, ytickname=label
+; 850 reference noise value
+oplot, [1d-10,1d10], 6d-9*[1.,1.], linestyle=1, thick=!p.thick*3.,color=white
+oplot, [1d-10,1d10], 6d-9*[1.,1.], linestyle=1, color=black
+
+axis, yaxis=1, yrange=yrange, ytickname=label, ystyle=1
 
 device, /close
 
