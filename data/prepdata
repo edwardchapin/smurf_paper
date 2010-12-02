@@ -12,6 +12,24 @@ set msg = quiet
 set clean_extra = "spikethresh=5,spikebox=50"
 
 
+# some data for showing magnetic field pickup, magdksquid.pro ------------------
+
+set lambda = s4a
+set obsdate = 20100223
+set obsnum = 00061
+set subfile = 0002
+
+echo "*** Processing $obsdate $obsnum ***"
+
+set basename = $lambda$obsdate\_$obsnum\_$subfile
+
+echo "    Cleaning..."
+
+$SMURF_DIR/sc2clean $dataroot/$lambda/$obsdate/$obsnum/$basename \
+    $basename\_clean \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.boxcar=0,com.gain_box=600000"' \
+    msg_filter=$msg
+
 # the following outputs are used by intro.pro and pca2band.pro -----------------
 
 # Uranus data from cookbook
@@ -46,7 +64,8 @@ foreach lambda (s4a s8d)
 
     $SMURF_DIR/sc2clean $basename\_con \
         $basename\_con_clean \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra'"' msg_filter=$msg
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.boxcar=0,com.gain_box=600000"' \
+        msg_filter=$msg
 
     echo "    Removing common-mode..."
 
@@ -76,5 +95,3 @@ echo "    Getting JCMTState..."
 
 $SMURF_DIR/jcmtstate2cat s4a$obsdate\_$obsnum\_con > \
     state_$obsdate\_$obsnum.tst
-
-
