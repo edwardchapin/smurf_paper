@@ -73,8 +73,15 @@ Reduction Facility: an iterative map-maker for SCUBA-2}
 
 \begin{abstract}
   We describe the properties of data from the Submillimetre Common
-  User Bolometer Array 2 (SCUBA-2), and the production of maps using
-  the Sub-Millimetre User Reduction Facility (SMURF).
+  User Bolometer Array 2 (SCUBA-2) taken during the Shared Risk
+  Observing period from 2010 February 11 to 2010 March 25, and the
+  production of maps using the Sub-Millimetre User Reduction Facility
+  (SMURF). Our iterative approach is similar to those used to reduce
+  data from other ground-based submillimetre telescopes in recent
+  years, and recovers angular scales up to the size of the array
+  footprint (approximately 2\,arcmin). The method is also able to
+  achieve the theoretical white-noise limit of the instrument for
+  point-source studies.
 \end{abstract}
 
 
@@ -180,7 +187,7 @@ order to be background limited. However, a superior over-all
 sensitivity on a per-bolometer basis is achieved through its improved
 responsivity (similar to an improved quantum efficiency for a CCD).
 
-The load on the detectors can vary substatially, both from thermal
+The load on the detectors can vary substantially, both from thermal
 sources within and outside the SCUBA-2 cryostat. In order to operate
 the camera across a broad dynamic range of conditions, it is therefore
 necessary to thermally control the focal plane. This is achieved by
@@ -203,23 +210,118 @@ resistance, and $\epsilon$ is the efficiency with which power is
 transferred to the bolometer. In order to calibrate the total factor
 $\epsilon R$, SCUBA-2 posesses an internal flatfield source.
 
-For further detail see...
+In general, bolometers have two predominant noise components: (i) the
+effectively white thermal noise produced by the phonon and optical
+loading on the absorbers; and (ii) and longer-timescale drift
+resulting from slow variations in the mean load (e.g. fridge,
+telescope, or atmospheric changes), and also the readout
+electronics. As such, the spectrum corresponding to a bolometer
+time-series exhibits a ``$1/f$'' shape below some knee frequency,
+$f_\mathrm{knee}$, and is relatively flat at higher frequencies. Other
+smaller effects may include line features in the spectrum (a common
+culprit is pickup from AC mains, or microphonic signals induced by
+mechanical vibrations), and finally a roll-off towards the Nyquist
+frequency caused by the anti-aliasing filter that precedes
+digitization.
 
-\subsubsection{Scan strategy}
+In order to observe astronomical sources, it is clearly advantageous
+that the signals appear in the region of the spectrum that offers the
+highest \snr, namely frequencies above $f_\mathrm{knee}$. This effect
+is achieved by modulating the signal; the original SCUBA primarily
+used the JCMT chopping secondary to place sources into the spectrum at
+about $\sim$10\,Hz. The problem with this strategy was that SCUBA was
+ultimately limited to recovering information on angular scales smaller
+than the chop throw (a maximum of a couple of arcmin)... cite
+somebody. The primary approach to map-making with SCUBA-2 is instead
+to slew the entire telescope at such a rate that angular scales of
+interest are crossed on time scales shorter than $1/f_\mathrm{knee}$,
+similar to other ground-based instruments (MAMBO, BOLOCAM, SHARC-II,
+AzTEC, LABOCA,...). The desire to scan rapidly has two basic
+constraints: (i) the telescope cannot physically move faster that
+several hundred arcsec\,sec$^{-1}$ without requiring unacceptably
+large accelerations to change direction, and (ii) bolometers are
+designed with a thermal time constant that balance response with
+sensitivity. Taking these constraints into consideration, SCUBA-2 was
+ultimately designed to work at a maximum scan velocity of
+600\,arcsec\,sec$^{-1}$. The data acquisition system has a target
+sample rate of 200\,Hz, which at that scan velocity results in a
+sample every 3.0\,arcsec, or approximately one third of the
+450\,\micron\ diffraction-limited full-width at half-maximum (FWHM) --
+a typical rule-of-thumb for adequately sampling a Gaussian point
+spread function (PSF). Similarly, the SCUBA-2 bolometers are designed
+to have a time constant of 2 ms \textbf{check that number!} in order
+to avoid distorting PSF-sized sources at this maximum scan rate.
+
+The scan strategy is designed, primarily, to mitigate the effects of
+$1/f$ drift. The simplest scan one might use is a raster pattern, or a
+series of parallel passes across this field. However, such a scan
+yields extremely poor performace for structures that are transverse to
+the scan direction, since a long time will have ellapsed between each
+parallel step, and the signal will therefore be totally dominated by
+the $1/f$ noise. In addition, other noise features may appear in the
+data periodically. With such a regularly spaced periodic scan
+strategy, these noise features can easily conspire with the scan
+pattern to produce similarly periodic noise structures in the map, or
+\emph{scan-synchronous} noise. It has therefore been recognized for
+some time that scan strategies that visit each region of the map on as
+many different time scales, and scan angles as possible offer the best
+protection against large-scale noise (...cite some people...). As a
+tradeoff between truly random scan patterns and feasibility of
+implementation taking into consideration both mechanical and
+scheduling constraints, SCUBA-2 presently has three primary scan
+modes: PONG (cite Borys et al.), Lissajous, and Daisy... (more
+citations? Kovacs et al. has a nice description... also CMB
+literature).
 
 %-------------------------------------------------
 \subsection{\scuba\ shared-risk observations}
 %-------------------------------------------------
 
-This paper will be focussed on S2SRO: only one subarray at each
-wavelength; fridge oscillations; working detectors (and variation from
-setup-to-setup).
+The S2SRO period, as mentioned above, took place during February and
+March 2010. For the purpose of this paper, we will consider data taken
+as early as 2009 December 3, at which point the instrument was being
+commissioned in a similar configuration to that of the S2SRO
+period. At this time, each of the 450 and 850\,\micron\ focal planes
+were populated with single subarrays, s4a and s8d respectively. There
+were two main mechanical problems to contend with during this
+period. First, the fridge was not able to cool the focal plane to the
+desired base temperature of ... which affected stability, particularly
+at 850\,\micron. Second, there were problems with the subarray
+fabrication process which led to large numbers of dead pixels, as well
+as large-scale variations in $T_\mathrm{C}$ and the thermal
+conductivity, $G$. These latter issues made it difficult to
+simulataneously lock all of the bolometers, and in addition many of
+the bolometers that were locked did not achieve their minimum
+theoretical noise performance, since it is not possible to adjust the
+individual temperature biases and place each device into the optimal
+region of the superconducting transition.
 
-Show some time series.
+While there were moderate variations from night-to-night during the
+observing period, there were typically 600 to 900 working detectors in
+each of the s4a and s8d subarrays. Fig.~\ref{fig:sensitivities} shows
+representative responsivity maps for the two subarrays from the middle
+of S2SRO based on the response to ramping the bolometer heaters.
 
-Show power spectra.
+\begin{figure}
+\vspace{2cm}
+\textbf{This will be a figure showing s4a and s8d responsivity maps}
+\vspace{2cm}
+\caption{The response of each bolometer to known input heater power
+  for a typical night during S2SRO. The s4a subarray had a
+  particularly large variation in $T_\mathrm{C}$ towards the
+  bottom-right which resulted in lower responsivity, and
+  correspondingly larger noise. The s8d array also suffered
+  significant variations across the focal plane, in particular
+  removing larger number of useful detectors from the bottom-left.}
+\label{fig:sensitivities}
+\end{figure}
 
-Show cross-spectra to emphasize how correlated things are?
+\subsubsection{Time series}
+
+In Fig.~\ref{fig:bolos_mix} we show sample time series from single
+bolometers in each of the subarrays, as well as variations in the
+mixing chamber temperature (as a proxy for the focal-plane
+temperature), and the telescope pointing during a PONG scan.
 
 \begin{figure}
 \centering
@@ -239,6 +341,50 @@ Show cross-spectra to emphasize how correlated things are?
   than at 850\,\micron.}
 \label{fig:bolos_mix}
 \end{figure}
+
+
+Both bolometers share significant long-timescale structure
+($\gsim10$\,s) that appears to be related to variations in the fridge
+base temperature, although the similarity is clearly greater at
+850\,\micron. In this particular case, the total power in the
+fluctuations at 450\,\micron, from $-0.04$\,pW to $+0.08$, are larger
+than the $-0.03$\,pW to $+0.05$\,pW fluctuations at 850\,\micron. Such
+behaviour might be expected if there is a comparable varying thermal
+load from the fridge at each wavelength, but a larger contribution of
+astmospheric variations through the 450\,\micron\ bandpass filters. We
+also note that there is no obvious strong correlation between the
+low-frequency signal structure at either wavelength at the telescope
+motion.
+
+The low-frequency signal component of the bolometer signals is also
+highly correlated amongst bolometers in the same subarray. We have
+calculate a common-mode signal, $\mathbf{c}(t)$ as the straight
+average time series of all the working bolometers. We then fit the
+amplitude of $\mathbf{c}(t)$ at each wavelength to the time series
+shown in Fig.~\ref{fig:bolos_mix} and remove it, yielding the grey
+residual signals. These residuals are quite flat, although still with
+noticeable variations. The white noise is also apparent, and larger at
+450\,\micron\ as one would expect from the larger loading compared to
+850\,\micron.
+
+\subsubsection{Power spectral densities}
+
+Next, we produce power spectral density (PSD) plots for several
+representative bolometers in Fig.~\ref{fig:pspec}. To produce this
+figure, we follow the convention that the PSD as a function of
+frequency, $\mathbf{P}(f)$, is normalized such that the integral over
+frequency gives the same variance as the time-series variance across
+the full time series. In other words, given a bolometer signal
+$\mathbf{b}(t)$,
+%
+\begin{equation}
+\int \mathbf{P}(f) df = \langle\mathbf{b}^2(t)\rangle.
+\end{equation}
+%
+However, we only show the PSD up to the Nyquist frequency, so the
+conversion from variance measured in the frequency domain to the time
+domain requires and additional multiplcation by 2; hence the units are
+pW$^2$\,Hz$^{-1}$ rather than pW$^2$\,s.
 
 \begin{figure}
 \centering
@@ -271,18 +417,52 @@ Show cross-spectra to emphasize how correlated things are?
 \label{fig:pspec}
 \end{figure}
 
-\subsubsection{Fridge oscillations}
-As shown in Fig.~\ref{fig:bolos_mix}, the dominant signal in both
-bands is clearly an oscillation in the fridge base temperature as
-evidenced by the low-resolution mixing chamber thermometer. The total
-power delivered to the bolometers is comparable at each wavelength,
-further suggesting a source internal to the cryostat, rather than an
-external optical load. Finally, there is no obvious correspondance
-with either the azimuth or elevation motion.
+The dotted coloured lines show the PSDs for raw, though flatfielded
+data. At each wavelength, there is a clear $1/f$ knee at a few Hz,
+followed by a predominantly white spectrum punctuated by line features
+above $\gsim 30$\,Hz, and finally roll-off caused by the anti-aliasing
+filter above $\gsim 70$\,Hz. As indicated in the previous section, the
+correlation between the low-frequency components of the different
+bolometer signals is large. The solid black lines in
+Fig.~\ref{fig:pspec} indicate the PSDs of the common-modes
+$\mathbf{c}(t)$ at each wavelength, which reproduce most of the
+low-frequency structures, as well as the high-frequency line
+features. The $\mathbf{c}(t)$ otherwise drop substantially below the
+individual bolometer PSDs at high-frequency as expected if the
+bolometers are dominated by un-correlated white noise. Finally, we
+note that the amplitudes and slopes of the $\mathbf{c}(t)$ are
+similar at both 450 and 850\,\micron. However, since the
+450\,\micron\ white noise is larger than at 850\,\micron\ (shown
+approximately by the horizontal dotted lines), the $1/f$ knee occurs
+at a \emph{lower} frequency at 450\,\micron.
 
-Show what's left over when we remove the common-mode, and the
-correlation of the resulting signal with patterns in $G$ and
-$T_\mathrm{C}$ across the array.
+Next, the common-mode signals are fit to each bolometer time series
+and removed as in Fig.~\ref{fig:bolos_mix}, and the resulting PSDs are
+shown as solid coloured lines. In this example, the residual signals
+have $1/f$ knees significantly lower than in the raw PSDs.
+
+For reference, the top horizontal axis has been converted to angular
+scale assuming a scan velocity of 200\,arcsec\,sec$^{-1}$ which was
+typical of the S2SRO observations. The power spectra of the PSFs in
+each band (arbitrary normalized to peak values of $10^{-6}$ and
+$10^{-7}$\,pW$^2$\,Hz$^{-1}$ at 450 and 850\,\micron\ respectively)
+are also showed as dashed lines for this assumed scan velocity showing
+that the smallest features resolvable by the telescope may be slightly
+affected by the excess noise in the line features. At the lower
+frequency end, the $1/f$ noise dominates at scales $\gsim 2$\,arcmin
+in the raw data and $\gsim 10$\,arcmin in the common-mode cleaned data
+at 450\,\micron, and at scales $\gsim 1$\,arscmin in the raw data and
+$\gsim 2$\,arcmin in the common-mode cleaned data at 850\,\micron.
+
+\subsubsection{Principal component analysis}
+
+\begin{figure*}
+\centering
+\includegraphics[width=\linewidth]{pca.pdf}
+\caption{The first six modes from a principal component analysis of
+  the combined 450 and 850\,\micron\ time-series bolometer data.}
+\label{fig:pca}
+\end{figure*}
 
 \subsubsection{Sky noise}
 Do we even see sky noise? Can show some results for the combined 450
@@ -328,7 +508,6 @@ some mention.
   more randomly scattered signal across the focal plane. Subsequent
   components follow this trend, and would generally be kept in a
   PCA-cleaning procedure.}
-
 \label{fig:pca}
 \end{figure*}
 
