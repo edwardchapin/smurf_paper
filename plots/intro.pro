@@ -238,9 +238,9 @@ for i=0, n_elements(x450)-1 do begin
   oplot, freq, smooth(p,box), color=col[i]
 endfor
 
-; 450 PSF
+; PSD 450 PSF
 fwhm_f = vel / 7.5
-psf = 1d-6 * exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) )
+psf = 1d-6 * ( exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) ) )^2d
 oplot, freq, psf, linestyle=2, color=black
 
 ; 450 common-mode power spectrum
@@ -289,9 +289,9 @@ p = (abs(f)^2d)/df
 oplot, freq, smooth(p,box), color=white, thick=!p.thick*3.
 oplot, freq, smooth(p,box), color=black, thick=!p.thick*1.
 
-; 850 PSF
+; PSD 850 PSF
 fwhm_f = vel / 14.5
-psf = 1d-7 * exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) )
+psf = 1d-7 * ( exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) ) )^2d
 oplot, freq, psf, linestyle=2, color=black
 
 ; 850 reference noise value
