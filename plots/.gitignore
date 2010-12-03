@@ -1,0 +1,7 @@
+# in this directory we don't care about any output plots
+
+*.eps
+*.ps
+*.pdf
+*.sav
+

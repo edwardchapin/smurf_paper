@@ -6,10 +6,11 @@
 *.blg
 *.log
 
-# ignore .fits and .sdf files to avoid tonnes of binary data
+# ignore .fits, .tst and .sdf files to avoid processed data
 
 *.fits
 *.sdf
+*.tst
 
 # specific files
 
