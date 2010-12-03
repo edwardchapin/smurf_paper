@@ -551,6 +551,36 @@ give comparable results; most of the signal at both 450\,\micron\ and
 850\,\micron\ appears to be produced by two dominant underlying
 mechanisms.
 
+The subsequent components identified by the PCA analysis in
+Fig.~\ref{fig:pca} vary wildly. Component 3, though not obvious from
+its eigenvector plot, is almost a pure ramping waveform that only
+appears in the s4a data, and produces the broad line featuress
+centered over 45\,Hz and 70\,Hz in the 450\,\micron\ PSDs in
+Fig.~\ref{fig:psd}. In other data sets, this third component has also
+often instead exhibited a regularly-spaced series of spikes with
+heights quantized into several amplitude families (again, only in the
+s4a array). In both cases, the shape and phase of this signal is the
+same in each bolometer, although the amplitude (and sign) varies, as
+evidenced by the large random scatter in the s4a eigenvalue maps. It
+is thought that these features are some sort of data acquisition
+glitch as the spikes (when they appear) exhibit the expected point
+response function of the anti-aliasing filter. Similarly, component 4
+also appears to be a data acquisition glitch in the s4a array,
+although along a single column, and with a peak at a lower frequency
+of 40\,Hz, and a second feature right at the Nyquist frequency.
+
+The last two components in Fig.~\ref{fig:pca} have an entirely
+different character. The amplitudes of both components are greatest in
+low-responsivity regions of the two subarrays (lower-right at
+450\,\micron\ and bottom-left at 850\,\micron). Bolometers in these
+regions of the subarray are probably only tenuously locked, and are
+more sensitive to changes in the loading, possibly resulting in the
+step and spikes that are seen in component 5. Component 6 is clearly
+related to component 5, though with the absence of the steps and
+spikes, so that together they seem to represent a continuum of shapes
+that are linear combinations of the spikes and steps with the slower
+drift evident only in component 6.
+
 \subsubsection{Magnetic field pickup}
 Show that it occasionally appears in the dark squids.
 
@@ -558,6 +588,33 @@ Show that it occasionally appears in the dark squids.
 \section{The SMURF Algorithm}
 \label{sec:algorithm}
 %------------------------------------------------------------------------------
+
+Given predictions for the performance of a fully-functioning SCUBA-2,
+and the observed properties of the first-installed subarrays during
+commissioning in late 2009 as described in the previous section, SMURF
+was designed with two primary goals in mind: (i) reduced maps should
+be scientifically useful and of ``near publication quality'' with
+minimal user interaction; and (ii) the execution time should not
+appreciably exceed the amount of time required to conduct
+observations. By attaining these goals it would be possible to conduct
+real-time reduction at the telescope to offer feedback to observers,
+and it would also be possible to maintain a central repository of
+(nearly) publishable data products.
+
+There are two general families of existing map-making strategies that
+were considered. The first are \emph{maximum likelihood} methods that
+were originally pioneered for the analysis of Cosmic Microwave
+Background (CMB) maps. Here, the pixels in the map are considered to
+be free parameters in a model-fitting problem, and the data are the
+raw time-series. By estimating the full noise covariance matrix for
+the data, it is then possible to estimate the maximum-likelihood
+map. While direct inversion solutions to this problem are untenable,
+some recent efforts to optimize these algorithms have enabled the
+reduction of smaller data sets in a reasonable amount of time. While
+maximum likelihood maps are, theoretically, the best maps that can be
+made from a noise point of view, the required computing resources and
+execution time would not have been feasible for the proposed real-time
+data reduction and data archiving model.
 
 \begin{itemize}
 
