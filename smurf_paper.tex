@@ -266,13 +266,13 @@ pattern to produce similarly periodic noise structures in the map, or
 \emph{scan-synchronous} noise. It has therefore been recognized for
 some time that scan strategies that visit each region of the map on as
 many different time scales, and scan angles as possible offer the best
-protection against large-scale noise (...cite some people...). As a
-tradeoff between truly random scan patterns and feasibility of
-implementation taking into consideration both mechanical and
-scheduling constraints, SCUBA-2 presently has three primary scan
-modes: PONG (cite Borys et al.), Lissajous, and Daisy... (more
-citations? Kovacs et al. has a nice description... also CMB
-literature).
+protection against large-scale noise (...cite some people...); such
+strategies are said to offer good \emph{cross-linking}. As a tradeoff
+between truly random scan patterns and feasibility of implementation
+taking into consideration both mechanical and scheduling constraints,
+SCUBA-2 presently has three primary scan modes: PONG (cite Borys et
+al.), Lissajous, and Daisy... (more citations? Kovacs et al. has a
+nice description... also CMB literature).
 
 %-------------------------------------------------
 \subsection{\scuba\ shared-risk observations}
@@ -457,26 +457,36 @@ $\gsim 2$\,arcmin in the common-mode cleaned data at 850\,\micron.
 
 \subsubsection{Principal component analysis}
 
-\begin{figure*}
-\centering
-\includegraphics[width=\linewidth]{pca.pdf}
-\caption{The first six modes from a principal component analysis of
-  the combined 450 and 850\,\micron\ time-series bolometer data.}
-\label{fig:pca}
-\end{figure*}
+A method that has been employed by teams analyzing BOLOCAM and AzTEC
+data to identify and remove low-frequency correlated noise is
+Principal Component Analysis
+\citep[PCA,][]{laurent2005,scott2008}. While we have not (yet)
+included ``PCA cleaning'' as a standard feature of SMURF, we have
+performed a preliminary analysis in IDL of some SCUBA-2 data to gain
+further insight into the nature of the low-frequency noise. The basic
+method is as follows: (i) the covariance matrix is built up for all
+pairs $(i,j)$ of the $N$ bolometer time series,
+$\langle\mathbf{b}_i(t),\mathbf{b}_j\rangle$; and (ii) an eigenvalue
+decomposition is used to identify a new set of statistically
+uncorrelated eigenvectors, $\mathbf{\xi}_i(t)$ (i.e. whose covariance
+matrix is diagonal), such that each of the bolometer time series is a
+linear combination of the eigenvectors, or \emph{components}
+i.e. $\mathbf{b}_i(t) = \bar{\mathbf{\xi}} \mathbf{\lambda}_i^T$,
+where each row of the matrix $\bar{\mathbf{\xi}}$ is an eigenvector,
+and $\mathbf{\lambda}_i^T$ is a column vector containing the
+corresponding eigenvalues. For convenience, the $\mathbf{\xi}_i$ are
+normalized by their \rms, so that the amplitude of each component is
+stored in the eigenvalues. In the earlier analyses mentioned, the
+low-frequency noise is assumed to be encapsulated in those components
+with the largest eigenvalues. Removing the projection of the time
+series along those components has been used successfully to reduce
+$1/f$ noise while retaining most of the signal in point-like sources.
 
-\subsubsection{Sky noise}
-Do we even see sky noise? Can show some results for the combined 450
-and 850\,\micron\ joint PCA analysis.
-
-\subsubsection{Magnetic field pickup}
-Show that it occasionally appears in the dark squids.
-
-\subsubsection{Line features}
-
-The power spectra also show some narrower line features (many
-correlated across the array). Even though we largely ignore them worth
-some mention.
+One unique feature of the SCUBA-2 data is that one can perform a PCA
+analysis of both the 450 and 850\,\micron\ data simultaneously. The
+first 6 most significant modes of our analysis are shown in
+Fig.~\ref{fig:pca}, with the eigenvectors in the top panels, and maps
+of the eigenvalues in each subarray in the bottom panels.
 
 \begin{figure*}
 \centering
@@ -511,6 +521,38 @@ some mention.
   PCA-cleaning procedure.}
 \label{fig:pca}
 \end{figure*}
+
+The majority of correlated signal at both wavelengths is clearly
+broken down into the first two plotted components. The first dominates
+at 450\,micron, whereas the second dominates at 850\,micron. For
+reference, the eigenvalues of these two modes are in the range
+$\sim1$--4\,pW, whereas the remaining modes have eigenvalues
+$\lsim0.3$\,pW. As mentioned earlier, one simple model for the
+correlated signal is a simple combination of oscillations in base
+temperature (which would be similar in each band), with a varying
+atmospheric signal (which is expected to be stronger at
+450\,\micron). Indeed, the fainter component 2 most closely resembles
+the mixing chamber temperature variations (Fig.~\ref{fig:bolos_mix}),
+whereas component 1 is stronger at 450\,\micron\ and does not resemble
+the fridge signal as closely.
+
+This physical interpretation of the eigenvectors should, however, be
+taken with a grain of salt, since the PCA analysis is really a
+statistical black box. Suppose most of the low frequency noise really
+could be decomposed into two components, the fridge signal
+$\mathbf{F}(t)$, and an atmospheric signal $\mathbf{A}(t)$. The two
+eigenvectors obtained from the PCA analysis are simply linear
+combinations of $\mathbf{F}(t)$ and $\mathbf{A}(t)$ that are
+statistically uncorrelated. Depending on the particular realizations
+of these two noise sources, this decomposition may, or may not give
+rise to eigenvectors that resemble the two underlying physical
+sources. Regardless, similar analyses of a few data sets during S2SRO
+give comparable results; most of the signal at both 450\,\micron\ and
+850\,\micron\ appears to be produced by two dominant underlying
+mechanisms.
+
+\subsubsection{Magnetic field pickup}
+Show that it occasionally appears in the dark squids.
 
 %------------------------------------------------------------------------------
 \section{The SMURF Algorithm}
