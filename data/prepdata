@@ -5,8 +5,13 @@
 # /jcmtdata/raw/scuba2 at JAC
 #
 
+source $SMURF_DIR/smurf.csh
+source $CONVERT_DIR/convert.csh
+source $KAPPA_DIR/kappa.csh
+
 set dataroot = /scuba2
-set msg = quiet
+#set msg = quiet
+set msg = verbose
 
 # extra cleaning parameters
 set clean_extra = "spikethresh=5,spikebox=50"
@@ -25,9 +30,9 @@ set basename = $lambda$obsdate\_$obsnum\_$subfile
 
 echo "    Cleaning..."
 
-$SMURF_DIR/sc2clean $dataroot/$lambda/$obsdate/$obsnum/$basename \
+sc2clean $dataroot/$lambda/$obsdate/$obsnum/$basename \
     $basename\_clean \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.boxcar=0,com.gain_box=600000"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.boxcar=0,com.gain_box=600000"' \
     msg_filter=$msg
 
 # the following outputs are used by intro.pro and pca2band.pro -----------------
@@ -37,15 +42,21 @@ $SMURF_DIR/sc2clean $dataroot/$lambda/$obsdate/$obsnum/$basename \
 #set obsnum = 00015
 #set subfile = "000[23]"
 
-# Wayne's debris disk from cookbook
+# Wayne's debris disk from cookbook -- use this for paper!!!
 set obsdate = 20100313
 set obsnum = 00029
-set subfile = "001[345]"
+set subfile = "001[345]".sdf
 
 # Some Lockman data
 #set obsdate = 20100311
 #set obsnum = 00065
 #set subfile = "000[345]"
+
+# 2011 data of NGC207IR post-upgrade
+#set obsdate = 20110203
+#set obsnum = 00016
+#set subfile = "000[345]"
+
 
 echo "*** Processing $obsdate $obsnum ***"
 
@@ -56,42 +67,37 @@ foreach lambda (s4a s8d)
 
     set basename = $lambda$obsdate\_$obsnum
 
-    $SMURF_DIR/sc2concat \
-        $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+    sc2concat $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
         $lambda$obsdate\_$obsnum\_con msg_filter=$msg
 
     echo "    Cleaning..."
 
-    $SMURF_DIR/sc2clean $basename\_con \
-        $basename\_con_clean \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.boxcar=0,com.gain_box=600000"' \
+    sc2clean $basename\_con $basename\_con_clean \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra'"' \
         msg_filter=$msg
 
     echo "    Removing common-mode..."
 
-    $SMURF_DIR/sc2clean $basename\_con \
-        $basename\_con_nocom \
+    sc2clean $basename\_con $basename\_con_nocom \
         config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.boxcar=0,com.gain_box=600000"' \
         msg_filter=$msg
 
     echo "    Copy out QUALITY at single time slice as a mask..."
 
-    $KAPPA_DIR/ndfcopy "$basename\_con_nocom(,,1000)" \
-        mask_$lambda comp=qual trim trimwcs msg_filter=$msg
+    ndfcopy "$basename\_con_nocom(,,1000)" mask_$lambda comp=qual trim \
+        trimwcs msg_filter=$msg
 
     echo "    Convert to FITS..."
 
-    $CONVERT_DIR/ndf2fits $basename\_con_clean \
-        \!$basename\_con_clean.fits msg_filter=$msg
+    ndf2fits $basename\_con_clean \!$basename\_con_clean.fits msg_filter=$msg
 
-    $CONVERT_DIR/ndf2fits $lambda$obsdate\_$obsnum\_con_nocom \
-        \!$basename\_con_nocom.fits msg_filter=$msg
+    ndf2fits $lambda$obsdate\_$obsnum\_con_nocom \!$basename\_con_nocom.fits \
+        msg_filter=$msg
 
-    $CONVERT_DIR/ndf2fits mask_$lambda \!mask_$lambda.fits msg_filter=$msg
+    ndf2fits mask_$lambda \!mask_$lambda.fits msg_filter=$msg
 
 end
 
 echo "    Getting JCMTState..."
 
-$SMURF_DIR/jcmtstate2cat s4a$obsdate\_$obsnum\_con > \
-    state_$obsdate\_$obsnum.tst
+jcmtstate2cat s4a$obsdate\_$obsnum\_con > state_$obsdate\_$obsnum.tst
