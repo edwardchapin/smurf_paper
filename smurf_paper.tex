@@ -456,6 +456,7 @@ at 450\,\micron, and at scales $\gsim 1$\,arscmin in the raw data and
 $\gsim 2$\,arcmin in the common-mode cleaned data at 850\,\micron.
 
 \subsubsection{Principal component analysis}
+\label{sec:pca}
 
 A method that has been employed by teams analyzing BOLOCAM and AzTEC
 data to identify and remove low-frequency correlated noise is
@@ -610,11 +611,12 @@ raw time-series. By estimating the full noise covariance matrix for
 the data, it is then possible to estimate the maximum-likelihood
 map. While direct inversion solutions to this problem are untenable,
 some recent efforts to optimize these algorithms have enabled the
-reduction of smaller data sets in a reasonable amount of time. While
-maximum likelihood maps are, theoretically, the best maps that can be
-made from a noise point of view, the required computing resources and
-execution time would not have been feasible for the proposed real-time
-data reduction and data archiving model.
+reduction of smaller data sets in a reasonable amount of time
+\citep[e.g.][]{patanchon2008}. While maximum likelihood maps are,
+theoretically, the best maps that can be made from a noise point of
+view, the required computing resources and execution time would not
+have been feasible for the proposed real-time data reduction and data
+archiving model.
 
 \begin{itemize}
 
@@ -664,12 +666,11 @@ where $\mathbf{n}^\mathrm{w}_i(t)$ is uncorrelated white (thermal)
 noise, $\mathbf{n}^\mathrm{f}_i(t)$ is low-frequency noise that is
 \emph{not} correlated from bolometer-to-bolometer, and
 $\mathbf{n}^\mathrm{c}(t)$ is a (predominantly low-frequency)
-correlated or \emph{common-mode} component.
-
-The primary goal of map-making is to model and remove
-$\mathbf{n}^\mathrm{f}_i$ and $\mathbf{n}^\mathrm{c}$ from the
-time-series. By re-gridding the remaining data we can then hope to
-approach the theoretical noise limit in the map.
+correlated or \emph{common-mode} component. The primary goal of
+map-making is to model and remove $\mathbf{n}^\mathrm{f}_i$ and
+$\mathbf{n}^\mathrm{c}$ from the time-series. By re-gridding the
+remaining data we can then hope to approach the theoretical noise
+limit in the map. This procedure is summarized in Fig.~\ref{fig:dimm}.
 
 \begin{figure}
 \centering
@@ -691,27 +692,75 @@ approach the theoretical noise limit in the map.
 \label{fig:dimm}
 \end{figure}
 
+First, the data files are read from disk, concatenated into contiguous
+arrays in memory, and run through a pre-processing stage that performs
+several operations including spike and sudden level step removal to
+enforce continuity in the time-series. Then, the iterative process
+within the dashed box begins. It is generally assumed that the
+dominant noise component is the common-mode, which is presumably
+dominated by large variations in the fridge temperature and sky noise
+(as argued in Section~\ref{sec:pca}). This signal is estimated as the
+average signal observed by all of the bolometers at each time step,
+and then removed from all of the bolometers. Once this large signal
+has been removed, we apply the extinction correction, which is
+determined completely from external measurements. Next, residual noise
+that differse from bolometer-to-bolometer (primarily low-frequency) is
+removed using an FFT-based filter. The resulting ``clean'' time-series
+are then re-gridded to produce a map estimate using nearest-neighbour
+sampling. Since each map pixel averages many bolometer samples
+together, it is fundamentally much less noisy than the bolometer
+time-series. We can therefore project the map back into the time
+domain, and create relatively noiseless estimates of what each
+bolometer would have seen in the absence of noise sources, and remove
+that from the time-series. This final step in the iteration gives a
+residual signal (with low-frequency and astronomical noise components
+removed) that may be used to measured the white noise level in each
+detector, and also to estimate an approximate $\chi^2$ for the model
+to track convergence. As we will discuss in the next sections, each
+signal component estimate is biased slightly from the presence of
+signal from other components, so the entire process is
+iterated. However, before the next iteration begins, we first undo the
+multiplicative factors introduced by the extinction correction, and
+also relative gains that may optionally be estimated in the
+common-mode estimation phase.
+
+In practice, the map-maker is highly configurable, both in terms of
+the order in which model components are fit (and whether they are fit
+at all), and the details of \emph{how} they are fit. In the following
+sections we describe these details.
+
 %-------------------------------------------------
 \subsection{Model components}
 %-------------------------------------------------
 
-Give details about each model component, roughly in the order they are
-calculated.
+In addition to specifying when each model component is calculated
+(normally an attempt is made to order them by decreasing amplitude in
+the time-series), there are a number of parameters that control their
+operation.
 
-\subsection{Common-mode estimation}
+\subsection{\texttt{COM,GAI}: common-mode estimation}
 
 DSB
 
 We estimate the common-mode, remove it from the time series, use it to
 flag bad bits of data, check for time-varying bolometer
-responsivities... what doesn't it do?!
+responsivities... what doesn't it do?! Also mention the optional
+presence of GAI.
 
-\subsection{Iterative filtering}
+\subsection{\texttt{FLT}: fourier transform filter}
 
-EC
+This model takes the FFT of the bolometer data, and can apply both
+high- and low-pass filters, as well as notch filteres, at hard
+frequency edges specified by the user. Alternatively, the frequency
+edges of the filters may be defined in terms of an \emph{angular
+  scale}, but converted into a frequency through knowledge of the mean
+telescope slew speed. The time-series may optionally have apodization
+applied before the transform to avoid ringing (primarily caused by
+wrap-around discontinuities at the ends of the time-series). The
+signal that is \emph{removed} from the time-series by this process are
+stored in the \texttt{FLT} container array.
 
-The FFT filter can do high/low-pass filtering. We can also do notches
-and whitening.
+\subsection{\texttt{SMO}: time-domain smoothing filter}
 
 TJ
 
@@ -719,17 +768,100 @@ We also have the SMO filter that's useful for very short scans
 because edge effects don't matter so much. Two sorts - median which is
 more robust, or mean which is more accurate.
 
+\subsection{\texttt{AST}: map estimation}
 
-\subsection{Noise estimation}
+Map estimation is accomplished using a simple nearest-neighbour
+resampling of the data onto a pre-defined map grid. For the $i$th map
+pixel $\mathbf{m}(x_i,y_i)$, the brightness is estimated as the
+weighted average of the bolometer data samples $\mathbf{b}_j$ that
+land within that pixel (from any bolometer or point in time),
+%
+\begin{equation}
+  \mathbf{m}(x_i,y_i) = \frac{\sum_j \mathbf{w}_j \mathbf{b}_j }
+                             { \sum_j \mathbf{w}_j } .
+\end{equation}
+%
+For the initial iteration the weights $\mathbf{w}_j$ are set to 1, but
+subsequently they are set to $1/\sigma_j^2$, the estimated inverse
+variance expected from the bolometer white noise levels as discussed
+in Section~\ref{sec:noi}. This weighting scheme is sensible provided
+that the bolometer data have no correlated (i.e., low-frequency)
+noise.
 
-Measure a white noise level from the power spectrum for each detector
-to use as a weight.
+In addition, a variance map $\mathbf{v}(x_j,y_j)$ is estimated. The
+default behaviour is to estimate this weighted error on the mean given
+the scatter in the weighted samples. This is accomplished by dividing
+the \emph{biased weighted sample variance} by the number of samples
+that went into the average (akin to the formula for standard error on
+the mean, but accounting for weights),
+%
+\begin{equation}
+\mathbf{v}(x_j,y_j) = \frac{\sum_j \mathbf{w}_j
+                            \sum_j \mathbf{w}_j \mathbf{b}_j -
+                            \left( \sum_j \mathbf{w}_j \mathbf{b}_j \right)^2 }
+                           { N \left( \sum_j \mathbf{w}_j \right)^2 },
+\end{equation}
+%
+where $N_j$ is the total number of bolometer samples that land in the
+pixel. We decided not to use the \emph{unbiased} estimator since in
+practice it would require accumulating an additional array of values
+at every map pixel, and only results in a small difference where there
+are less than $\sim10$ samples per pixel (a situation that is almost
+never encountered in a SCUBA-2 map except in the edge pixels).
 
-\subsection{Map estimation}
+Finally, once the map estimation is complete, the map is projected
+into the time domain (the signal that would be produced in each
+bolometer by the signal represented by the map) and removed.
 
-In the map, use weighted standard error to estimate noise. This is
-accurate for a single pixel, but there is still spatially correlated
-noise in the maps which we can show with some figures.
+\subsubsection{Map-based despiking}
+
+In addition, the \texttt{AST} model can use the map and its variance
+to provide additional despiking of the time-series. Unlike the
+time-domain despiker described ???, this calculation uses the scatter
+in the population of samples used to estimate the map pixel value
+(from different times and bolometers) to reject outliers. This method
+is more robust against false-positive detections of bright/compact
+astronomical sources since transient features in the time-series are
+unlikely to occur by chance whenever a bolometer crosses a specific
+location on the sky, whereas real astronomical sources are at fixed
+spatial locations.
+
+The estimated variance, $\mathbf{v_p}(x_i,y_i)$, of the normalized
+weighted samples that land in the $i$th map pixel is simply the biased
+weighted sample variance (i.e., the variance map value multiplied by
+the number of samples)
+%
+\begin{equation}
+  \mathbf{v_p}(x_i,y_i) = N_i \mathbf{v}(x_i,y_i).
+\end{equation}
+
+In order to compare the weighted \emph{differences} between the
+samples and the map values, [$\mathbf{b}_j - \mathbf{m}(x_i,y_i)$] to
+$\mathbf{v_p}$, they must be scaled appropriately. We define a
+normalized difference, $\mathbf{d}_j$, in such a way that the variance
+of this new variable gives the weighted sample variance of the
+underlying data points,
+%
+\begin{eqnarray}
+  \frac{\sum_j \mathbf{d}_j^2}{N} &=&
+  \frac{\sum_j \mathbf{w}_j [\mathbf{b}_j - \mathbf{m}(x_i,y_i)]^2}
+       {\sum_k \mathbf{w}_k} \\
+   \Rightarrow \mathbf{d}_j^2 &=& \frac{N \mathbf{w}_j [\mathbf{b}_j -
+       \mathbf{m}(x_i,y_i)]^2}{ \sum_k \mathbf{w}_k} .
+\end{eqnarray}
+%
+The map-based despiker flags those $\mathbf{d}_j$ that are further
+than some threshold number of standard deviations,
+$\sqrt{\mathbf{v_p}}$, away from zero so that they are not used in
+subsequent iterations.
+
+\subsection{\texttt{NOI}: noise estimation}
+\label{sec:noi}
+
+The primary purpose of the noise component, \texttt{NOI} is to measure
+the noise in each bolometer residual once all of the other models have
+been fit and removed. This noise may then be used to estimate weights
+for the data in subsequent iterations.
 
 \subsection{Model degeneracies}
 
@@ -743,6 +875,12 @@ solution to the example sections.
 Since we can do most of this stuff either as a pre-processing step or
 iteratively, I thinks this goes in a generic-sounding subsection. This
 can go here, or perhaps earlier?
+
+\subsubsection{Down-sampling}
+
+EC
+
+\subsubsection{Whitening filter}
 
 \subsubsection{Time-domain de-spiking}
 
