@@ -369,6 +369,7 @@ noticeable variations. The white noise is also apparent, and larger at
 850\,\micron.
 
 \subsubsection{Power spectral densities}
+\label{sec:psd}
 
 Next, we produce power spectral density (PSD) plots for several
 representative bolometers in Fig.~\ref{fig:pspec}. To produce this
@@ -379,7 +380,8 @@ the full time series. In other words, given a bolometer signal
 $\mathbf{b}(t)$,
 %
 \begin{equation}
-\int \mathbf{P}(f) df = \langle\mathbf{b}^2(t)\rangle.
+\label{eq:psd}
+\langle\mathbf{b}^2(t)\rangle = \int \mathbf{P}(f) df .
 \end{equation}
 %
 However, we only show the PSD up to the Nyquist frequency, so the
@@ -557,8 +559,8 @@ Fig.~\ref{fig:pca} vary wildly. Component 3, though not obvious from
 its eigenvector plot, is almost a pure ramping waveform that only
 appears in the s4a data, and produces the broad line featuress
 centered over 45\,Hz and 70\,Hz in the 450\,\micron\ PSDs in
-Fig.~\ref{fig:psd}. In other data sets, this third component has also
-often instead exhibited a regularly-spaced series of spikes with
+Fig.~\ref{fig:pspec}. In other data sets, this third component has
+also often instead exhibited a regularly-spaced series of spikes with
 heights quantized into several amplitude families (again, only in the
 s4a array). In both cases, the shape and phase of this signal is the
 same in each bolometer, although the amplitude (and sign) varies, as
@@ -726,19 +728,51 @@ common-mode estimation phase.
 
 In practice, the map-maker is highly configurable, both in terms of
 the order in which model components are fit (and whether they are fit
-at all), and the details of \emph{how} they are fit. In the following
-sections we describe these details.
+at all), and the details of \emph{how} they are fit. A summary of the
+model components is given in the next section.
 
 %-------------------------------------------------
 \subsection{Model components}
+\label{sec:components}
 %-------------------------------------------------
 
 In addition to specifying when each model component is calculated
 (normally an attempt is made to order them by decreasing amplitude in
 the time-series), there are a number of parameters that control their
-operation.
+operation. Table~\ref{tab:components} list the model components and
+the typical order in which they are calculated. The following sections
+describe their implementation in detail.
 
-\subsection{\texttt{COM,GAI}: common-mode estimation}
+\begin{table}
+  \caption{Summary of the model components that can be fit to
+    \scuba\ time-series data with SMURF. Only the first group of
+    models are typically fit to the data (\texttt{COM}--\texttt{NOI})
+    in the indicated order. The remaining models
+    (\texttt{DKS}--\texttt{PLN}) have only been included for
+    completeness}
+  \vspace{0.2cm}
+  \centering
+  \begin{tabular}{c|l}
+    \hline
+    Model & Description \\
+    \hline
+    \texttt{COM} & remove common-mode signal \\
+    \texttt{GAI} & common-mode scaled to each bolometer \\
+    \texttt{EXT} & extinction correction \\
+    \texttt{FLT} & Fourier transform filter \\
+    \texttt{AST} & map estimate of astronomical signal \\
+    \texttt{NOI} & noise estimation \\
+    \hline
+    \texttt{DKS} & dark squid cleaning along columns \\
+    \texttt{SMO} & time-domain smoothing filter \\
+    \texttt{PLN} & 2-dimensional time-varying plane removal \\
+    \hline
+    \end{tabular}
+  \label{tab:components}
+\end{table}
+
+\subsubsection{\texttt{COM,GAI}: common-mode estimation}
+\label{sec:comgai}
 
 DSB
 
@@ -747,7 +781,18 @@ flag bad bits of data, check for time-varying bolometer
 responsivities... what doesn't it do?! Also mention the optional
 presence of GAI.
 
-\subsection{\texttt{FLT}: fourier transform filter}
+\subsubsection{\texttt{EXT}: extinction correction}
+\label{sec:ext}
+
+AGG
+
+This is actually only calculated once before the map solution begins
+using external opacity monitors (WVM, $\tau_\mathrm{CSO}$,
+skydip). Summarize the measurements, order of preference and something
+about the calibration for the SCUBA-2 filters.
+
+\subsubsection{\texttt{FLT}: fourier transform filter}
+\label{sec:flt}
 
 This model takes the FFT of the bolometer data, and can apply both
 high- and low-pass filters, as well as notch filteres, at hard
@@ -760,15 +805,8 @@ wrap-around discontinuities at the ends of the time-series). The
 signal that is \emph{removed} from the time-series by this process are
 stored in the \texttt{FLT} container array.
 
-\subsection{\texttt{SMO}: time-domain smoothing filter}
-
-TJ
-
-We also have the SMO filter that's useful for very short scans
-because edge effects don't matter so much. Two sorts - median which is
-more robust, or mean which is more accurate.
-
-\subsection{\texttt{AST}: map estimation}
+\subsubsection{\texttt{AST}: map estimation}
+\label{sec:ast}
 
 Map estimation is accomplished using a simple nearest-neighbour
 resampling of the data onto a pre-defined map grid. For the $i$th map
@@ -813,18 +851,134 @@ Finally, once the map estimation is complete, the map is projected
 into the time domain (the signal that would be produced in each
 bolometer by the signal represented by the map) and removed.
 
-\subsubsection{Map-based despiking}
+In addition to map estimation, the \texttt{AST} model can also be used
+to perform map-based despiking of the time-series
+(Section~\ref{sec:mapdespike}), and to apply constraints to the map to
+improve convergences (Section~???).
 
-In addition, the \texttt{AST} model can use the map and its variance
-to provide additional despiking of the time-series. Unlike the
-time-domain despiker described ???, this calculation uses the scatter
-in the population of samples used to estimate the map pixel value
-(from different times and bolometers) to reject outliers. This method
-is more robust against false-positive detections of bright/compact
-astronomical sources since transient features in the time-series are
-unlikely to occur by chance whenever a bolometer crosses a specific
-location on the sky, whereas real astronomical sources are at fixed
-spatial locations.
+\subsubsection{\texttt{NOI}: noise estimation}
+\label{sec:noi}
+
+The primary purpose of the noise component, \texttt{NOI} is to measure
+the noise in each bolometer residual once all of the other models have
+been fit and removed. This noise may then be used to estimate weights
+for the data in subsequent iterations.
+
+As in Section~\ref{sec:psd} the FFT of each bolometer time series is
+taken, and the PSD calculated. An average white noise level is then
+measured from 2 to 10\,Hz, a relatively clean region that lies above
+the $1/f$ knee, but below the high-frequency line features for most of
+the bolometer data taken during S2SRO (Fig.~\ref{fig:pspec}). Taking
+this constant level for $\mathbf{P}(f)$ we then calculate the expected
+variance of the time-series (in approximately 200\,Hz samples) using
+Eq.~\ref{eq:psd}. If the bolometer noise were produced purely by
+uncorrelated thermal sources (i.e. no other long-scale drifts), with
+no high-frequency line features, and without the attenuation at even
+higher frequencies by the anti-aliasing filter, this is the
+theoretical noise limit of the detectors. These measured variances are
+stored, and then used in subsequent iterations to weight the data
+points when calculating the map estimate (Section~\ref{sec:ast}).
+
+Since noise estimation is usually calculated as the final step, it is
+the cleanest data for which some cleaning operations may be
+performed. For this reason \texttt{NOI} can optionally use the
+time-domain DC step fixer (Section~\ref{sec:steps}) and spike
+detection (Section~\ref{sec:timedespike}).
+
+\subsubsection{\texttt{DKS}: dark squid cleaning along columns}
+\label{sec:dks}
+
+Columns share significant magnetic field pickup which is measured by
+the dark squids. This model has been included although it makes little
+improvement, or injects noise since the magnetic field pickup noise is
+generally sub-dominant.
+
+\subsubsection{\texttt{SMO}: time-domain smoothing filter}
+\label{sec:smo}
+
+TJ
+
+We also have the SMO filter that's useful for very short scans
+because edge effects don't matter so much. Two sorts - median which is
+more robust, or mean which is more accurate.
+
+\subsubsection{\texttt{PLN}: 2d time-varying sky noise plane removal}
+\label{sec:pln}
+
+TJ
+
+We can remove a plane at each timeslice but it doesn't seem to improve
+things. Perhaps refer to other papers that claim to have seen coherent
+2d structures in the sky noise?
+
+\subsection{Model degeneracies}
+
+Introduce the topic of model degeneracies here, but defer their
+solution to the example sections.
+
+%-------------------------------------------------
+\subsection{Data cleaning}
+%-------------------------------------------------
+
+Since we can do most of this stuff either as a pre-processing step or
+iteratively, I thinks this goes in a generic-sounding subsection. This
+can go here, or perhaps earlier?
+
+\subsubsection{Down-sampling}
+
+EC
+
+\subsubsection{Whitening filter}
+
+EC
+
+\subsubsection{Time-domain de-spiking}
+\label{sec:timedespike}
+
+DSB
+
+\subsubsection{Step correction}
+\label{sec:steps}
+
+DSB
+
+\subsubsection{Gap filling / apodization}
+\label{sec:gaps}
+
+DSB
+
+Discuss gap filling, ``new'' window function method, also apodization
+and start/end polynomial continuity stuff. Should reference CMB
+literature -- in particular look at \citet{stompor2002}.
+
+\subsubsection{Flatfields}
+\label{sec:flatfields}
+
+TJ
+
+Discuss heater ramps, normalizing off the common-mode signal
+amplitude, astronomical sources, and the internal flatfield source.
+
+\subsubsection{Additional bad bolometer rejection}
+
+TJ
+
+Measuring the noise power spectra and throwing away outliers. Data
+flagged bad by the DA system.
+
+\subsubsection{Map-based despiking}
+\label{sec:mapdespike}
+
+It is possible to use the map estimate (Section~\ref{sec:ast}) to
+provide additional despiking of the time-series. Unlike the
+time-domain despiker (Section~\ref{sec:timedespike}), this calculation
+uses the scatter in the population of samples used to estimate the map
+pixel values (from different times and bolometers) to reject
+outliers. This method is more robust against false-positive detections
+of bright/compact astronomical sources since transient features in the
+time-series are unlikely to occur by chance whenever a bolometer
+crosses a specific location on the sky, whereas real astronomical
+sources are at fixed spatial locations.
 
 The estimated variance, $\mathbf{v_p}(x_i,y_i)$, of the normalized
 weighted samples that land in the $i$th map pixel is simply the biased
@@ -855,67 +1009,6 @@ than some threshold number of standard deviations,
 $\sqrt{\mathbf{v_p}}$, away from zero so that they are not used in
 subsequent iterations.
 
-\subsection{\texttt{NOI}: noise estimation}
-\label{sec:noi}
-
-The primary purpose of the noise component, \texttt{NOI} is to measure
-the noise in each bolometer residual once all of the other models have
-been fit and removed. This noise may then be used to estimate weights
-for the data in subsequent iterations.
-
-\subsection{Model degeneracies}
-
-Introduce the topic of model degeneracies here, but defer their
-solution to the example sections.
-
-%-------------------------------------------------
-\subsection{Data cleaning}
-%-------------------------------------------------
-
-Since we can do most of this stuff either as a pre-processing step or
-iteratively, I thinks this goes in a generic-sounding subsection. This
-can go here, or perhaps earlier?
-
-\subsubsection{Down-sampling}
-
-EC
-
-\subsubsection{Whitening filter}
-
-\subsubsection{Time-domain de-spiking}
-
-DSB
-
-\subsubsection{Step correction}
-
-DSB
-
-\subsubsection{Gap filling / apodization}
-
-DSB
-
-Discuss gap filling, ``new'' window function method, also apodization
-and start/end polynomial continuity stuff. Should reference CMB
-literature -- in particular look at \citet{stompor2002}.
-
-\subsubsection{Flatfields}
-\label{sec:flatfields}
-
-TJ
-
-Discuss heater ramps, normalizing off the common-mode signal
-amplitude, astronomical sources, and the internal flatfield source.
-
-\subsubsection{Additional bad bolometer rejection}
-
-TJ
-
-Measuring the noise power spectra and throwing away outliers. Data
-flagged bad by the DA system.
-
-\subsubsection{Map-based despiking}
-
-EC
 
 %------------------------------------------------------------------------------
 \section{Examples}
