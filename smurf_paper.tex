@@ -343,7 +343,6 @@ temperature), and the telescope pointing during a PONG scan.
 \label{fig:bolos_mix}
 \end{figure}
 
-
 Both bolometers share significant long-timescale structure
 ($\gsim10$\,s) that appears to be related to variations in the fridge
 base temperature, although the similarity is clearly greater at
@@ -585,7 +584,64 @@ that are linear combinations of the spikes and steps with the slower
 drift evident only in component 6.
 
 \subsubsection{Magnetic field pickup}
-Show that it occasionally appears in the dark squids.
+\label{sec:magpickup}
+
+An additional noise source that appears to be significant in only a
+small subset of the S2SRO data is magnetic field pickup. Since the
+bolometer signals are ultimately detected through the amplification of
+magnetic fields, any additional changing fields within the cryostat
+will also be detected.
+
+An example of an observation where pickup appears to be significant is
+shown in Fig.~\ref{fig:magpickup}. The time-series for two
+450\,\micron\ bolometers in the same column (not flatfielded) show
+that there is a strong signal with a similar shape, but opposite
+signs. This behaviour is seen across the entire array. The dark squid
+signal for the same columns exhibits a similar shape and
+amplitude. Since the dark squid has no thermal absorber or TES
+attached to it, this observed signal is not likely to be optical or
+thermal in nature (although there can be some crosstalk with the
+bolometers...). It is also for this reason that the higher-frequency
+noise that appears in the bolometer data (thermal) does not appear in
+the dark squid, leading to a significantly higher \snr. The sign of
+such a signal is expected to be random in the bolometer time-series
+(ask detector person for an explanation).
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{magpickup.pdf}
+\caption{Evidence for significant magnetic field pickup for
+  observation 20100228\_00016.  The top panel shows two un-flatfielded
+  (but mean-subtracted) bolometer time-series from the same column,
+  with a 200 sample boxcar smooth (approximately 1\,s), illustrating
+  that they are dominated by a similar signal with opposite signs. The
+  second panel shows the dark squid signal for the column, also
+  mean-subtracted and with the same boxcar smooth. The bottom panel
+  shows the azimuthal and elevation offsets from the map centre. For
+  reference, the mean azimuth was 171.9\,deg, and the mean elevation
+  68.0\,deg. Only the azimuthal signal appears to be correlated with
+  the dark squids and bolometer signals, which suggests a magnetic
+  field stationary with respect to the telescope dome as the source,
+  since its direction with respect to the cryostat only changes with
+  azimuthal motion.}
+\label{fig:magpickup}
+\end{figure}
+
+The telescope pointing offsets for this approximately 0.5\,deg
+diameter scan are also shown in Fig.~\ref{fig:magpickup}. Since the
+phase of the azimuth offsets from the map centre in this scan pattern
+slowly drifts with respect to the elevation offsets, it is clear that
+the bolometer and dark squid signals are detecting a noise source that
+is correlated only with the azimuthal motion and \emph{not} the
+elevation. This behaviour would be expected if if there were a strong
+magnetic field fixed with respect to the telescope dome (i.e., the
+earth's magnetic field). Since SCUBA-2 is mounted on a Nasmyth
+platform, only azimuthal motion will change the effective direction of
+such a field with respect to the cryostat. It is also worth noting
+that the absolute azimuth of the telescope was close to 180\,deg
+(i.e., nearly due-south). We suspect that this observing
+configuration, combined with the large amplitude of the scan, may have
+conspired to produce these large signals.
 
 %------------------------------------------------------------------------------
 \section{The SMURF Algorithm}

@@ -10,8 +10,8 @@ source $CONVERT_DIR/convert.csh
 source $KAPPA_DIR/kappa.csh
 
 set dataroot = /scuba2
-#set msg = quiet
-set msg = verbose
+set msg = quiet
+#set msg = verbose
 
 # extra cleaning parameters
 set clean_extra = "spikethresh=5,spikebox=50"
@@ -20,20 +20,36 @@ set clean_extra = "spikethresh=5,spikebox=50"
 # some data for showing magnetic field pickup, magdksquid.pro ------------------
 
 set lambda = s4a
-set obsdate = 20100223
-set obsnum = 00061
-set subfile = 0002
+set obsdate = 20100228
+set obsnum = 00016
+set subfile = "000[234]"
 
 echo "*** Processing $obsdate $obsnum ***"
 
-set basename = $lambda$obsdate\_$obsnum\_$subfile
+set basename = $lambda$obsdate\_$obsnum
+
+echo "    Concatenating..."
+
+sc2concat $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+    $basename\_con noflat msg_filter=$msg
 
 echo "    Cleaning..."
 
-sc2clean $dataroot/$lambda/$obsdate/$obsnum/$basename \
-    $basename\_clean \
+sc2clean $basename\_con $basename\_con\_clean \
     config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.boxcar=0,com.gain_box=600000"' \
     msg_filter=$msg
+
+echo "    Convert to FITS..."
+
+ndf2fits $basename\_con_clean \!$basename\_con_clean.fits msg_filter=$msg
+ndf2fits $basename\_con_clean.more.scuba2.dksquid \
+    \!$basename\_con\_clean\_dksquid.fits msg_filter=$msg
+
+echo "    Getting JCMTState..."
+
+jcmtstate2cat $lambda$obsdate\_$obsnum\_con > state_$obsdate\_$obsnum.tst
+
+#exit
 
 # the following outputs are used by intro.pro and pca2band.pro -----------------
 
@@ -89,12 +105,12 @@ foreach lambda (s4a s8d)
 
     echo "    Convert to FITS..."
 
-    ndf2fits $basename\_con_clean \!$basename\_con_clean.fits msg_filter=$msg
+    ndf2fits $basename\_con_clean \!$basename\_con\_clean.fits msg_filter=$msg
 
-    ndf2fits $lambda$obsdate\_$obsnum\_con_nocom \!$basename\_con_nocom.fits \
+    ndf2fits $lambda$obsdate\_$obsnum\_con_nocom \!$basename\_con\_nocom.fits \
         msg_filter=$msg
 
-    ndf2fits mask_$lambda \!mask_$lambda.fits msg_filter=$msg
+    ndf2fits mask_$lambda \!mask\_$lambda.fits msg_filter=$msg
 
 end
 
