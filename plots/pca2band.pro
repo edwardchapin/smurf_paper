@@ -5,14 +5,20 @@
 pre='./2band_'
 datadir='../data/'
 
-; debris disk
-obs = '20100313_00029'
+; debris disk (paper!)
+;obs = '20100313_00029'
 
 ; uranus
 ;obs = '20091214_00015'
 
 ; lockman
 ;obs = '20100311_00065'
+
+; 2011 data of NGC207IR post-upgrade (s4a,s4c,s4d,s8a,s8b,s8d)
+obs = '20110203_00016'
+
+subarr850 = 's8d'
+subarr450 = 's4a'
 
 ncomp = 16    ; single component plots (up to this value)
 nrem = 0      ; number of components to remove
@@ -24,11 +30,11 @@ day2sec = 24d*3600d
 if 0 then begin
 
   ; load bolo data and mask
-  fxread, datadir+'s8d'+obs+'_con_clean.fits', data8, head8
-  fxread, datadir+'s4a'+obs+'_con_clean.fits', data4, head4
+  fxread, datadir+subarr850+obs+'_con_clean.fits', data8, head8
+  fxread, datadir+subarr450+obs+'_con_clean.fits', data4, head4
 
-  fxread, datadir+'mask_s8d.fits', mask8, mhead4
-  fxread, datadir+'mask_s4a.fits', mask4, mhead4
+  fxread, datadir+'mask_'+subarr850+'.fits', mask8, mhead4
+  fxread, datadir+'mask_'+subarr450+'.fits', mask4, mhead4
 
   state = scuba2_readstate( datadir+'state_'+obs+'.tst' )
   t = state.rts_end
@@ -130,7 +136,7 @@ if 0 then begin
       for j=0, n-1 do begin
           eof[i,*] = eof[i,*] + newdata[xg[j],yg[j],*] * u[i,j]
       endfor
-      eof[i,*] = eof[i,*] / sqrt(total(eof[i,*]^2d))
+      eof[i,*] = eof[i,*] / stdev(eof[i,*])
   endfor
 
   ; project data along eigenvectors to get principal components
@@ -208,8 +214,8 @@ if dobigplot then begin
   device, filename=pre+'bolos.ps', xsize=27.94, ysize=21.59
 
   for i=0, n-1 do begin
-    if xg[i] ge nx then array='s8d' $
-    else array='s4a'
+    if xg[i] ge nx then array=subarr850 $
+    else array=subarr450
 
     plot, newdata[xg[i],yg[i],*], xtitle="Sample #", ytitle="Raw Data", $
           title=array+strcompress(xg[i]+1)+strcompress(yg[i]+1), $
@@ -239,8 +245,8 @@ if dobigplot then begin
     device, filename=pre+'bolos_clean.ps'
 
     for i=0, n-1 do begin
-      if xg[i] ge nx then array='s8d' $
-      else array='s4a'
+      if xg[i] ge nx then array=subarr850 $
+      else array=subarr450
 
       plot, newdata_pca[xg[i],yg[i],*], xtitle="Sample #", $
             ytitle="Raw Cleaned Data", $
