@@ -136,7 +136,7 @@ if 0 then begin
       for j=0, n-1 do begin
           eof[i,*] = eof[i,*] + newdata[xg[j],yg[j],*] * u[i,j]
       endfor
-      eof[i,*] = eof[i,*] / stdev(eof[i,*])
+      eof[i,*] = eof[i,*] / sqrt(total(eof[i,*]^2d))
   endfor
 
   ; project data along eigenvectors to get principal components
