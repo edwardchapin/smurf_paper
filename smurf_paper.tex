@@ -158,7 +158,7 @@ mention scan strategies...
 
 There are numerous ways to attack this problem, most of them evolving
 out of techniques that were developed to produce maps of the
-large-scale anisitropies in the Cosmic Microwave Backgroubd.  Styles
+large-scale anisitropies in the Cosmic Microwave Background (CMB).  Styles
 of map-making: maximum likelihood \citep[e.g.,][]{patanchon2008};
 iterative -- see \citet{johnstone2000} implementation of
 \citet{wright1996} to remove chop, \citet{kovacs2008} for SHARC-2
@@ -169,11 +169,13 @@ etc.; de-correlation using PCA analysis
 it produces on a nightly basis, and the fact that it is observing a
 wide variety of science targets for multiple users (unlike dedicated
 CMB experiments, for example). For this reason, SMURF has been
-designed to use a less accurate (primarily on large angular scales),
-though faster and less memory-intensive iterative approach that
-attempts to model and remove most of the correlated signal components,
-and then regrid the residual signals. This method is similar in spirit
-to the Comprehensive Reduction Utility for SHARC-2
+designed to use a faster, and less memory-intensive algorithm than
+CMB-style maximum likelihood map-makers, although it is less accurate
+at reproducing large-scale structures. The basic procedure is to
+iteratively model and remove most of the bolometer-bolometer
+correlated signal components and independent low-frequency noise, and
+then regrid the residual signals. This method is similar in spirit to
+the Comprehensive Reduction Utility for SHARC-2
 \citep[CRUSH,][]{kovacs2008}, and the pipeline developed for the
 Bolocam Galactic Plane Survey \citep{aguirre2010}. While most of the
 analysis described here applies equally to all of the data taken
@@ -184,16 +186,17 @@ and had considerably different noise properties and poorer performance
 than the fully-commissioned instrument in 2011.
 
 %------------------------------------------------------------------------------
-\section{Data Properties}
+\section{\scuba\ data properties}
 \label{sec:data}
 %------------------------------------------------------------------------------
 
-My thought is that this section would give the basics about how
-SCUBA-2 works, and then more specific details for the S2SRO
-observations.
+In this section we summarize how \scuba\ bolometers detect temperature
+variations (Section~\ref{sec:bolos}), typical \scuba\ scan strategies
+(Section~\ref{sec:scan}).
 
 %--------------------------------------------------
-\subsection{How \scuba\ takes measurements}
+\subsection{How the \scuba\ bolometers work}
+\label{sec:bolos}
 %--------------------------------------------------
 
 While the details of how \scuba\ works is described in
@@ -209,9 +212,9 @@ biased to a temperature within this transition on large time scales,
 then tiny temperature fluctuations on short time-scales will produce
 significant changes in the impedence. The entire SCUBA-2 focal plane
 is therefore held at a \emph{base temperature} somewhat below
-$T_\mathrm{C}$. The TESs then have a small electrical voltage bias,
+$T_\mathrm{C}$. The TESs then have a small electrical voltage biases,
 and individual pixel heaters (using a current bias to apply the
-desired Ohmic heating) are used to place the detectors in the
+desired Joule heating) are used to place the detectors in the
 transition. Only a small detector bias voltage is required since the
 heaters compensate for most of the variations in the base temperature,
 and other ambient loads (like the atmosphere).  Small temperature (and
@@ -221,8 +224,8 @@ using chains of superconducting quantum interference devices (SQUIDs),
 and the larger output current is finally digitized. Each detector has
 its own SQUID for the first-stage of the amplification, but the
 remaining stages occur within a common chain of SQUIDs for each column
-of 40 detectors. Each of the 32 rows is then read-out in sequence that
-occurs at a frequency of ...kHz?... This multiplexing scheme greatly
+of 40 detectors. Each of the 32 rows is then read-out in sequence at a
+row-visit frequency of ...kHz?... This multiplexing scheme greatly
 reduces the number of readout and bias lines to each detector, making
 such large-format bolometer array designs feasible. It should also be
 noted that there is an additional 33rd row of SQUID reasouds that are
@@ -230,20 +233,41 @@ not connected to TES. These ``dark SQUIDs'' are used to track
 non-thermal noise sources that are common to each column's amplifier
 chain.
 
-The focal planes at each of 450 and 850\,\micron\ are populated with
-four of these $40 \times 32$ subarrays (referred to as s4a--s4d, and
-s8a--s8d respectively), and simultaneously image approximately the
-same region of the sky by means of a beam-splitter.
+The response of the output digitized current, $I$, with respect to a
+change in the power $P$ incident on the bolometer, $dI/dP$ depends on
+the efficiency of the thermal absorber, how well the TES is biased
+into the transition, and the gain of the SQUID amplifiers. Since there
+are variations in $T_\mathrm{C}$ across each subarray due to
+manufacturing difficulties, considerable effort has gone into
+dynamically applying position-dependent biases as well as an over-all
+focal plane bias to make as many detectors useable as possible
+\citep{holland2011}. In practice, the response of a given detector can
+therefore vary somewhat from observation to observation depending on
+how the bias and amplification parameters were set up. To track these
+changes, at the start of each observation, the current is ramped
+through the bolometer heaters such that $dI/dP$ can be measured. Note
+that the bolometers may have a slightly different response to heater
+power due to conductance as compared to the response to optical power,
+so additioanl efficiency corrections must also be obtained. While not
+discussed further in this paper, details may be found in
+\citet{dempsey2011}. We will refer to measurements of $dI/dP$ across
+the focal plane as the \emph{flatfield}. Fig.~\ref{fig:sensitivities}
+shows the flatfield for each focal plane.
 
+\begin{figure}
+\vspace{2cm}
+\textbf{This will be a figure showing s4a and s8d responsivity maps}
+\vspace{2cm}
+\caption{The response of each bolometer to known input heater power
+  for a typical night during S2SRO. The s4a subarray had a
+  particularly large variation in $T_\mathrm{C}$ towards the
+  bottom-right which resulted in lower responsivity, and
+  correspondingly larger noise. The s8d array also suffered
+  significant variations across the focal plane, in particular
+  removing larger number of useful detectors from the bottom-left.}
+\label{fig:sensitivities}
+\end{figure}
 
-
-The camera has been designed so that the absolute response of each
-detector can be established by ramping currents through the individual
-pixel heaters to produce Joule heating power, $P_\mathrm{J} =
-\epsilon I^2R$, where $I$ is the known current, $R$ is the heater
-resistance, and $\epsilon$ is the efficiency with which power is
-transferred to the bolometer. In order to calibrate the total factor
-$\epsilon R$, SCUBA-2 posesses an internal flatfield source.
 
 In general, bolometers have two predominant noise components: (i) the
 effectively white thermal noise produced by the phonon and optical
@@ -258,6 +282,11 @@ culprit is pickup from AC mains, or microphonic signals induced by
 mechanical vibrations), and finally a roll-off towards the Nyquist
 frequency caused by the anti-aliasing filter that precedes
 digitization.
+
+%--------------------------------------------------
+\subsection{Scan strategies}
+\label{sec:scan}
+%--------------------------------------------------
 
 In order to observe astronomical sources, it is clearly advantageous
 that the signals appear in the region of the spectrum that offers the
@@ -297,61 +326,20 @@ the $1/f$ noise. In addition, other noise features may appear in the
 data periodically. With such a regularly spaced periodic scan
 strategy, these noise features can easily conspire with the scan
 pattern to produce similarly periodic noise structures in the map, or
-\emph{scan-synchronous} noise. It has therefore been recognized for
-some time that scan strategies that visit each region of the map on as
-many different time scales, and scan angles as possible offer the best
-protection against large-scale noise (...cite some people...); such
-strategies are said to offer good \emph{cross-linking}. As a tradeoff
-between truly random scan patterns and feasibility of implementation
-taking into consideration both mechanical and scheduling constraints,
-SCUBA-2 presently has three primary scan modes: PONG (cite Borys et
-al.), Lissajous, and Daisy... (more citations? Kovacs et al. has a
-nice description... also CMB literature).
+\emph{scan-synchronous} noise. It has therefore been recognized that
+scan strategies that visit each region of the map on as many different
+time scales, and scan angles as possible offer the best protection
+against large-scale noise (...cite some people...); such strategies
+are said to offer good \emph{cross-linking}. As a tradeoff between
+truly random scan patterns and feasibility of implementation taking
+into consideration both mechanical and scheduling constraints, SCUBA-2
+presently has three primary scan modes: PONG (cite Borys et al.),
+Lissajous, and Daisy... (more citations? Kovacs et al. has a nice
+description... also CMB literature).
 
 %-------------------------------------------------
-\subsection{\scuba\ shared-risk observations}
+\subsection{Typical bolometer signals}
 %-------------------------------------------------
-
-The S2SRO period, as mentioned above, took place during February and
-March 2010. For the purpose of this paper, we will consider data taken
-as early as 2009 December 3, at which point the instrument was being
-commissioned in a similar configuration to that of the S2SRO
-period. At this time, each of the 450 and 850\,\micron\ focal planes
-were populated with single subarrays, s4a and s8d respectively. There
-were two main mechanical problems to contend with during this
-period. First, the fridge was not able to cool the focal plane to the
-desired base temperature of ... which affected stability, particularly
-at 850\,\micron. Second, there were problems with the subarray
-fabrication process which led to large numbers of dead pixels, as well
-as large-scale variations in $T_\mathrm{C}$ and the thermal
-conductivity, $G$. These latter issues made it difficult to
-simulataneously lock all of the bolometers, and in addition many of
-the bolometers that were locked did not achieve their minimum
-theoretical noise performance, since it is not possible to adjust the
-individual temperature biases and place each device into the optimal
-region of the superconducting transition.
-
-While there were moderate variations from night-to-night during the
-observing period, there were typically 600 to 900 working detectors in
-each of the s4a and s8d subarrays. Fig.~\ref{fig:sensitivities} shows
-representative responsivity maps for the two subarrays from the middle
-of S2SRO based on the response to ramping the bolometer heaters.
-
-\begin{figure}
-\vspace{2cm}
-\textbf{This will be a figure showing s4a and s8d responsivity maps}
-\vspace{2cm}
-\caption{The response of each bolometer to known input heater power
-  for a typical night during S2SRO. The s4a subarray had a
-  particularly large variation in $T_\mathrm{C}$ towards the
-  bottom-right which resulted in lower responsivity, and
-  correspondingly larger noise. The s8d array also suffered
-  significant variations across the focal plane, in particular
-  removing larger number of useful detectors from the bottom-left.}
-\label{fig:sensitivities}
-\end{figure}
-
-\subsubsection{Time series}
 
 In Fig.~\ref{fig:bolos_mix} we show sample time series from single
 bolometers in each of the subarrays, as well as variations in the
@@ -385,24 +373,21 @@ fluctuations at 450\,\micron, from $-0.04$\,pW to $+0.08$, are larger
 than the $-0.03$\,pW to $+0.05$\,pW fluctuations at 850\,\micron. Such
 behaviour might be expected if there is a comparable varying thermal
 load from the fridge at each wavelength, but a larger contribution of
-astmospheric variations through the 450\,\micron\ bandpass filters. We
+atmospheric variations through the 450\,\micron\ bandpass filters. We
 also note that there is no obvious strong correlation between the
-low-frequency signal structure at either wavelength at the telescope
-motion.
+low-frequency signal structure, at either wavelength, with the
+telescope motion.
 
 The low-frequency signal component of the bolometer signals is also
 highly correlated amongst bolometers in the same subarray. We have
-calculate a common-mode signal, $\mathbf{c}(t)$ as the straight
-average time series of all the working bolometers. We then fit the
-amplitude of $\mathbf{c}(t)$ at each wavelength to the time series
-shown in Fig.~\ref{fig:bolos_mix} and remove it, yielding the grey
-residual signals. These residuals are quite flat, although still with
+calculated a common-mode signal, $\mathbf{c}(t)$, as the average time
+series of all the working bolometers. We then fit the amplitude of
+$\mathbf{c}(t)$ at each wavelength to the signals shown in
+Fig.~\ref{fig:bolos_mix} and remove it, yielding the grey residual
+signals. These residuals are quite flat, although still with
 noticeable variations. The white noise is also apparent, and larger at
-450\,\micron\ as one would expect from the larger loading compared to
-850\,\micron.
-
-\subsubsection{Power spectral densities}
-\label{sec:psd}
+450\,\micron\ as one would expect from the larger backgrounds compared
+to 850\,\micron.
 
 Next, we produce power spectral density (PSD) plots for several
 representative bolometers in Fig.~\ref{fig:pspec}. To produce this
@@ -453,24 +438,24 @@ pW$^2$\,Hz$^{-1}$ rather than pW$^2$\,s.
 \label{fig:pspec}
 \end{figure}
 
-The dotted coloured lines show the PSDs for raw, though flatfielded
-data. At each wavelength, there is a clear $1/f$ knee at a few Hz,
-followed by a predominantly white spectrum punctuated by line features
-above $\gsim 30$\,Hz, and finally roll-off caused by the anti-aliasing
-filter above $\gsim 70$\,Hz. As indicated in the previous section, the
-correlation between the low-frequency components of the different
-bolometer signals is large. The solid black lines in
-Fig.~\ref{fig:pspec} indicate the PSDs of the common-modes
-$\mathbf{c}(t)$ at each wavelength, which reproduce most of the
-low-frequency structures, as well as the high-frequency line
+The dotted coloured lines in Fig~\ref{fig:pspec} show the PSDs for
+raw, though flatfielded data. At each wavelength, there is a clear
+$1/f$ knee at a few Hz, followed by a predominantly white spectrum
+punctuated by line features above $\gsim 30$\,Hz, and finally roll-off
+caused by the anti-aliasing filter above $\gsim 70$\,Hz. As indicated
+in the previous section, the correlation between the low-frequency
+components of the different bolometer signals is large. The solid
+black lines in Fig.~\ref{fig:pspec} indicate the PSDs of the
+common-modes $\mathbf{c}(t)$ at each wavelength, which reproduce most
+of the low-frequency structures, as well as the high-frequency line
 features. The $\mathbf{c}(t)$ otherwise drop substantially below the
 individual bolometer PSDs at high-frequency as expected if the
 bolometers are dominated by un-correlated white noise. Finally, we
-note that the amplitudes and slopes of the $\mathbf{c}(t)$ are
-similar at both 450 and 850\,\micron. However, since the
-450\,\micron\ white noise is larger than at 850\,\micron\ (shown
-approximately by the horizontal dotted lines), the $1/f$ knee occurs
-at a \emph{lower} frequency at 450\,\micron.
+note that the amplitudes and slopes of the $\mathbf{c}(t)$ are similar
+at both 450 and 850\,\micron. However, since the 450\,\micron\ white
+noise is larger than at 850\,\micron\ (shown approximately by the
+horizontal dotted lines), the $1/f$ knee occurs at a \emph{lower}
+frequency at 450\,\micron.
 
 Next, the common-mode signals are fit to each bolometer time series
 and removed as in Fig.~\ref{fig:bolos_mix}, and the resulting PSDs are
@@ -490,8 +475,96 @@ in the raw data and $\gsim 10$\,arcmin in the common-mode cleaned data
 at 450\,\micron, and at scales $\gsim 1$\,arscmin in the raw data and
 $\gsim 2$\,arcmin in the common-mode cleaned data at 850\,\micron.
 
-\subsubsection{Principal component analysis}
+\subsection{Magnetic field pickup}
+\label{sec:magpickup}
+
+An additional noise source that appears to be significant in only a
+small subset of the S2SRO data is magnetic field pickup. Since the
+bolometer signals are ultimately detected through the amplification of
+magnetic fields, any additional changing fields within the cryostat
+will also be detected.
+
+An example of an observation where pickup appears to be significant is
+shown in Fig.~\ref{fig:magpickup}. The time-series for two
+450\,\micron\ bolometers in the same column (not flatfielded) show
+that there is a strong signal with a similar shape, but opposite
+signs. This behaviour is seen across the entire array. The dark squid
+signal for the same columns exhibits a similar shape and
+amplitude. Since the dark squid has no thermal absorber or TES
+attached to it, this observed signal is not likely to be optical or
+thermal in nature (although there can be some crosstalk with the
+bolometers...). It is also for this reason that the higher-frequency
+noise that appears in the bolometer data (thermal) does not appear in
+the dark squid, leading to a significantly higher \snr. The sign of
+such a signal is expected to be random in the bolometer time-series
+(ask detector person for an explanation).
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{magpickup.pdf}
+\caption{Evidence for significant magnetic field pickup for
+  observation 20100228\_00016.  The top panel shows two un-flatfielded
+  (but mean-subtracted) bolometer time-series from the same column,
+  with a 200 sample boxcar smooth (approximately 1\,s), illustrating
+  that they are dominated by a similar signal with opposite signs. The
+  second panel shows the dark squid signal for the column, also
+  mean-subtracted and with the same boxcar smooth. The bottom panel
+  shows the azimuthal and elevation offsets from the map centre. For
+  reference, the mean azimuth was 171.9\,deg, and the mean elevation
+  68.0\,deg. Only the azimuthal signal appears to be correlated with
+  the dark squids and bolometer signals, which suggests a magnetic
+  field stationary with respect to the telescope dome as the source,
+  since its direction with respect to the cryostat only changes with
+  azimuthal motion.}
+\label{fig:magpickup}
+\end{figure}
+
+The telescope pointing offsets for this approximately 0.5\,deg
+diameter scan are also shown in Fig.~\ref{fig:magpickup}. Since the
+phase of the azimuth offsets from the map centre in this scan pattern
+slowly drifts with respect to the elevation offsets, it is clear that
+the bolometer and dark squid signals are detecting a noise source that
+is correlated only with the azimuthal motion and \emph{not} the
+elevation. This behaviour would be expected if if there were a strong
+magnetic field fixed with respect to the telescope dome (i.e., the
+earth's magnetic field). Since SCUBA-2 is mounted on a Nasmyth
+platform, only azimuthal motion will change the effective direction of
+such a field with respect to the cryostat. It is also worth noting
+that the absolute azimuth of the telescope was close to 180\,deg
+(i.e., nearly due-south). We suspect that this observing
+configuration, combined with the large amplitude of the scan, may have
+conspired to produce these large signals.
+
+%-------------------------------------------------
+\subsection{Comparison between \scuba\ shared-risk observations and the 2011 re-commissioned instrument}
+%-------------------------------------------------
+
+The S2SRO period took place during February and March 2010. For the
+purpose of this paper, we will consider data taken as early as 2009
+December 3, at which point the instrument was being commissioned in a
+similar configuration to that of the S2SRO period. At this time, each
+of the 450 and 850\,\micron\ focal planes were populated with single
+subarrays, s4a and s8d respectively. There were two main mechanical
+problems to contend with during this period. First, the fridge was not
+able to cool the focal plane to the desired base temperature of
+... which affected stability, particularly at 850\,\micron. Second,
+there were problems with the subarray fabrication process which led to
+large numbers of dead pixels, as well as large-scale variations in
+$T_\mathrm{C}$ and the thermal conductivity, $G$. These latter issues
+made it difficult to simulataneously place all of the TESs into the
+optimal region of the superconducting transition, leading to
+significantly poorer sensitivities.
+
+While there were moderate variations from night-to-night during the
+observing period, there were typically 600 to 900 working detectors in
+each of the s4a and s8d subarrays. Fig.~\ref{fig:sensitivities} shows
+representative responsivity maps for the two subarrays from the middle
+of S2SRO based on the response to ramping the bolometer heaters.
+
+%-------------------------------------------------
+\subsection{Principal component analysis}
 \label{sec:pca}
+%-------------------------------------------------
 
 A method that has been employed by teams analyzing BOLOCAM and AzTEC
 data to identify and remove low-frequency correlated noise is
@@ -616,66 +689,6 @@ related to component 5, though with the absence of the steps and
 spikes, so that together they seem to represent a continuum of shapes
 that are linear combinations of the spikes and steps with the slower
 drift evident only in component 6.
-
-\subsubsection{Magnetic field pickup}
-\label{sec:magpickup}
-
-An additional noise source that appears to be significant in only a
-small subset of the S2SRO data is magnetic field pickup. Since the
-bolometer signals are ultimately detected through the amplification of
-magnetic fields, any additional changing fields within the cryostat
-will also be detected.
-
-An example of an observation where pickup appears to be significant is
-shown in Fig.~\ref{fig:magpickup}. The time-series for two
-450\,\micron\ bolometers in the same column (not flatfielded) show
-that there is a strong signal with a similar shape, but opposite
-signs. This behaviour is seen across the entire array. The dark squid
-signal for the same columns exhibits a similar shape and
-amplitude. Since the dark squid has no thermal absorber or TES
-attached to it, this observed signal is not likely to be optical or
-thermal in nature (although there can be some crosstalk with the
-bolometers...). It is also for this reason that the higher-frequency
-noise that appears in the bolometer data (thermal) does not appear in
-the dark squid, leading to a significantly higher \snr. The sign of
-such a signal is expected to be random in the bolometer time-series
-(ask detector person for an explanation).
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{magpickup.pdf}
-\caption{Evidence for significant magnetic field pickup for
-  observation 20100228\_00016.  The top panel shows two un-flatfielded
-  (but mean-subtracted) bolometer time-series from the same column,
-  with a 200 sample boxcar smooth (approximately 1\,s), illustrating
-  that they are dominated by a similar signal with opposite signs. The
-  second panel shows the dark squid signal for the column, also
-  mean-subtracted and with the same boxcar smooth. The bottom panel
-  shows the azimuthal and elevation offsets from the map centre. For
-  reference, the mean azimuth was 171.9\,deg, and the mean elevation
-  68.0\,deg. Only the azimuthal signal appears to be correlated with
-  the dark squids and bolometer signals, which suggests a magnetic
-  field stationary with respect to the telescope dome as the source,
-  since its direction with respect to the cryostat only changes with
-  azimuthal motion.}
-\label{fig:magpickup}
-\end{figure}
-
-The telescope pointing offsets for this approximately 0.5\,deg
-diameter scan are also shown in Fig.~\ref{fig:magpickup}. Since the
-phase of the azimuth offsets from the map centre in this scan pattern
-slowly drifts with respect to the elevation offsets, it is clear that
-the bolometer and dark squid signals are detecting a noise source that
-is correlated only with the azimuthal motion and \emph{not} the
-elevation. This behaviour would be expected if if there were a strong
-magnetic field fixed with respect to the telescope dome (i.e., the
-earth's magnetic field). Since SCUBA-2 is mounted on a Nasmyth
-platform, only azimuthal motion will change the effective direction of
-such a field with respect to the cryostat. It is also worth noting
-that the absolute azimuth of the telescope was close to 180\,deg
-(i.e., nearly due-south). We suspect that this observing
-configuration, combined with the large amplitude of the scan, may have
-conspired to produce these large signals.
 
 %------------------------------------------------------------------------------
 \section{The SMURF Algorithm}
