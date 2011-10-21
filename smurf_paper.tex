@@ -53,7 +53,7 @@ Reduction Facility: an iterative map-maker for SCUBA-2}
 
 \author[Edward~L.~Chapin~et~al.]{
   \parbox[t]{\textwidth}{
-    Edward~L.~Chapin$^{1}$\thanks{E-mail:~echapin@phas.ubc.ca},
+    Edward~L.~Chapin$^{1,2}$\thanks{E-mail:~echapin@phas.ubc.ca},
     David~S.~Berry$^{2}$,
     Andrew~G.~Gibb$^{1}$,
     Tim~Jenness$^{2}$,
@@ -109,43 +109,79 @@ chicken, chicken: chicken, chicken: chicken -- chicken
 \textbf{start intro here...}
 
 The Submillimetre Common User Bolometer Array 2
-\citep[\scuba,][]{holland2006} is a new instrument for the 15-m
-James Clerk Maxwell Telescope (JCMT) on Mauna Kea, Hawai'i. The camera
-can simultaneously image the sky in two broad bands centered over 450
-and 850\,\micron. Ultimately, the instrument will also be equipped
-with a Fourier transform spectrometer \citep[FTS-2,][]{gom2010}, and a polarimeter
-\cite[POL-2,][]{bastien2005}. This paper describes the Submillimetre User Reduction Facility,
-SMURF, a software package for reducing the imaging data, with an
-emphasis on data taken during the SCUBA-2 Shared-Risks Observing period
-(S2SRO) which took place from 2010 February 11 to 2010 March 25. The reduction
-of FTS-2 and POL-2 data will be described at a later date once these
-additional instruments have been commissioned.
+\citep[\scuba,][]{holland2006} is a new instrument for the 15-m James
+Clerk Maxwell Telescope (JCMT) on Mauna Kea, Hawai'i. The camera
+simultaneously images the sky in two broad bands centered over 450 and
+850\,\micron. The focal planes at each wavelength are populated with 4
+rectangular subarrays, consisting of $40 \times 32$ bolometers each,
+and subtend a nearly contiguous $4' \times 4'$ footprint on the sky.
+Ultimately, the instrument will also be equipped with a Fourier
+transform spectrometer \citep[FTS-2,][]{gom2010}, and a polarimeter
+\cite[POL-2,][]{bastien2005}. This paper describes the Submillimetre
+User Reduction Facility, SMURF, a software package for reducing the
+imaging data. The reduction of FTS-2 and POL-2 data will be described
+at a later date once these additional instruments have been
+commissioned. The details of the instrument design, performance, and
+its calibration are given in two companion papers: \citet{holland2011}
+and \citet{dempsey2011}.
 
-Over the last twenty years, the submillimetre band (defined here to be
-200--1000\,\micron) has revolutionized several important areas of
-astrophysics: helping to characterize the early stages of
-star-formation by identifying the dense, cold regions in molecular
-clouds where stars may eventually form; discovering through blind
-surveys the locations and surface density of a class of massive
-star-forming galaxies in the early Universe, now referred to as
-submillimetre galaxies, or SMGs; and finding debris disks around
-nearby stars, the early stages of planet formation.
+Over the last twenty years, observations in the submillimetre band
+(defined here to be 200--1000\,\micron) have helped revolutionized
+several important areas of astrophysics including: the
+characterization of early stages of star-formation by identifying the
+dense, cold regions in molecular clouds where stars may eventually
+form; discovering through blind surveys a class of massive dusty
+star-forming galaxies in the early ($z>2$) Universe, now referred to
+as submillimetre galaxies, or SMGs; and identifying debris disks
+around nearby stars, the early stages of planet formation.  With
+$\sim10000$ total detectors, SCUBA-2 is presently the largest
+submillimetre camera in the world, and the fastest wide-area
+ground-based submillimetre imager.
 
-Styles of map-making: maximum likelihood
-\citep[e.g.,][]{patanchon2008}; iterative -- see \citet{johnstone2000}
-implementation of \citet{wright1996} to remove chop,
-\citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA analysis
+Most submillimetre imaging cameras to date have used bolometers to
+maximize sensitivities: each pixel consists of an efficient thermal
+absorber to collect photons that have passed through a broad-band
+filter, and the signal is read-out using a thermometer. The
+high-frequency broad-band noise in modern systems, such as SCUBA-2, is
+limited by photon noise from the instrument and ambient
+backgrounds. The low-frequency noise, however, is dominated by sources
+such as the low-frequency drift in the readout electronics, and drifts
+in the mean background levels (such as the atmosphere for ground-based
+instruments). The process of making a map therefore amounts to
+separating the component of the bolometer signals that is produced by
+astronomical sources, from the non-white (and therefore correlated)
+contaminating noise components. Fortunately each has a particular
+profile: astronomical sources are typically fixed in a sky reference
+frame (to a good approximation), whereas other noise sources are often
+correlated in time, and usually from bolometer-to-bolometer. ...also
+mention scan strategies...
+
+There are numerous ways to attack this problem, most of them evolving
+out of techniques that were developed to produce maps of the
+large-scale anisitropies in the Cosmic Microwave Backgroubd.  Styles
+of map-making: maximum likelihood \citep[e.g.,][]{patanchon2008};
+iterative -- see \citet{johnstone2000} implementation of
+\citet{wright1996} to remove chop, \citet{kovacs2008} for SHARC-2
+etc.; de-correlation using PCA analysis
 \citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
 
-Since \scuba\ will ultimately have nearly 10,000 working bolometers,
-considerably larger than any other existing ground, or space-spaced
-bolometer cameras, SMURF has been designed to use a less accurate,
+\scuba\ is presently unique in terms of the shear volume of data that
+it produces on a nightly basis, and the fact that it is observing a
+wide variety of science targets for multiple users (unlike dedicated
+CMB experiments, for example). For this reason, SMURF has been
+designed to use a less accurate (primarily on large angular scales),
 though faster and less memory-intensive iterative approach that
 attempts to model and remove most of the correlated signal components,
-and then regrid the residuals signals. This method is similar in
-spirit to the Comprehensive Reduction Utility for SHARC-2
+and then regrid the residual signals. This method is similar in spirit
+to the Comprehensive Reduction Utility for SHARC-2
 \citep[CRUSH,][]{kovacs2008}, and the pipeline developed for the
-Bolocam Galactic Plane Survey \citep{aguirre2010}.
+Bolocam Galactic Plane Survey \citep{aguirre2010}. While most of the
+analysis described here applies equally to all of the data taken
+to-date with \scuba, we note that the SCUBA-2 Shared-Risks Observing
+period (S2SRO) which took place from 2010 February 11 to 2010 March 25
+used only a single subarray at each of the two observing wavelengths,
+and had considerably different noise properties and poorer performance
+than the fully-commissioned instrument in 2011.
 
 %------------------------------------------------------------------------------
 \section{Data Properties}
@@ -160,48 +196,46 @@ observations.
 \subsection{How \scuba\ takes measurements}
 %--------------------------------------------------
 
-Before describing the data-reduction algorithm in detail, we summarize
-the basic strategy used to make measurements with SCUBA-2.
+While the details of how \scuba\ works is described in
+\citet{holland2011}, and its calibration in \citet{dempsey2011}, we
+summarize the basic concepts relative to map-making here.
 
-The first generation of submm bolometer cameras used NTD germanium
-thermistors (e.g., SCUBA, MAMBO, BOLOCAM, AzTEC, LABOCA...).
-Generally speaking, these devices are operated using a current bias;
-changing thermal conditions alter their impedence, resulting in a
-changing Voltage that can be measured. The bolometers are cooled so
-that they are {\em background limited} -- the dominant noise term is
-the optical load from sources outside of the cryostat (emissivity from
-telescope, atmospheric fluctuations, and astronomical sources).
+The \scuba\ bolometer temperatures are read-out using superconducting
+transition-edge sensors (TESs), with critical temperatures
+$T_\mathrm{C}$ (...typical value...). The range about $T_\mathrm{C}$
+in which the transition from a superconductor to a normal material
+occurs is extremely small (...typical value...?). If the devices are
+biased to a temperature within this transition on large time scales,
+then tiny temperature fluctuations on short time-scales will produce
+significant changes in the impedence. The entire SCUBA-2 focal plane
+is therefore held at a \emph{base temperature} somewhat below
+$T_\mathrm{C}$. The TESs then have a small electrical voltage bias,
+and individual pixel heaters (using a current bias to apply the
+desired Ohmic heating) are used to place the detectors in the
+transition. Only a small detector bias voltage is required since the
+heaters compensate for most of the variations in the base temperature,
+and other ambient loads (like the atmosphere).  Small temperature (and
+therefore impedence) fluctuations produce a changing current through
+the TESs. The resulting changing magnetic fields are then amplified
+using chains of superconducting quantum interference devices (SQUIDs),
+and the larger output current is finally digitized. Each detector has
+its own SQUID for the first-stage of the amplification, but the
+remaining stages occur within a common chain of SQUIDs for each column
+of 40 detectors. Each of the 32 rows is then read-out in sequence that
+occurs at a frequency of ...kHz?... This multiplexing scheme greatly
+reduces the number of readout and bias lines to each detector, making
+such large-format bolometer array designs feasible. It should also be
+noted that there is an additional 33rd row of SQUID reasouds that are
+not connected to TES. These ``dark SQUIDs'' are used to track
+non-thermal noise sources that are common to each column's amplifier
+chain.
 
-In contrast, SCUBA-2 belongs to a new generation of cameras that uses
-superconducting transition-edge sensors (TESs, like ACT, SPT,
-MUSTANG). These devices are held at the critical temperature,
-$T_\mathrm{C}$, below which the material becomes a superconductor, and
-above which it becomes a normal conductor. Within this transition,
-tiny temperature fluctuations can produce huge changes in
-impedence. The devices are operated with a voltage bias, so that
-thermal fluctuations produce changing currents, which in turn generate
-changing local magnetic fields. Chains of superconducting quantum
-interference devices (SQUIDs) are used to amplify these signals,
-ultimately providing a larger changing current that may be
-digitized. Like the NTD thermistor-based cameras, SCUBA-2 is cooled in
-order to be background limited. However, a superior over-all
-sensitivity on a per-bolometer basis is achieved through its improved
-responsivity (similar to an improved quantum efficiency for a CCD).
+The focal planes at each of 450 and 850\,\micron\ are populated with
+four of these $40 \times 32$ subarrays (referred to as s4a--s4d, and
+s8a--s8d respectively), and simultaneously image approximately the
+same region of the sky by means of a beam-splitter.
 
-The load on the detectors can vary substantially, both from thermal
-sources within and outside the SCUBA-2 cryostat. In order to operate
-the camera across a broad dynamic range of conditions, it is therefore
-necessary to thermally control the focal plane. This is achieved by
-providing a fridge {\em base temperature}, $T_\mathrm{B}$ that is
-well-below $T_\mathrm{C}$, and then using heaters that are connected
-to each bolometer to place the array in to transition.
 
-The focal plane is divided into four quadrants, each filled with 32
-column $\times$ 40 row sub-arrays labelled s4a--s4d at 450\,\micron,
-and s8a--s8d at 850\,\micron. To avoid independent bias and readout
-wires to each bolometer, each array is multiplexed by column. There is
-an additional row of dark SQUIDs with no TESs or thermal absorber used
-to monitor non-thermal noise sources.
 
 The camera has been designed so that the absolute response of each
 detector can be established by ramping currents through the individual
