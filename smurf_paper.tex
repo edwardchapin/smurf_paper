@@ -244,15 +244,16 @@ focal plane bias to make as many detectors useable as possible
 \citep{holland2011}. In practice, the response of a given detector can
 therefore vary somewhat from observation to observation depending on
 how the bias and amplification parameters were set up. To track these
-changes, at the start of each observation, the current is ramped
-through the bolometer heaters such that $dI/dP$ can be measured. Note
-that the bolometers may have a slightly different response to heater
-power due to conductance as compared to the response to optical power,
-so additioanl efficiency corrections must also be obtained. While not
-discussed further in this paper, details may be found in
-\citet{dempsey2011}. We will refer to measurements of $dI/dP$ across
-the focal plane as the \emph{flatfield}. Fig.~\ref{fig:sensitivities}
-shows the flatfield for each focal plane.
+responsivity changes, at the start of each observation, the current is
+ramped through the bolometer heaters such that $dI/dP$ can be
+measured. Note that the bolometers may have a slightly different
+response to heater power due to conductance as compared to the
+response to optical power, so additioanl efficiency corrections must
+also be obtained. While not discussed further in this paper, details
+may be found in \citet{dempsey2011}. We will refer to measurements of
+$dI/dP$ across the focal plane as the
+\emph{flatfield}. Fig.~\ref{fig:sensitivities} shows the flatfield for
+each focal plane.
 
 \begin{figure}
 \vspace{2cm}
@@ -282,6 +283,19 @@ culprit is pickup from AC mains, or microphonic signals induced by
 mechanical vibrations), and finally a roll-off towards the Nyquist
 frequency caused by the anti-aliasing filter that precedes
 digitization.
+
+The final conversion of power received by the detector into
+astronomical flux units requires two more fundamental corrections: (i)
+atmospheric extinction (due to atmospheric water vapour) must be
+compensated for; and (ii) the corrected power is related to an
+astronomical flux density through the effective area of the detector,
+the spectral response of the bolometers (bandpass), the spectrum of
+the source, and additional optical efficiency factors -- a \emph{flux
+  conversion factor} (FCF). Extinction is measured, in most cases,
+using the JCMT line-of-sight water vapour radiometer (WVM) which is
+calibrated using skydips and the CSO 225\,GHz tipper. The FCF is
+determined empirically using measurements of standard sources. For
+further details on these calibration steps, see \citet{dempsey2011}.
 
 %--------------------------------------------------
 \subsection{Scan strategies}
@@ -536,7 +550,7 @@ configuration, combined with the large amplitude of the scan, may have
 conspired to produce these large signals.
 
 %-------------------------------------------------
-\subsection{Comparison between \scuba\ shared-risk observations and the 2011 re-commissioned instrument}
+\subsection{Differences between the S2SRO and 2011 re-commissioned instrument}
 %-------------------------------------------------
 
 The S2SRO period took place during February and March 2010. For the
@@ -567,29 +581,31 @@ of S2SRO based on the response to ramping the bolometer heaters.
 %-------------------------------------------------
 
 A method that has been employed by teams analyzing BOLOCAM and AzTEC
-data to identify and remove low-frequency correlated noise is
-Principal Component Analysis
-\citep[PCA,][]{laurent2005,scott2008}. While we have not (yet)
-included ``PCA cleaning'' as a standard feature of SMURF, we have
-performed a preliminary analysis in IDL of some SCUBA-2 data to gain
-further insight into the nature of the low-frequency noise. The basic
-method is as follows: (i) the covariance matrix is built up for all
-pairs $(i,j)$ of the $N$ bolometer time series,
-$\langle\mathbf{b}_i(t),\mathbf{b}_j\rangle$; and (ii) an eigenvalue
-decomposition is used to identify a new set of statistically
+data to identify and remove correlated noise is Principal Component
+Analysis \citep[PCA,][]{laurent2005,scott2008}. We initially used PCA
+to gain further insight into the nature of the \scuba\ noise
+properties, but it is now also included it in SMURF as method for
+cleaning the data.
+
+The basic method is as follows: (i) a covariance matrix is built up
+for all pairs $(i,j)$ of the $N$ bolometer time series,
+$\langle\mathbf{b}_i(t),\mathbf{b}_j\rangle$; and (ii) a singular
+value decomposition is used to identify a new set of statistically
 uncorrelated eigenvectors, $\mathbf{\xi}_i(t)$ (i.e. whose covariance
 matrix is diagonal), such that each of the bolometer time series is a
 linear combination of the eigenvectors, or \emph{components}
 i.e. $\mathbf{b}_i(t) = \bar{\mathbf{\xi}} \mathbf{\lambda}_i^T$,
 where each row of the matrix $\bar{\mathbf{\xi}}$ is an eigenvector,
 and $\mathbf{\lambda}_i^T$ is a column vector containing the
-corresponding eigenvalues. For convenience, the $\mathbf{\xi}_i$ are
-normalized by their \rms, so that the amplitude of each component is
-stored in the eigenvalues. In the earlier analyses mentioned, the
-low-frequency noise is assumed to be encapsulated in those components
-with the largest eigenvalues. Removing the projection of the time
-series along those components has been used successfully to reduce
-$1/f$ noise while retaining most of the signal in point-like sources.
+corresponding eigenvalues. The $\mathbf{\xi}_i$ are normalized by
+their \rms, so that the amplitude of each component is stored in the
+eigenvalues. In the earlier analyses mentioned, the low-frequency
+noise is assumed to be encapsulated in those components with the
+largest eigenvalues. Removing the projection of the time series along
+those components has been used successfully to reduce $1/f$ noise
+while retaining most of the signal in point-like sources. There is an
+implicit assumption in this analysis that the noise properties are
+stationary.
 
 One unique feature of the SCUBA-2 data is that one can perform a PCA
 analysis of both the 450 and 850\,\micron\ data simultaneously. The
@@ -695,33 +711,32 @@ drift evident only in component 6.
 \label{sec:algorithm}
 %------------------------------------------------------------------------------
 
-Given predictions for the performance of a fully-functioning SCUBA-2,
-and the observed properties of the first-installed subarrays during
-commissioning in late 2009 as described in the previous section, SMURF
-was designed with two primary goals in mind: (i) reduced maps should
-be scientifically useful and of ``near publication quality'' with
-minimal user interaction; and (ii) the execution time should not
-appreciably exceed the amount of time required to conduct
-observations. By attaining these goals it would be possible to conduct
-real-time reduction at the telescope to offer feedback to observers,
+Given \scuba's data rate, SMURF was designed with two primary goals in
+mind: (i) reduced maps should be scientifically useful and of ``near
+publication quality'' with minimal user interaction; and (ii) the
+execution time should not appreciably exceed the amount of time
+required to conduct observations on a high-end multi-tcore desktop
+computer. By attaining these goals it would be possible to conduct
+real-time reductions at the telescope to offer feedback to observers,
 and it would also be possible to maintain a central repository of
 (nearly) publishable data products.
 
-There are two general families of existing map-making strategies that
-were considered. The first are \emph{maximum likelihood} methods that
-were originally pioneered for the analysis of Cosmic Microwave
-Background (CMB) maps. Here, the pixels in the map are considered to
-be free parameters in a model-fitting problem, and the data are the
-raw time-series. By estimating the full noise covariance matrix for
-the data, it is then possible to estimate the maximum-likelihood
-map. While direct inversion solutions to this problem are untenable,
-some recent efforts to optimize these algorithms have enabled the
-reduction of smaller data sets in a reasonable amount of time
-\citep[e.g.][]{patanchon2008}. While maximum likelihood maps are,
-theoretically, the best maps that can be made from a noise point of
-view, the required computing resources and execution time would not
-have been feasible for the proposed real-time data reduction and data
-archiving model.
+As described in the introduction, rather than pursue a slow but
+potentially more accurate \emph{maximum likelihood} method that would
+require the inversion of a complex linear problem, we instead use an
+iterative approach that estimates and removes most of the correlated
+(and in particular low-frequency) noise sources in parallel with a
+simplified map estimation. We do note, however, that recent advances
+in direct inversion methods such as \citet{patanchon2008} may in fact
+be tenable for SCUBA-2 data. A future goal of the software team is to
+investigate meshing SMURF (perhaps as a cleaning step and initial
+condition) for a SANEPIC-like algorithm.
+
+The remainder of this section gives an overview of the model that is
+assumed by SMURF for the \scuba\ data, and the typical steps used to
+estimate a map. Subsequent sections discuss problems with this model
+and additional processing steps and constraints that can be used to
+improve the solution in different cases.
 
 \begin{itemize}
 
@@ -751,15 +766,10 @@ elevation and atmospheric conditions, and $\mathbf{n}_i(t)$ represents
 sources of noise. The two terms in square brackets, as written, have
 units of power delivered to the detectors (pW). The scale factor $g_i$
 converts this effective power to the digitized units recorded on disk
-(DAC), and in this formulation is assumed to be constant in time.
+(DAC) -- the \emph{flatfield} multiplied by a digitization constant --
+and in this formulation it is assumed to be constant in time.
 
-In practice, $g_i$ is further factored into two components: $g_i = r_i
-d$. The responsivity, $r_i$, gives the change in current as a function
-of power fluctuations (A\,pW$^{-1}$). There is then a final (and
-constant across all bolometers) conversion factor from current to DAC
-units, $d$ (DAC/A).
-
-As for the noise, $\mathbf{n}_i(t)$, we break it down into several
+We then express the noise, $\mathbf{n}_i(t)$, as the sum of several
 components,
 %
 \begin{equation}
@@ -773,7 +783,7 @@ noise, $\mathbf{n}^\mathrm{f}_i(t)$ is low-frequency noise that is
 $\mathbf{n}^\mathrm{c}(t)$ is a (predominantly low-frequency)
 correlated or \emph{common-mode} component. The primary goal of
 map-making is to model and remove $\mathbf{n}^\mathrm{f}_i$ and
-$\mathbf{n}^\mathrm{c}$ from the time-series. By re-gridding the
+$\mathbf{n}^\mathrm{c}$ from the time-series, while re-gridding the
 remaining data we can then hope to approach the theoretical noise
 limit in the map. This procedure is summarized in Fig.~\ref{fig:dimm}.
 
@@ -808,14 +818,16 @@ dominated by large variations in the fridge temperature and sky noise
 average signal observed by all of the bolometers at each time step,
 and then removed from all of the bolometers. Once this large signal
 has been removed, we apply the extinction correction, which is
-determined completely from external measurements. Next, residual noise
-that differse from bolometer-to-bolometer (primarily low-frequency) is
-removed using an FFT-based filter. The resulting ``clean'' time-series
-are then re-gridded to produce a map estimate using nearest-neighbour
-sampling. Since each map pixel averages many bolometer samples
-together, it is fundamentally much less noisy than the bolometer
-time-series. We can therefore project the map back into the time
-domain, and create relatively noiseless estimates of what each
+determined completely from external measurements
+\citep[see][]{dempsey2011}. Next, residual noise that differs from
+bolometer-to-bolometer (primarily low-frequency) is removed, usually
+using a high-pass filter. The resulting ``clean'' time-series are then
+re-gridded to produce a map estimate using nearest-neighbour
+sampling. Since each map pixel is calculated as the average of many
+bolometer samples, it is fundamentally much less noisy than the raw
+bolometer time-series. We can therefore project the map back into the
+time domain (i.e. scanning the array across the current estimate of
+the map), and create approximately noiseless estimates of what each
 bolometer would have seen in the absence of noise sources, and remove
 that from the time-series. This final step in the iteration gives a
 residual signal (with low-frequency and astronomical noise components
@@ -887,12 +899,12 @@ presence of GAI.
 \subsubsection{\texttt{EXT}: extinction correction}
 \label{sec:ext}
 
-AGG
+The extinction correction is normally derived using the JCMT water
+vapour radiometer (WVM), and is not considered to be a free parameter
+in the solution. For details on how it is calculated see
+\citet{dempsey2011}. Note that its numerical value is calculated only
+once, and simply applied as a scale factor in the iterative solution.
 
-This is actually only calculated once before the map solution begins
-using external opacity monitors (WVM, $\tau_\mathrm{CSO}$,
-skydip). Summarize the measurements, order of preference and something
-about the calibration for the SCUBA-2 filters.
 
 \subsubsection{\texttt{FLT}: fourier transform filter}
 \label{sec:flt}
@@ -904,9 +916,13 @@ edges of the filters may be defined in terms of an \emph{angular
   scale}, but converted into a frequency through knowledge of the mean
 telescope slew speed. The time-series may optionally have apodization
 applied before the transform to avoid ringing (primarily caused by
-wrap-around discontinuities at the ends of the time-series). The
-signal that is \emph{removed} from the time-series by this process are
-stored in the \texttt{FLT} container array.
+wrap-around discontinuities at the ends of the time-series). Finally,
+a whitening filter may also be applied in which a simple $1/f^\alpha +
+\mathrm{constant}$ is fit to the power spectrum of each bolometer, and
+then the bolometer FFT is multiplied by its inverse (though normalized
+to preserve the white noise level).  The signal that is \emph{removed}
+from the time-series by this process are stored in the \texttt{FLT}
+container array.
 
 \subsubsection{\texttt{AST}: map estimation}
 \label{sec:ast}
@@ -994,7 +1010,19 @@ detection (Section~\ref{sec:timedespike}).
 Columns share significant magnetic field pickup which is measured by
 the dark squids. This model has been included although it makes little
 improvement, or injects noise since the magnetic field pickup noise is
-generally sub-dominant.
+generally sub-dominant. Furthermore, not every column that contains
+working bolometers also has a working dark squid. An alternative is to
+use the \texttt{TMP} model described below.
+
+\subsubsection{\texttt{TMP}: remove a scaled template}
+
+Since the \texttt{DKS} cannot generally be used due to the missing
+dark squids, an alternative is to use the telescope pointing as a
+proxy for the signal due to magnetic field pickup
+(Section~\ref{sec:magpickup}. Generally speaking the azimuth (or its
+sine) as a function of time is used as a template that is simply
+scaled and removed from each bolometer signal. Some modest
+improvements can be achieved with this model.
 
 \subsubsection{\texttt{SMO}: time-domain smoothing filter}
 \label{sec:smo}
@@ -1016,8 +1044,13 @@ things. Perhaps refer to other papers that claim to have seen coherent
 
 \subsection{Model degeneracies}
 
-Introduce the topic of model degeneracies here, but defer their
-solution to the example sections.
+A fundamental problem faced by the SMURF algorithm, as described, is
+that there are degeneracies between model parameters. Thinking of each
+pixel in the output map, as well as each sample in the various noise
+model components, such as the common-mode and signal removed by the
+Fourier filtering, any degeneracy can cause the solution to
+diverge. Of particular concern are situations in which the map
+diverges.
 
 %-------------------------------------------------
 \subsection{Data cleaning}
