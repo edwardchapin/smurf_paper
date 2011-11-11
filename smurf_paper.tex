@@ -186,6 +186,9 @@ used only a single subarray at each of the two observing wavelengths,
 and had considerably different noise properties and poorer performance
 than the fully-commissioned instrument in 2011.
 
+\textit{May want to note that the pipeline is discussed elsewhere,
+  e.g. Gibb et al 2006.}
+
 %------------------------------------------------------------------------------
 \section{\scuba\ data properties}
 \label{sec:data}
@@ -906,7 +909,6 @@ in the solution. For details on how it is calculated see
 \citet{dempsey2011}. Note that its numerical value is calculated only
 once, and simply applied as a scale factor in the iterative solution.
 
-
 \subsubsection{\texttt{FLT}: fourier transform filter}
 \label{sec:flt}
 
@@ -1015,6 +1017,9 @@ generally sub-dominant. Furthermore, not every column that contains
 working bolometers also has a working dark squid. An alternative is to
 use the \texttt{TMP} model described below.
 
+\textit{There are also the popped bolometers that could help fill the
+gaps.}
+
 \subsubsection{\texttt{TMP}: remove a scaled template}
 
 Since the \texttt{DKS} cannot generally be used due to the missing
@@ -1096,6 +1101,10 @@ TJ
 Discuss heater ramps, normalizing off the common-mode signal
 amplitude, astronomical sources, and the internal flatfield source.
 
+\textit{Surely flatfields are discussed in the main SCUBA-2 paper so
+don't really have any useful purpose here since they aren't
+technically part of the map-maker.}
+
 \subsubsection{Additional bad bolometer rejection}
 
 TJ
@@ -1161,11 +1170,15 @@ constrain a maximum-likelihood map with poor cross-linking.
 Heavy initial filtering, and only iteratively solve for map and
 common-mode with edge constraints.
 
+\textit{And matched filter is discussed here or superceded by
+the 2D FFTs?}
 
 \subsection{Bright extended emission}
 The hardest thing to do with SCUBA-2 at the moment. Try to generate a
 source/background mask to assist the map solution based on thresholds
 in \snr. Compare with BOLOCAM stuff.
+
+\textit{Or now an externally supplied mask.}
 
 %------------------------------------------------------------------------------
 \section{Summary and future work}
@@ -1187,6 +1200,10 @@ weights in Fourier space separately).
 \section{Acknowledgements}
 %------------------------------------------------------------------------------
 
+\textit{Presumably the standard telescope acknowledgment here plus a thank you
+to CFI for funding the DR work. Ed should probably thank both CANFAR
+and JAC for additionally funding although his JAC funding is noted in
+the affiliation.}
 
 %------------------------------------------------------------------------------
 \bibliographystyle{mn2e}
