@@ -152,3 +152,42 @@ end
 echo "    Getting JCMTState..."
 
 jcmtstate2cat s4a$obsdate\_$obsnum\_con > state_$obsdate\_$obsnum.tst
+
+
+
+
+
+
+
+# The plot for section "COM, GAI: common-mode estimation". First
+# flatfield the raw data.
+$SMURF_DIR/flatfield $dataroot/s8a/20110907/00029/s8a20110907_00029_0023 \
+                     ./s8a20110907_00029_0023_ff
+
+#  Form an image holding the mean value in each bolometer.
+$KAPPA_DIR/collapse s8a20110907_00029_0023_ff estimator=mean \
+                    out=s8a20110907_00029_0023_cl axis=mjd
+
+#  Expand the image out into a cube and subtract from the flatfielded data.
+$KAPPA_DIR/wcsalign s8a20110907_00029_0023_cl ref=s8a20110907_00029_0023_ff \
+                    out=s8a20110907_00029_0023_bk method=near accept
+$KAPPA_DIR/sub s8a20110907_00029_0023_ff s8a20110907_00029_0023_bk \
+               out=s8a20110907_00029_0023_res
+
+#  Produce the plot as an eps file (pgplot.ps) in portrait mode.
+$KAPPA_DIR/clinplot s8a20110907_00029_0023_res nx=8 ny=8 ybot=-0.02 ytop=0.02 \
+                    axes=no key=no device=epsf_p
+
+#  Convert the eps file to a pdf (com.pdf)
+epstopdf pgplot.ps
+mv pgplot.pdf com.pdf
+
+# Clean up.
+rm pgplot.ps s8a20110907_00029_0023_ff.sdf out=s8a20110907_00029_0023_cl.sdf \
+             s8a20110907_00029_0023_bk.sdf s8a20110907_00029_0023_res.sdf
+
+
+
+
+
+

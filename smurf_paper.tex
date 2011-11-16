@@ -893,12 +893,98 @@ describe their implementation in detail.
 \subsubsection{\texttt{COM,GAI}: common-mode estimation}
 \label{sec:comgai}
 
-DSB
+﻿Fig.~\ref{fig:com} shows the time series from a selection of typical
+bolometers.\footnote{The data have been flat-fielded and each time series
+has been adjusted to a mean value of zero.} The similarity between most
+bolometers is evident, and forms the common-mode signal - assumed to be a
+consequence of variations in the atmospheric emission and fridge
+temperature. This common-mode usually dominates the astronomical signal
+for all but the brightest sources, and swamps faint extended structure.
+The purpose of the COM and GAI models is to remove this common-mode
+signal.
 
-We estimate the common-mode, remove it from the time series, use it to
-flag bad bits of data, check for time-varying bolometer
-responsivities... what doesn't it do?! Also mention the optional
-presence of GAI.
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{com.pdf}
+\caption{A selection of typical bolometer time series after flatfielding
+and removal of a constant baseline. It can be seen that most bolometers
+exhibit a common time variation overlayed with other features.}
+\label{fig:com}
+\end{figure}
+
+The COM model is the common-mode signal itself. It is a single time
+series that is estimated by finding the mean of all bolometers at each
+time step. Bolometer values that have been flagged as unusable for any
+reason are excluded from the mean.
+
+Since bolometers have varying sensitivities, the amplitude of the
+common-mode variations will also vary from bolometer to bolometer. So
+comparing each bolometer time stream with the common-mode signal allows
+an estimate of the bolometer sensitivity to be obtained. In practice, a
+least squares linear fit is performed between the bolometer time series
+and the common-mode to determine a gain and offset for each bolometer.
+The gain and offset for each bolometer is known as the GAI model. Each
+bolometer value can then optionally be scaled and shifted using these
+values so that all bolometers share a common (but as yet unknown)
+calibration. This provides an alternative( or additional) flatfielding
+strategy to that described in in section~\ref{sec:bolos}.
+
+An option exists to cater for time-varying sensitivities. If used, the
+least squares fits described above are performed on short blocks of
+contiguous time slices, providing multiple gain and offset values for
+each bolometer (one pair for each block of time slices). The gain and
+offset at any required time slice can then be found by interpolation
+between these values.
+
+It can be seen from Fig.~\ref{fig:com} that some bolometers depart
+radically from the common-mode, indicating some problem within the
+bolometer. Such bolometers are identified by calculating the Pearson
+coefficient of correlation between each bolometer time stream and the
+common mode. Bolometers for which the correlation coefficient is below a
+specified limit, or which have a negative gain, are flagged as bad in
+order to omit them from the final map. If the option described above for
+handling time-varying sensitivities is used, then a correlation
+coefficient can be determined for each individual block of time slices.
+This allows individual bad blocks to be rejected from a bolometer time
+stream, rather than rejecting the whole bolometer. This is beneficial for
+bolometers that follow the common-mode for most of the time but suffer
+from transient problems at specific times.
+
+The common-mode is calculated from all bolometers that have not
+previously been flagged as bad. Thus aberrant bolometers with low
+correlation coefficients will be included, polluting the common-mode. For
+this reason, an iterative approach is taken to estimating the common-mode.
+The initial common-mode estimate is formed from all remaining bolometers.
+Aberrant bolometers with low correlation coefficients are then identified
+by comparing each bolometer time stream with the common-mode. Such
+aberrant bolometers are flagged as bad, and a new estimate of the
+common-mode is produced omitting the newly flagged bolometers. This
+process is repeated until no further bolometers are rejected.
+
+Any astronomical sources that are smaller than the array size will
+contribute signal to some bolometers but not other bolometers, thus
+biassing the simple mean used to estimate the common mode. However, on
+each iteration of the map-making algorithm illustrated in
+Fig.~\ref{fig:dimm}, a large fraction of the remaining astronomical
+signal is extracted from the bolometer time series and transferred to the
+output map, resulting in subsequent estimates of the common-mode being
+more accurate.
+
+Any extended astronomical emission on a scale comparable to or larger
+than the spatial extent of the area used to estimate the common-mode will
+contribute a similar signal to all bolometers. Therefore such extended
+emission is indistinguishable from the other sources of common-mode
+signal (fridge and atmosphere variations) and will be removed by the COM
+model. This places a limit on the spatial extent of astronomical
+structure that can be recovered.
+
+For this reason, the usual practice is to estimate a single COM model by
+examining data from all four sub-arrays in each waveband, since this
+allow spatial structure on the scale of the whole focal plane to be
+recovered. However, sometimes there is evidence that the common-mode
+differs from one array to another, and so an option exists to estimate a
+separate COM model for each individual subarray, with a consequent
+lowering in the scale of spatial structure that can be recovered.
 
 \subsubsection{\texttt{EXT}: extinction correction}
 \label{sec:ext}
