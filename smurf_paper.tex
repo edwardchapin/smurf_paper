@@ -1163,7 +1163,41 @@ EC
 \subsubsection{Time-domain de-spiking}
 \label{sec:timedespike}
 
-DSB
+Spikes of short duration and high amplitude are often seen in the time
+series data. If not removed, they can cause ringing in the FLT model
+(Section~\ref{sec:flt}). Two alternative approaches may be used to remove
+these spikes. This section describes the detection and removal of spikes
+within the time series of each bolometer, and
+section~\ref{sec:mapdespike} describes the detection and removal of
+spikes within the final map. In practice, map-based despiking
+(Section~\ref{sec:mapdespike}) usually gives superior results, and so
+time-domain despiking is usually switched off.
+
+\emph{Do we need some discussion of the physical causes and
+characteristics of spikes?}
+
+Each one-dimensional bolometer time series is processed independently. At
+each time slice, the median value of the current bolometer in a box
+centred on the time slice, and containing a specified number of time
+slices (typically 50), is found. If the residual between the
+time slice value and the median value is greater than some specified
+multiple (typically 10) of the local noise level, the time slice is
+flagged as a spike.
+
+If the local noise level were estimated within the same box used to
+determine the median value, a spike in the box would cause the local
+noise level to be over-estimated severely. For this reason, the local
+noise level is taken as the standard deviation of the values within a
+neighbouring box on the ``down-stream'' side of the median box (that is,
+the side that has already been checked for spikes). That is, the high end
+of the noise box is just below the low end of the median filter box. This
+introduces a slight asymmetry in the noise, but this should not matter
+unless the noise varies significantly on a time scale shorter than the
+box size.
+
+This simple algorithm is not very good at distinguishing between spikes
+and bright point sources, and so the threshold for spike detection is
+usually raised when making maps of bright point sources.
 
 \subsubsection{Step correction}
 \label{sec:steps}
