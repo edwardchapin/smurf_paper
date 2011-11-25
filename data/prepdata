@@ -189,5 +189,135 @@ rm pgplot.ps s8a20110907_00029_0023_ff.sdf out=s8a20110907_00029_0023_cl.sdf \
 
 
 
+# The following long section produces the plots for the step fixing section
+
+# This needs smurf to be compiled to produce debugging info about the
+# step-fixing process.
+#
+#   % setenv CFLAGS -DDEBUG_STEPS
+#   % configure
+#   % touch libsmf/smf_fix_steps.c
+#   % make
+#   % make install
+#
+#   When running fixsteps the index of the bolo to record must be given on standard input.
+#   Bolo [i,j] has index i+j*32    ( i=[0:31]  j=[0:39] )
+
+
+#  Flatfield the data and remove a constant background from each bolometer.
+$SMURF_DIR/flatfield $dataroot/s8d/20100303/00085/s8d20100303_00085_0031 ff
+$KAPPA_DIR/collapse ff estimator=mean out=cl axis=mjd
+$KAPPA_DIR/wcsalign cl ref=ff out=bk method=near accept
+$KAPPA_DIR/sub ff bk out=resid
+
+
+$KAPPA_DIR/gdset epsfcol_l
+$KAPPA_DIR/gdclear
+$KAPPA_DIR/picdef mode=a xpic=2 ypic=1 nooutline prefix=a
+
+$KAPPA_DIR/ndfcopy resid'(24,30,3380:3460)' aaa
+$KAPPA_DIR/wcsframe aaa pixel
+rm -f pgplot*ps*
+$KAPPA_DIR/linplot aaa style="'colour=black,width=3,label(1)=Time sample index,labelunits(1)=0,drawtitle=0'"
+mv pgplot.ps lhs1.ps
+
+setenv SMF_THREADS 1
+echo 984 | $SMURF_DIR/fixsteps resid fixed
+$KAPPA_DIR/wcsframe fixed pixel
+$KAPPA_DIR/linplot fixed'(24,30,)' style="'colour=red,width=3'" noclear
+mv pgplot.ps lhs2.ps
+
+#stilts tcopy timedata.asc timedata.fits ifmt=ascii ofmt=fits
+#$POLPACK/polimage timedata.fits shape=no coldat=median out=median
+
+
+$KAPPA_DIR/picsel a2
+
+$KAPPA_DIR/ndfcopy resid'(6,7,)' aaa
+$KAPPA_DIR/wcsframe aaa pixel
+rm -f pgplot*ps*
+$KAPPA_DIR/linplot aaa style="'colour=black,width=3,label(1)=Time sample index,labelunits(1)=0,drawtitle=0'"
+mv pgplot.ps rhs1.ps
+
+$KAPPA_DIR/ndfcopy resid'(6,12,)' bbb
+$KAPPA_DIR/wcsframe bbb pixel
+rm -f pgplot*ps*
+$KAPPA_DIR/linplot bbb style="'colour=blue,width=3'" noclear align
+mv pgplot.ps rhs2.ps
+
+setenv SMF_THREADS 1
+echo 230 | $SMURF_DIR/fixsteps resid fixed
+$KAPPA_DIR/wcsframe fixed pixel
+$KAPPA_DIR/linplot fixed'(6,7,)' style="'colour=red,width=3'" noclear align
+mv pgplot.ps rhs3.ps
+
+/star/bin/psmerge -e -r270 lhs1.ps -r270 lhs2.ps -r270 rhs1.ps -r270 rhs2.ps -r270 rhs3.ps > steps1.ps
+epstopdf steps1.ps
+
+
+
+$KAPPA_DIR/gdclear
+rm -f pgplot*ps*
+$KAPPA_DIR/linplot aaa'(6,7,5000~1000)' style="'colour=black,width=3,label(1)=Time sample index,labelunits(1)=0,drawtitle=0,gap(1)=200'"
+mv pgplot.ps a1.ps
+
+stilts tcopy timedata.asc timedata.fits ifmt=ascii ofmt=fits
+$POLPACK_DIR/polimage timedata.fits shape=no coldat=median out=median
+$KAPPA_DIR/linplot median'(5000~1000)' style="'colour=red,width=3'" noclear align
+mv pgplot.ps a2.ps
+
+/star/bin/psmerge -e -r270 a1.ps -r270 a2.ps > steps2.ps
+epstopdf steps2.ps
+
+
+$KAPPA_DIR/gdclear
+rm -f pgplot*ps*
+$POLPACK_DIR/polimage timedata.fits shape=no coldat=diff out=diff
+$KAPPA_DIR/linplot diff'(5000~1000)' style="'colour=black,width=3,label(1)=Time sample index,labelunits(1)=0,drawtitle=0,gap(1)=200'"
+mv pgplot.ps a1.ps
+/star/bin/psmerge -e -r270 a1.ps > steps3.ps
+epstopdf steps3.ps
+
+
+
+$KAPPA_DIR/gdclear
+rm -f pgplot*ps*
+$POLPACK_DIR/polimage timedata.fits shape=no coldat=diff out=diff
+$KAPPA_DIR/linplot diff'(5000~1000)' ytop=0.002 ybot=-0.002 style="'colour=black,width=3,width(curves)=1,label(1)=Time sample index,labelunits(1)=0,drawtitle=0,gap(1)=200'"
+mv pgplot.ps a1.ps
+$POLPACK_DIR/polimage timedata.fits shape=no coldat=mdiff2 out=mdiff2
+$KAPPA_DIR/linplot mdiff2'(5000~1000)' style="'colour=red,width=3'" noclear align
+mv pgplot.ps a2.ps
+
+$POLPACK_DIR/polimage timedata.fits shape=no coldat=sdiff out=sdiff
+$KAPPA_DIR/linplot sdiff'(5000~1000)' style="'colour=blue,width=3'" noclear align
+mv pgplot.ps a3.ps
+
+/star/bin/psmerge -e -r270 a1.ps -r270 a2.ps -r270 a3.ps > steps4.ps
+epstopdf steps4.ps
+
+
+
+$KAPPA_DIR/gdclear
+rm -f pgplot*ps*
+$POLPACK_DIR/polimage timedata.fits shape=no coldat=rdiff out=rdiff
+$KAPPA_DIR/linplot rdiff'(5000~1000)' ytop=0.002 ybot=-0.002 style="'colour=black,width=3,label(1)=Time sample index,labelunits(1)=0,drawtitle=0,gap(1)=200'"
+mv pgplot.ps a1.ps
+
+$POLPACK_DIR/polimage timedata.fits shape=no coldat=rms out=rms
+$KAPPA_DIR/linplot rms'(5000~1000)' style="'colour=green,width=3'" noclear align
+mv pgplot.ps a2.ps
+
+/star/bin/psmerge -e -r270 a1.ps -r270 a2.ps > steps5.ps
+epstopdf steps5.ps
+
+
+rm -f a1.ps diff.sdf median.sdf rms.sdf steps1.ps a2.ps fixed.sdf \
+   rdiff.sdf steps4.ps timedata.asc a3.ps lhs1.ps rhs1.ps sdiff.sdf \
+   steps2.ps timedata.fits aaa.sdf lhs2.ps rhs2.ps stepdata.asc \
+   steps5.ps bbb.sdf mdiff2.sdf rhs3.ps steps3.ps ff.sdf, cl.sdf, bk.sdf, \
+   resid.sdf
+
+
 
 
