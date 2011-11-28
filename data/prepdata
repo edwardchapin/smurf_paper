@@ -190,6 +190,7 @@ rm pgplot.ps s8a20110907_00029_0023_ff.sdf out=s8a20110907_00029_0023_cl.sdf \
 
 
 # The following long section produces the plots for the step fixing section
+steps:
 
 # This needs smurf to be compiled to produce debugging info about the
 # step-fixing process.
@@ -273,7 +274,7 @@ epstopdf steps2.ps
 $KAPPA_DIR/gdclear
 rm -f pgplot*ps*
 $POLPACK_DIR/polimage timedata.fits shape=no coldat=diff out=diff
-$KAPPA_DIR/linplot diff'(5000~1000)' style="'colour=black,width=3,label(1)=Time sample index,labelunits(1)=0,drawtitle=0,gap(1)=200'"
+$KAPPA_DIR/linplot diff'(5000~1000)' style="'colour=black,width=3,label(1)=Time sample index,label(2)=Difference (pW),labelunits(1)=0,drawtitle=0,gap(1)=200'"
 mv pgplot.ps a1.ps
 /star/bin/psmerge -e -r270 a1.ps > steps3.ps
 epstopdf steps3.ps
@@ -283,7 +284,7 @@ epstopdf steps3.ps
 $KAPPA_DIR/gdclear
 rm -f pgplot*ps*
 $POLPACK_DIR/polimage timedata.fits shape=no coldat=diff out=diff
-$KAPPA_DIR/linplot diff'(5000~1000)' ytop=0.002 ybot=-0.002 style="'colour=black,width=3,width(curves)=1,label(1)=Time sample index,labelunits(1)=0,drawtitle=0,gap(1)=200'"
+$KAPPA_DIR/linplot diff'(5000~1000)' ytop=0.002 ybot=-0.002 style="'colour=black,width=3,width(curves)=1,label(2)=Difference (pW),label(1)=Time sample index,labelunits(1)=0,drawtitle=0,gap(1)=200'"
 mv pgplot.ps a1.ps
 $POLPACK_DIR/polimage timedata.fits shape=no coldat=mdiff2 out=mdiff2
 $KAPPA_DIR/linplot mdiff2'(5000~1000)' style="'colour=red,width=3'" noclear align
@@ -301,7 +302,7 @@ epstopdf steps4.ps
 $KAPPA_DIR/gdclear
 rm -f pgplot*ps*
 $POLPACK_DIR/polimage timedata.fits shape=no coldat=rdiff out=rdiff
-$KAPPA_DIR/linplot rdiff'(5000~1000)' ytop=0.002 ybot=-0.002 style="'colour=black,width=3,label(1)=Time sample index,labelunits(1)=0,drawtitle=0,gap(1)=200'"
+$KAPPA_DIR/linplot rdiff'(5000~1000)' ytop=0.002 ybot=-0.002 style="'colour=black,width=3,label(2)=Difference (pW),label(1)=Time sample index,labelunits(1)=0,drawtitle=0,gap(1)=200'"
 mv pgplot.ps a1.ps
 
 $POLPACK_DIR/polimage timedata.fits shape=no coldat=rms out=rms

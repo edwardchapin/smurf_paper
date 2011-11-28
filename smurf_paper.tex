@@ -1219,166 +1219,52 @@ that the step correction is performing well.
 \end{figure*}
 
 Sudden steps can occur in the time stream data from each bolometer.
-Fig.~\ref{fig:steps1} shows such steps in the time streams for two
-bolometers. For each bolometer, correcting these steps involves:
 
-\begin{enumerate}
+\emph{why?}
 
-\item Locating each candidate step.
+The black curves in Fig.~\ref{fig:steps1} show examples of such steps in
+the time streams for two bolometers. If not removed, these steps can
+cause severe ringing in the FLT model (Section~\ref{sec:flt}) and visible
+streaks in the final map, corresponding to the paths of individual
+bolometers over the sky.
 
-\item Determining the widths of the candidate steps. Some steps
+Steps occur with a wide range of heights and shapes. The ratio of step
+height to noise can vary from less than 10 to several hundred. Some steps
 occur over a single sample such as the step close to sample 5000 in the
 right-hand plot of Fig.~\ref{fig:steps1}, but others happen more
 gradually such as the step close to sample 5300. In addition, a step can
 be preceeded or followed by a short period of instability, as is visible
-at the bottom of the step in the right hand plot of
+at the bottom of the step in the left hand plot of
+Fig.~\ref{fig:steps1}. Further problems are caused by steps that occur
+close together in time, such as the large downward step followed by a
+smaller upward step close to sample 5000 in the right hand plot of
 Fig.~\ref{fig:steps1}.
 
-\item Determine the height of the step. Steps can vary enormously in height.
-For instance the step in the left plot of Fig.~\ref{fig:steps1} is
-roughly 3 pW in height, whereas the step at sample 5100 in the right hand
-plot is only 0.01 pW in height. The height of a step is taken as the
-difference in the local median value just before and just after the step.
-
-\item Correcting all subsequent data values by the step height.
-
-\item Once all steps have been corrected, a global offset is added to the
-corrected bolometer time stream to ensure that the mean value before and
-after step correction is unchanged.
-
-\end{enumerate}
-
-\paragraph{Detecting Candidate Steps:}
-The first stage in the algorithm is to search the bolometer time stream for
-contiguous blocks of samples that have unusually large mean gradients
-compared to the neighbouring samples. Each such block of samples is
-considered to be a candidate step. The starting and ending time of each
-such block is noted. Once all candidate steps have been found for a
-bolometer, the algorithm proceeds to the next stage. Candidate steps are
-found as follows:
+Detecting and correcting such a wide variety of steps reliably has proved
+to be a challenge. The current step-correction algorithm is described in
+detail in appendix~\ref{appendix:steps}. In outline, the following stages
+are involved in detecting and correcting steps in a single bolometer time
+stream:
 
 \begin{enumerate}
 
-\item Smooth the bolometer time stream using a median filter of width
-50 samples. This reduces the effects of the noise in the data. Using a
-median filter rather than a mean filter helps to preserve the sharp edges
-at each step, and is robust against spikes, etc.
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{steps2.pdf}
-\caption{A section of the right hand bolometer from  Fig.~\ref{fig:steps1}
-with the median smoothed data overlayed in red.}
-\label{fig:steps2}
-\end{figure}
-
-The red curve in Fig.~\ref{fig:steps2} shows the median smoothed data for
-the right hand bolometer from Fig.~\ref{fig:steps1}.
-
-\item At each time sample, find the difference between the two adjacent
-values in the median filtered bolometer data. This is proportional to the
-gradient of the median filtered bolometer data. Fig.~\ref{fig:steps3}
-shows these differences for the sample bolometer shown in previous
-figures. The high gradients at the three step are clearly visible at
-indices 5040, 5100 and 5280. In addition, the varying gradient of the
-underlying noise-free time series can be seen in the lower level changes
-in the difference values.
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{steps3.pdf}
-\caption{Differences between adjacent values of the median smoothed data
-in  Fig.~\ref{fig:steps2}.}
-\label{fig:steps3}
-\end{figure}
-
-\item Steps are located by looking for difference values that exceed 25
-times the RMS of the neighbouring difference value. However, the RMS of
-the differences can be heavily affected by the gradient of the underlying
-noise-free time series. If there is a strong upward or downward trend in
-the time series data, the RMS of the difference values will be higher
-potentially resulting in some steps being missed. Therefore to enhance
-the reliability of the step detection, an attempt is made to remove these
-variations before locating the steps. To do this, the differences are
-smoothed using mean filter, and the smoothed differences are removed. The
-remaining residual difference values represent the gradient due to steps,
-spikes, noise, etc. It is important that the smoothed differences are not
-polluted by the large values caused by spikes and steps. So before
-smoothing, differences of more than three times the RMS difference (taken
-over the whole time stream) are identified and flagged. The RMS is then
-re-calculated omitting the flagged values and a further two such
-rejection iterations are performed. This flags high gradient values
-caused by spikes, jumps, point sources, etc. The difference values close
-to a step are often not typical of those in the wider neighbourhood, so
-each block of contiguous flagged difference values is doubled in width.
-These flagged values are shown as black in Fig.~\ref{fig:steps4}, with
-the remaining unflagged values shown in red.
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{steps4.pdf}
-\caption{The red curve shows the data from Fig.~\ref{fig:steps3} plotted with smaller upper
-and lower limits. The blue curve shows the results of smoothing the red
-curve. Points omitted from the red curve are shown in black.}
-\label{fig:steps4}
-\end{figure}
-
-\item The differences for the remaining samples are smoothed
-using a mean filter of width 50 samples. The smoothing process fills in small
-holes in the array (up to 40 samples), but will not fill in larger holes.
-Such larger holes are filled in later by linear interpolation. The
-resulting smoothed differences (shown in blue in Fig.~\ref{fig:steps4})
-provide an estimate of the local gradient of the underlying noise-free
-median-filtered data stream.
-
-\item The smoothed differences are subtracted from the total differences
-to get the residual differences caused by noise, spikes, steps, etc.
-These are show in black in Fig.~\ref{fig:steps5}.
-
-\item The local RMS of the residual differences at each time sample is
-found by smoothing the squared residual differences using a median filter
-of width 200 samples, and then taking the square root of the smoothed values.
-These are show in green in Fig.~\ref{fig:steps5}.
-
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{steps5.pdf}
-\caption{The black curve shows the residuals between the red and blue curves in
-Fig.~\ref{fig:steps4}. Missing data is filled in by a combination of
-smoothing and linear interpolation. The green curve is the local RMS of the data
-over a box width of 200 samples.}
-\label{fig:steps5}
-\end{figure}
-
-\item Blocks of contiguous samples for which the residual difference exceeds
-25 times the local RMS of the residual differences are found. Any two
-such blocks that are separated by fewer than 100 samples are merged into
-a single block. Blocks are ignored if they fail any of the following
-tests:
-
-\begin{enumerate}
-
-\item The width of the block must be less than 200 samples.
-
-\item The total of all the SNR values (the absolute residual difference
-divided by the local RMS of the residual differences) in the block must be
-at least 25.
-
-\item The total of all SNR values in the block must exceed half the value of
-the largest single SNR value in the block.
+\item Median smooth the whole time stream.
+\item Find the gradient of the median smoothed time series at each sample.
+\item Smooth the gradient values to determine the local mean gradient and
+subtract this local mean from the total gradient to get residual gradients.
+\item Find residual gradient values that exceed 25 times the local RMS of
+the residual gradients.
+\item Group these high residual gradients into contiguous blocks of
+samples.
+\item Merge blocks that are separated by less than 100 samples
 
 \end{enumerate}
 
-The second and third tests are intended to prevent spikes being treated as
-two very close steps, since such steps will have SNR values of opposite
-signs and will thus cancel out.
-
-The data in Fig.~\ref{fig:steps5} results in two blocks being defined -
-one between samples 5037 and 5102, and another between samples 5286 and
-5296. Each of these blocks define the start and end of a candidate step.
-
-\end{enumerate}
-
+The results of step correction are shown by the red curves in
+Fig.~\ref{fig:steps1}. For comparison, the blue curve shows the
+uncorrected time stream from a nearby bolometer that does not suffer from
+steps. The agreement between the red and blue curves confirms that
+the step correction algorithm is working satisfactorily.
 
 
 \subsubsection{Gap filling / apodization}
@@ -1509,7 +1395,178 @@ the affiliation.}
 
 %------------------------------------------------------------------------------
 \appendix
-\section[]{This is an appendix}
+\section[]{Step correction in detail}
+
+An outline of the step correction algorithm is given in
+Section~\ref{sec:steps}. This appendix contains a more detailed
+description.
+
+Detecting and correcting steps in a single bolometer time stream involves:
+
+\begin{enumerate}
+
+\item Locating each candidate step.
+
+\item Determining the widths of the candidate steps.
+
+\item Determine the height of the step. Steps can vary enormously in height.
+For instance the step in the left plot of Fig.~\ref{fig:steps1} is
+roughly 3 pW in height, whereas the step at sample 5100 in the right hand
+plot is only 0.01 pW in height. The height of a step is taken as the
+difference in the local median value just before and just after the step.
+
+\item Correcting all subsequent data values by the step height.
+
+\item Once all steps have been corrected, a global offset is added to the
+corrected bolometer time stream to ensure that the mean value before and
+after step correction is unchanged.
+
+\end{enumerate}
+
+\subsection{Detecting candidate steps}
+The first stage in the algorithm is to search the bolometer time stream for
+contiguous blocks of samples that have unusually large mean gradients
+compared to the neighbouring samples. Each such block of samples is
+considered to be a candidate step. The starting and ending time of each
+such block is noted. Once all candidate steps have been found for a
+bolometer, the algorithm proceeds to the next stage. Candidate steps are
+found as follows:
+
+\begin{enumerate}
+
+\item Smooth the bolometer time stream using a median filter of width
+50 samples. This reduces the effects of the noise in the data. Using a
+median filter rather than a mean filter helps to preserve the sharp edges
+at each step, and is robust against spikes, etc.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{steps2.pdf}
+\caption{A section of the right hand bolometer from  Fig.~\ref{fig:steps1}
+with the median smoothed data overlayed in red.}
+\label{fig:steps2}
+\end{figure}
+
+The red curve in Fig.~\ref{fig:steps2} shows the median smoothed data for
+the right hand bolometer from Fig.~\ref{fig:steps1}.
+
+\item At each time sample, find the difference between the two adjacent
+values in the median filtered bolometer data. This is proportional to the
+gradient of the median filtered bolometer data. Fig.~\ref{fig:steps3}
+shows these differences for the sample bolometer shown in previous
+figures. The high gradients at the three step are clearly visible at
+indices 5040, 5100 and 5280.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{steps3.pdf}
+\caption{Differences between adjacent values of the median smoothed data
+in  Fig.~\ref{fig:steps2}.}
+\label{fig:steps3}
+\end{figure}
+
+\item Steps are located by looking for difference values that exceed 25
+times the RMS value of the nearby neighbouring differences. However, the
+local RMS of the differences includes the gradient of the underlying
+noise-free time series. So if there is a strong upward or downward trend
+in the time series data, the RMS of the difference values will be higher,
+potentially resulting in some steps being missed. For instance, at sample
+5000 the overall trend in the time series is downwards, resulting in a
+negative bias to the difference values.\footnote{This bias is not visible in
+Fig.~\ref{fig:steps3} because of the large vertical range, but can be seen in
+Fig.~\ref{fig:steps4} which has a smaller vertical scale.}
+
+Therefore to enhance the reliability of the step detection, such biases
+are removed before locating the steps. To do this, the differences are
+smoothed using a mean filter, and the smoothed differences are removed.
+The remaining residual difference values represent the gradient due to
+steps, spikes, noise, etc. It is important that the smoothed differences
+are not polluted by the large values caused by spikes and steps. So
+before smoothing, differences of more than three times the RMS difference
+(taken over the whole time stream) are identified and flagged. The RMS is
+then re-calculated omitting the flagged values and a further two such
+rejection iterations are performed. This process flags high gradient values
+caused by spikes, jumps, point sources, etc. The difference values close
+to a step are often not typical of those in the wider neighbourhood, so
+each block of contiguous flagged difference values is doubled in width.
+These flagged values are shown as black in Fig.~\ref{fig:steps4}, with
+the remaining unflagged values shown in red.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{steps4.pdf}
+\caption{The red curve shows the data from Fig.~\ref{fig:steps3} plotted with smaller upper
+and lower limits. The blue curve shows the results of smoothing the red
+curve. Points omitted from the red curve are shown in black.}
+\label{fig:steps4}
+\end{figure}
+
+\item The differences for the remaining samples are smoothed
+using a mean filter of width 50 samples. The smoothing process fills in small
+holes in the array (up to 40 samples), but will not fill in larger holes.
+Such larger holes are filled in later by linear interpolation. The
+resulting smoothed differences (shown in blue in Fig.~\ref{fig:steps4})
+provide an estimate of the local gradient of the underlying noise-free
+median-filtered data stream.
+
+\item The smoothed differences are subtracted from the total differences
+to get the residual differences caused by noise, spikes, steps, etc.
+These are show in black in Fig.~\ref{fig:steps5}.
+
+\item The local RMS of the residual differences at each time sample is
+found by smoothing the squared residual differences using a median filter
+of width 200 samples, and then taking the square root of the smoothed values.
+These are show in green in Fig.~\ref{fig:steps5}.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{steps5.pdf}
+\caption{The black curve shows the residuals between the red and blue curves in
+Fig.~\ref{fig:steps4}. Missing data is filled in by a combination of
+smoothing and linear interpolation. The green curve is the local RMS of the data
+over a box width of 200 samples.}
+\label{fig:steps5}
+\end{figure}
+
+\item Blocks of contiguous samples for which the residual difference exceeds
+25 times the local RMS of the residual differences are found. Any two
+such blocks that are separated by fewer than 100 samples are merged into
+a single block. Blocks are ignored if they fail any of the following
+tests:
+
+\begin{enumerate}
+
+\item The width of the block must be less than 200 samples.
+
+\item The total of all the SNR values (the absolute residual difference
+divided by the local RMS of the residual differences) in the block must be
+at least 25.
+
+\item The total of all SNR values in the block must exceed half the value of
+the largest single SNR value in the block.
+
+\end{enumerate}
+
+The second and third tests are intended to prevent spikes being treated as
+two very close steps, since such steps will have SNR values of opposite
+signs and will thus cancel out.
+
+The data in Fig.~\ref{fig:steps5} results in two blocks being defined -
+one between samples 5037 and 5102 and another between samples 5286 and
+5296. Each of these blocks define the start and end of a candidate step.
+The first block includes two visible steps, but they have been merged
+into a single candidate step due to their small separation (less than 100
+samples).
+
+\end{enumerate}
+
+
+\subsection{Measuring and confirming candidate steps}
+
+
+
+
+
 %------------------------------------------------------------------------------
 
 
