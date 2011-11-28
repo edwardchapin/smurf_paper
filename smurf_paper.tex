@@ -1233,7 +1233,7 @@ height to noise can vary from less than 10 to several hundred. Some steps
 occur over a single sample such as the step close to sample 5000 in the
 right-hand plot of Fig.~\ref{fig:steps1}, but others happen more
 gradually such as the step close to sample 5300. In addition, a step can
-be preceeded or followed by a short period of instability, as is visible
+be preceded or followed by a short period of instability, as is visible
 at the bottom of the step in the left hand plot of
 Fig.~\ref{fig:steps1}. Further problems are caused by steps that occur
 close together in time, such as the large downward step followed by a
@@ -1243,11 +1243,9 @@ Fig.~\ref{fig:steps1}.
 Detecting and correcting such a wide variety of steps reliably has proved
 to be a challenge. The current step-correction algorithm is described in
 detail in appendix~\ref{appendix:steps}. In outline, the following stages
-are involved in detecting and correcting steps in a single bolometer time
-stream:
+are involved in detecting steps in a single bolometer time stream:
 
 \begin{enumerate}
-
 \item Median smooth the whole time stream.
 \item Find the gradient of the median smoothed time series at each sample.
 \item Smooth the gradient values to determine the local mean gradient and
@@ -1257,8 +1255,50 @@ the residual gradients.
 \item Group these high residual gradients into contiguous blocks of
 samples.
 \item Merge blocks that are separated by less than 100 samples
+\end{enumerate}
+
+The above process produces a list of candidate steps in each bolometer
+time series. Each candidate step is then verified, measured and corrected
+using the following procedure:
+
+\begin{enumerate}
+
+\item The above process can mis-interpret the edges of a bright source
+as a step. So we ignore blocks that occur close to bright sources.
+
+\item If the block passes the above test, a least squares linear fit is
+performed to the median-filtered bolometer data just before the block, and
+this fit is extrapolated to predict the data value expected at the centre
+of the block on the basis of the preceding data.
+
+\item A least squares linear fit is performed to the median-filtered
+bolometer data just after the block, and this fit is extrapolated to
+predict the data value expected at the centre of the block on the basis
+of the following data.
+
+\item The difference between these two expected data values is taken as
+the step height.
+
+\item The preceding three steps are repeated several times, each time
+including a different selection of samples in the two least squares fits.
+The mean and standard deviation of the corresponding set of step heights
+is found.
+
+\item If the mean step height is small compared to the standard deviation
+of the step heights, or compared to the noise in the bolometer data, then
+the step is ignored.
+
+\item If the above checks are passed, all subsequent bolometer samples are
+corrected by the mean step height.
+
+\item Bolometer samples within the duration of the step, and a few
+samples on either side, are flagged as unusable.
 
 \end{enumerate}
+
+Once all steps have been corrected within a bolometer time stream, a
+constant value is added to all samples in the time stream to restore its
+original mean value.
 
 The results of step correction are shown by the red curves in
 Fig.~\ref{fig:steps1}. For comparison, the blue curve shows the
