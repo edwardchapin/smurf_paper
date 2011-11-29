@@ -1310,11 +1310,77 @@ the step correction algorithm is working satisfactorily.
 \subsubsection{Gap filling / apodization}
 \label{sec:gaps}
 
-DSB
+The evaluation of the FLT model (Section~\ref{sec:flt}) involves taking
+the Fast Fourier Transform of each bolometer time series. Data that has
+been flagged as bad for any reason (for instance, due to the presence of
+spikes, steps, or unusual common-mode signal) needs to be excluded from
+this FFT. Two method are available:
 
-Discuss gap filling, ``new'' window function method, also apodization
-and start/end polynomial continuity stuff. Should reference CMB
-literature -- in particular look at \citet{stompor2002}.
+\begin{itemize}
+\item Gap-filling: each contiguous block of bad data samples is filled
+with artificial data before taking the FFT. A least squares linear fit is
+performed to the 50 samples preceding the block, and a similar fit is
+performed to the 50 samples following the block. These are used to
+estimate the expected values at the start and end of the block of bad
+values. The bad values are then replaced by linear interpolation between
+the expected start and end values. Gaussian noise is added with a
+standard deviation equal to the mean of the RMS residuals in the two
+fits.
+\item Masking: each bad data value is replaced by zero, and an associated
+mask is created that holds 1.0 for each good sample in the time stream and
+0.0 for each bad sample. The masked data and the mask are then each filtered
+in the same way using FFTs, and the filtered data is finally normalised by
+dividing it by the filtered mask.
+\end{itemize}
+
+In addition to replacing bad samples before the FFT, it is also necessary
+to ensure that the data values at the start and end of the time series
+are similar. Since a Fast Fourier transform treats the data as a single
+cycle in an infinitely repeating waveform, any large difference between
+starting and ending value will effectively introduce sudden steps at the
+start and end of each cycle, causing unwanted oscillations (ringing) in
+the transform. Another consequence of the cyclic nature of the FFT is
+that features at one end of the time series can affect the filtered
+values at the other end of the time series. Two methods are available to
+avoid these two problems:
+
+\begin{itemize}
+\item Apodisation: a number of samples at the start and end of each
+bolometer time series are multiplied by a cosine function in order to
+roll the data values off smoothly to zero. The default number of samples
+modified at each end of the time series is given by half the ratio of the
+sampling frequency to the lowest retained frequency. In addition, each
+end of the time stream is padded with double this number of zeros. This
+method is illustrated in Fig.~\ref{fig:pad2}.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{pad2.pdf}
+\caption{The black curve shows a bolometer time stream, padded
+with zeros. The red curve shows the time stream after apodisation.}
+\label{fig:pad2}
+\end{figure}
+
+\item Padding with artificial data: instead of padding with zeros, each
+time stream is padded with artificial data that connects the two ends of
+the data stream smoothly and includes Gaussian noise. No apodisation is
+performed. The number of samples of padding at each end is again equal to
+the ratio of the sampling frequency to the lowest retained frequency.
+This is illustrated in Fig.~\ref{fig:pad1}.
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{pad1.pdf}
+\caption{The black curve shows the same bolometer time stream as in
+Fig.~\ref{fig:pad2}, againpadded with zeros. The red curve shows the time stream
+after padding with artificial data.}
+\label{fig:pad1}
+\end{figure}
+
+\end{itemize}
+
+\emph{Should reference CMB literature -- in particular look at
+\citet{stompor2002}}.
 
 \subsubsection{Flatfields}
 \label{sec:flatfields}

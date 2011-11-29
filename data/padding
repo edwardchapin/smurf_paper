@@ -1,0 +1,59 @@
+#!/bin/tcsh
+
+# Edit smf_filter_execute.c and add in the following two calls to smf_write_data:
+#
+#
+#  smf_write_smfData( data, NULL, "Before", NULL, 0, 0, MSG__NORM, status );
+#
+#  /* If apodising is switched off, fill gaps in the data and re-create
+#     the artifical data used for padding based on the current contents of
+#     the smfData. */
+#  if( apod_length == SMF__BADSZT ) {
+#    smf_fillgaps( wf, data, SMF__Q_PAD | SMF__Q_GAP, status );
+#
+#  /* If apodising is switched on, fill the data (retaining the zero padding)
+#     and apodise the data. */
+#  } else {
+#    smf_fillgaps( wf, data, SMF__Q_GAP, status );
+#    if( apod_length > 0 ) smf_apodize( data, apod_length, 1, status );
+#  }
+#
+#  smf_write_smfData( data, NULL, "After", NULL, 0, 0, MSG__NORM, status );
+#
+#
+#  Build and install smurf. Then do:
+
+set dataroot = /data/scuba2/rawdata
+
+$SMURF_DIR/makemap out=fred method=iterate config="'^/star/share/smurf/dimmconfig.lis,numiter=1'" \
+                   $dataroot/s8d/20100303/00085/s8d20100303_00085_0031
+$KAPPA_DIR/gdset epsfcol_l
+$KAPPA_DIR/gdclear
+rm pgplot.ps*
+$KAPPA_DIR/wcsframe "'After,Before'" pixel
+$KAPPA_DIR/setbb "'After,Before'" 0
+$KAPPA_DIR/linplot After'(,8,16)' style="'colour=black,colour(curve)=red,width=3,label(1)=Time sample index,labelunits(1)=0,drawtitle=0'"
+mv pgplot.ps a1.ps
+$KAPPA_DIR/linplot Before'(,8,16)' style="'colour=black,width=3'" noclear align
+mv pgplot.ps a2.ps
+/star/bin/psmerge -e -r270 a1.ps -r270 a2.ps > pad1.ps
+epstopdf pad1.ps
+
+$SMURF_DIR/makemap out=fred method=iterate config="'^/star/share/smurf/dimmconfig.lis,numiter=1,flt.zeropad=1'" \
+                   $dataroot/s8d/20100303/00085/s8d20100303_00085_0031
+$KAPPA_DIR/gdset epsfcol_l
+$KAPPA_DIR/gdclear
+rm pgplot.ps*
+$KAPPA_DIR/wcsframe "'After,Before'" pixel
+$KAPPA_DIR/setbb "'After,Before'" 0
+$KAPPA_DIR/linplot After'(,8,16)' style="'colour=black,colour(curve)=red,width=3,label(1)=Time sample index,labelunits(1)=0,drawtitle=0'"
+mv pgplot.ps a1.ps
+$KAPPA_DIR/linplot Before'(,8,16)' style="'colour=black,width=3'" noclear align
+mv pgplot.ps a2.ps
+/star/bin/psmerge -e -r270 a1.ps -r270 a2.ps > pad2.ps
+epstopdf pad2.ps
+
+rm -f fred.sdf a1.ps a2.ps pad1.ps pad2.ps Before.sdf After.sdf
+
+
+
