@@ -45,6 +45,8 @@
 \def\gsim{\mathrel{\lower2.5pt\vbox{\lineskip=0pt\baselineskip=0pt
           \hbox{$>$}\hbox{$\sim$}}}}
 
+% how are model names displayed
+\newcommand{\model}[1]{\texttt{#1}}
 
 % ----------------------------------------------------------------------------
 
@@ -865,9 +867,9 @@ describe their implementation in detail.
 \begin{table}
   \caption{Summary of the model components that can be fit to
     \scuba\ time-series data with SMURF. Only the first group of
-    models are typically fit to the data (\texttt{COM}--\texttt{NOI})
+    models are typically fit to the data (\model{COM}--\model{NOI})
     in the indicated order. The remaining models
-    (\texttt{DKS}--\texttt{PLN}) have only been included for
+    (\model{DKS}--\model{PLN}) have only been included for
     completeness}
   \vspace{0.2cm}
   \centering
@@ -875,22 +877,22 @@ describe their implementation in detail.
     \hline
     Model & Description \\
     \hline
-    \texttt{COM} & remove common-mode signal \\
-    \texttt{GAI} & common-mode scaled to each bolometer \\
-    \texttt{EXT} & extinction correction \\
-    \texttt{FLT} & Fourier transform filter \\
-    \texttt{AST} & map estimate of astronomical signal \\
-    \texttt{NOI} & noise estimation \\
+    \model{COM} & remove common-mode signal \\
+    \model{GAI} & common-mode scaled to each bolometer \\
+    \model{EXT} & extinction correction \\
+    \model{FLT} & Fourier transform filter \\
+    \model{AST} & map estimate of astronomical signal \\
+    \model{NOI} & noise estimation \\
     \hline
-    \texttt{DKS} & dark squid cleaning along columns \\
-    \texttt{SMO} & time-domain smoothing filter \\
-    \texttt{PLN} & 2-dimensional time-varying plane removal \\
+    \model{DKS} & dark squid cleaning along columns \\
+    \model{SMO} & time-domain smoothing filter \\
+    \model{PLN} & 2-dimensional time-varying plane removal \\
     \hline
     \end{tabular}
   \label{tab:components}
 \end{table}
 
-\subsubsection{\texttt{COM,GAI}: common-mode estimation}
+\subsubsection{\model{COM,GAI}: common-mode estimation}
 \label{sec:comgai}
 
 ﻿Fig.~\ref{fig:com} shows the time series from a selection of typical
@@ -986,7 +988,7 @@ differs from one array to another, and so an option exists to estimate a
 separate COM model for each individual subarray, with a consequent
 lowering in the scale of spatial structure that can be recovered.
 
-\subsubsection{\texttt{EXT}: extinction correction}
+\subsubsection{\model{EXT}: extinction correction}
 \label{sec:ext}
 
 The extinction correction is normally derived using the JCMT water
@@ -995,7 +997,7 @@ in the solution. For details on how it is calculated see
 \citet{dempsey2011}. Note that its numerical value is calculated only
 once, and simply applied as a scale factor in the iterative solution.
 
-\subsubsection{\texttt{FLT}: fourier transform filter}
+\subsubsection{\model{FLT}: fourier transform filter}
 \label{sec:flt}
 
 This model takes the FFT of the bolometer data, and can apply both
@@ -1010,10 +1012,10 @@ a whitening filter may also be applied in which a simple $1/f^\alpha +
 \mathrm{constant}$ is fit to the power spectrum of each bolometer, and
 then the bolometer FFT is multiplied by its inverse (though normalized
 to preserve the white noise level).  The signal that is \emph{removed}
-from the time-series by this process are stored in the \texttt{FLT}
+from the time-series by this process are stored in the \model{FLT}
 container array.
 
-\subsubsection{\texttt{AST}: map estimation}
+\subsubsection{\model{AST}: map estimation}
 \label{sec:ast}
 
 Map estimation is accomplished using a simple nearest-neighbour
@@ -1059,15 +1061,15 @@ Finally, once the map estimation is complete, the map is projected
 into the time domain (the signal that would be produced in each
 bolometer by the signal represented by the map) and removed.
 
-In addition to map estimation, the \texttt{AST} model can also be used
+In addition to map estimation, the \model{AST} model can also be used
 to perform map-based despiking of the time-series
 (Section~\ref{sec:mapdespike}), and to apply constraints to the map to
 improve convergences (Section~???).
 
-\subsubsection{\texttt{NOI}: noise estimation}
+\subsubsection{\model{NOI}: noise estimation}
 \label{sec:noi}
 
-The primary purpose of the noise component, \texttt{NOI} is to measure
+The primary purpose of the noise component, \model{NOI} is to measure
 the noise in each bolometer residual once all of the other models have
 been fit and removed. This noise may then be used to estimate weights
 for the data in subsequent iterations.
@@ -1089,11 +1091,11 @@ points when calculating the map estimate (Section~\ref{sec:ast}).
 
 Since noise estimation is usually calculated as the final step, it is
 the cleanest data for which some cleaning operations may be
-performed. For this reason \texttt{NOI} can optionally use the
+performed. For this reason \model{NOI} can optionally use the
 time-domain DC step fixer (Section~\ref{sec:steps}) and spike
 detection (Section~\ref{sec:timedespike}).
 
-\subsubsection{\texttt{DKS}: dark squid cleaning along columns}
+\subsubsection{\model{DKS}: dark squid cleaning along columns}
 \label{sec:dks}
 
 Columns share significant magnetic field pickup which is measured by
@@ -1101,14 +1103,14 @@ the dark squids. This model has been included although it makes little
 improvement, or injects noise since the magnetic field pickup noise is
 generally sub-dominant. Furthermore, not every column that contains
 working bolometers also has a working dark squid. An alternative is to
-use the \texttt{TMP} model described below.
+use the \model{TMP} model described below.
 
 \textit{There are also the popped bolometers that could help fill the
 gaps.}
 
-\subsubsection{\texttt{TMP}: remove a scaled template}
+\subsubsection{\model{TMP}: remove a scaled template}
 
-Since the \texttt{DKS} cannot generally be used due to the missing
+Since the \model{DKS} cannot generally be used due to the missing
 dark squids, an alternative is to use the telescope pointing as a
 proxy for the signal due to magnetic field pickup
 (Section~\ref{sec:magpickup}. Generally speaking the azimuth (or its
@@ -1116,7 +1118,7 @@ sine) as a function of time is used as a template that is simply
 scaled and removed from each bolometer signal. Some modest
 improvements can be achieved with this model.
 
-\subsubsection{\texttt{SMO}: time-domain smoothing filter}
+\subsubsection{\model{SMO}: time-domain smoothing filter}
 \label{sec:smo}
 
 TJ
@@ -1125,7 +1127,7 @@ We also have the SMO filter that's useful for very short scans
 because edge effects don't matter so much. Two sorts - median which is
 more robust, or mean which is more accurate.
 
-\subsubsection{\texttt{PLN}: 2d time-varying sky noise plane removal}
+\subsubsection{\model{PLN}: 2d time-varying sky noise plane removal}
 \label{sec:pln}
 
 TJ
