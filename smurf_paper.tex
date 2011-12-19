@@ -860,16 +860,16 @@ model components is given in the next section.
 In addition to specifying when each model component is calculated
 (normally an attempt is made to order them by decreasing amplitude in
 the time-series), there are a number of parameters that control their
-operation. Table~\ref{tab:components} list the model components and
+operation. Table~\ref{tab:components} lists the model components and
 the typical order in which they are calculated. The following sections
 describe their implementation in detail.
 
 \begin{table}
   \caption{Summary of the model components that can be fit to
     \scuba\ time-series data with SMURF. Only the first group of
-    models are typically fit to the data (\model{COM}--\model{NOI})
-    in the indicated order. The remaining models
-    (\model{DKS}--\model{PLN}) have only been included for
+    models (in the order indicated) are typically fit to the data
+    (\model{COM}--\model{NOI}) in the indicated order. The remaining
+    models (\model{DKS}--\model{PLN}) have only been included for
     completeness}
   \vspace{0.2cm}
   \centering
@@ -902,7 +902,7 @@ bolometers is evident, and forms the common-mode signal - assumed to be a
 consequence of variations in the atmospheric emission and fridge
 temperature. This common-mode usually dominates the astronomical signal
 for all but the brightest sources, and swamps faint extended structure.
-The purpose of the COM and GAI models is to remove this common-mode
+The purpose of the \model{COM} and \model{GAI} models is to remove this common-mode
 signal.
 
 \begin{figure}
@@ -914,22 +914,23 @@ exhibit a common time variation overlayed with other features.}
 \label{fig:com}
 \end{figure}
 
-The COM model is the common-mode signal itself. It is a single time
+The \model{COM} model is the common-mode signal itself. It is a single time
 series that is estimated by finding the mean of all bolometers at each
 time step. Bolometer values that have been flagged as unusable for any
 reason are excluded from the mean.
 
 Since bolometers have varying sensitivities, the amplitude of the
 common-mode variations will also vary from bolometer to bolometer. So
-comparing each bolometer time stream with the common-mode signal allows
-an estimate of the bolometer sensitivity to be obtained. In practice, a
-least squares linear fit is performed between the bolometer time series
-and the common-mode to determine a gain and offset for each bolometer.
-The gain and offset for each bolometer is known as the GAI model. Each
-bolometer value can then optionally be scaled and shifted using these
-values so that all bolometers share a common (but as yet unknown)
-calibration. This provides an alternative( or additional) flatfielding
-strategy to that described in in section~\ref{sec:bolos}.
+comparing each bolometer time stream with the common-mode signal
+allows an estimate of the bolometer sensitivity to be obtained. In
+practice, a least squares linear fit is performed between the
+bolometer time series and the common-mode to determine a gain and
+offset for each bolometer.  The gain and offset for each bolometer is
+known as the \model{GAI} model. Each bolometer value can then
+optionally be scaled and shifted using these values so that all
+bolometers share a common (but as yet unknown) calibration. This
+provides an alternative( or additional) flatfielding strategy to that
+described in in section~\ref{sec:bolos}.
 
 An option exists to cater for time-varying sensitivities. If used, the
 least squares fits described above are performed on short blocks of
@@ -976,24 +977,35 @@ Any extended astronomical emission on a scale comparable to or larger
 than the spatial extent of the area used to estimate the common-mode will
 contribute a similar signal to all bolometers. Therefore such extended
 emission is indistinguishable from the other sources of common-mode
-signal (fridge and atmosphere variations) and will be removed by the COM
+signal (fridge and atmosphere variations) and will be removed by the 
 model. This places a limit on the spatial extent of astronomical
 structure that can be recovered.
 
-For this reason, the usual practice is to estimate a single COM model by
-examining data from all four sub-arrays in each waveband, since this
-allow spatial structure on the scale of the whole focal plane to be
-recovered. However, sometimes there is evidence that the common-mode
-differs from one array to another, and so an option exists to estimate a
-separate COM model for each individual subarray, with a consequent
-lowering in the scale of spatial structure that can be recovered.
+For this reason, the usual practice is to estimate a single
+\model{COM} model by examining data from all four sub-arrays in each
+waveband, since this allow spatial structure on the scale of the whole
+focal plane to be recovered. However, sometimes there is evidence that
+the common-mode differs from one array to another, and so an option
+exists to estimate a separate \model{COM} model for each individual
+subarray, with a consequent lowering in the scale of spatial structure
+that can be recovered.
 
 \subsubsection{\model{EXT}: extinction correction}
 \label{sec:ext}
 
-The extinction correction is normally derived using the JCMT water
-vapour radiometer (WVM), and is not considered to be a free parameter
-in the solution. For details on how it is calculated see
+The extinction correction is a multiplicative factor that is normally
+derived using the JCMT water vapour radiometer (WVM), and is not
+considered to be a free parameter in the solution. However, it is
+applied as part of the iterative solution, rather than a
+pre-processing step, since any small errors will be amplified by the
+large low-frequency drifts in the raw bolometer time-series. For
+example, if the bolometer drift is 1000 times greater than an
+astronomical source of interest, a 1 per cent error in the flatfield
+will produce stripes of order 10 times the astronomical signal
+amplitude in the final map! If \model{EXT} is applied after the bulk
+of the low-frequency noise has been removed (e.g., \model{COM,GAI}),
+then there is little potential for such small errors to affect the
+final map.  For details on how it is calculated see
 \citet{dempsey2011}. Note that its numerical value is calculated only
 once, and simply applied as a scale factor in the iterative solution.
 
@@ -1013,16 +1025,26 @@ a whitening filter may also be applied in which a simple $1/f^\alpha +
 then the bolometer FFT is multiplied by its inverse (though normalized
 to preserve the white noise level).  The signal that is \emph{removed}
 from the time-series by this process are stored in the \model{FLT}
-container array.
+container array. Typically this model is used purely as a high-pass
+filter to remove most of the $1/f$ noise. Low-pass filtering is
+redundant for two reasons: (i) SMURF already low-pass filters and
+re-samples to a lower sample rate as described in
+Section~\ref{sec:downsamp}; and (ii) the act of re-gridding the data
+to produce map estimates effectively low-pass filters the data at a
+frequency that corresponds to the inverse of the crossing time of a
+single map pixel. Notch filters have not been used with \scuba\ data
+particularly since line features tend to move around (i.e. a dynamic
+line-detection system would have to be developed, and care would have
+to be taken that astronomical sources are not suppressed).
 
 \subsubsection{\model{AST}: map estimation}
 \label{sec:ast}
 
-Map estimation is accomplished using a simple nearest-neighbour
-resampling of the data onto a pre-defined map grid. For the $i$th map
-pixel $\mathbf{m}(x_i,y_i)$, the brightness is estimated as the
-weighted average of the bolometer data samples $\mathbf{b}_j$ that
-land within that pixel (from any bolometer or point in time),
+Map estimation is accomplished using a nearest-neighbour resampling of
+the data onto a pre-defined map grid. For the $i$th map pixel
+$\mathbf{m}(x_i,y_i)$, the brightness is estimated as the weighted
+average of the bolometer data samples $\mathbf{b}_j$ that land within
+that pixel (from any bolometer or point in time),
 %
 \begin{equation}
   \mathbf{m}(x_i,y_i) = \frac{\sum_j \mathbf{w}_j \mathbf{b}_j }
@@ -1051,7 +1073,14 @@ the mean, but accounting for weights),
 \end{equation}
 %
 where $N_j$ is the total number of bolometer samples that land in the
-pixel. We decided not to use the \emph{unbiased} estimator since in
+pixel. As written, this algorithm is numerically unstable if the two
+terms in the numerator are large, and of nearly the same value:
+floating point precision errors can cause the difference to be
+significantly incorrect. In practice we use the more numerically
+stable ``weighted incremental algorithm'' that calculates incremental
+differences, as described in \citet{west1979}.
+
+ We decided not to use the \emph{unbiased} estimator since in
 practice it would require accumulating an additional array of values
 at every map pixel, and only results in a small difference where there
 are less than $\sim10$ samples per pixel (a situation that is almost
@@ -1155,6 +1184,7 @@ iteratively, I thinks this goes in a generic-sounding subsection. This
 can go here, or perhaps earlier?
 
 \subsubsection{Down-sampling}
+\label{sec:downsamp}
 
 EC
 
