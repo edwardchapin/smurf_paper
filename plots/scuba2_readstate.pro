@@ -31,7 +31,10 @@ function scuba2_readstate, filename
   EL = dblarr(n)
   DAZ = dblarr(n)
   DEL = dblarr(n)
+  TELSPEED = dblarr(n)
   WVMTAU = dblarr(n)
+  PWVZEN = dblarr(n)
+  PWVLOS = dblarr(n)
   FTS_POS = dblarr(n)
   JOS_DRCONTROL = lonarr(n)
   POL_ANG = dblarr(n)
@@ -90,7 +93,7 @@ function scuba2_readstate, filename
     readf, 1, ln
     words = strsplit(ln, tab, /extract)
 
-    if n_elements(words) eq 58 then begin
+    if n_elements(words) eq 61 then begin
       Id[i] = words[0]
       RA[i] = words[1]
       DEC[i] = words[2]
@@ -100,55 +103,58 @@ function scuba2_readstate, filename
       EL[i] = words[6]
       DAZ[i] = words[7]
       DEL[i] = words[8]
-      WVMTAU[i] = words[9]
-      FTS_POS[i] = words[10]
-      JOS_DRCONTROL[i] = words[11]
-      POL_ANG[i] = words[12]
-      RTS_END[i] = words[13]
-      RTS_NUM[i] = words[14]
-      SC2_BIAS[i] = words[15]
-      SC2_FPUTEMP[i] = words[16]
-      SC2_HEAT[i] = words[17]
-      SC2_MIXTEMP[i] = words[18]
-      SMU_AZ_CHOP_X[i] = words[19]
-      SMU_AZ_CHOP_Y[i] = words[20]
-      SMU_AZ_JIG_X[i] = words[21]
-      SMU_AZ_JIG_Y[i] = words[22]
-      SMU_CHOP_PHASE[i] = words[23]
-      SMU_JIG_INDEX[i] = words[24]
-      SMU_TR_CHOP_X[i] = words[25]
-      SMU_TR_CHOP_Y[i] = words[26]
-      SMU_TR_JIG_X[i] = words[27]
-      SMU_TR_JIG_Y[i] = words[28]
-      TCS_AIRMASS[i] = words[29]
-      TCS_AZ_AC1[i] = words[30]
-      TCS_AZ_AC2[i] = words[31]
-      TCS_AZ_ANG[i] = words[32]
-      TCS_AZ_BC1[i] = words[33]
-      TCS_AZ_BC2[i] = words[34]
-      TCS_AZ_DC1[i] = words[35]
-      TCS_AZ_DC2[i] = words[36]
-      TCS_BEAM[i] = words[37]
-      TCS_DM_ABS[i] = words[38]
-      TCS_DM_REL[i] = words[39]
-      TCS_EN_DC1[i] = words[40]
-      TCS_EN_DC2[i] = words[41]
-      TCS_INDEX[i] = words[42]
-      TCS_PERCENT_CMP[i] = words[43]
-      TCS_SOURCE[i] = words[44]
-      TCS_TAI[i] = words[45]
-      TCS_TR_AC1[i] = words[46]
-      TCS_TR_AC2[i] = words[47]
-      TCS_TR_ANG[i] = words[48]
-      TCS_TR_BC1[i] = words[49]
-      TCS_TR_BC2[i] = words[50]
-      TCS_TR_DC1[i] = words[51]
-      TCS_TR_DC2[i] = words[52]
-      TCS_TR_SYS[i] = words[53]
-      WVM_T12[i] = words[54]
-      WVM_T42[i] = words[55]
-      WVM_T78[i] = words[56]
-      WVM_TIME[i] = words[57]
+      TELSPEED[i] = words[9]
+      WVMTAU[i] = words[10]
+      PWVZEN[i] = words[11]
+      PWVLOS[i] = words[12]
+      FTS_POS[i] = words[13]
+      JOS_DRCONTROL[i] = words[14]
+      POL_ANG[i] = words[15]
+      RTS_END[i] = words[16]
+      RTS_NUM[i] = words[17]
+      SC2_BIAS[i] = words[18]
+      SC2_FPUTEMP[i] = words[19]
+      SC2_HEAT[i] = words[20]
+      SC2_MIXTEMP[i] = words[21]
+      SMU_AZ_CHOP_X[i] = words[22]
+      SMU_AZ_CHOP_Y[i] = words[23]
+      SMU_AZ_JIG_X[i] = words[24]
+      SMU_AZ_JIG_Y[i] = words[25]
+      SMU_CHOP_PHASE[i] = words[26]
+      SMU_JIG_INDEX[i] = words[27]
+      SMU_TR_CHOP_X[i] = words[28]
+      SMU_TR_CHOP_Y[i] = words[29]
+      SMU_TR_JIG_X[i] = words[30]
+      SMU_TR_JIG_Y[i] = words[31]
+      TCS_AIRMASS[i] = words[32]
+      TCS_AZ_AC1[i] = words[33]
+      TCS_AZ_AC2[i] = words[34]
+      TCS_AZ_ANG[i] = words[35]
+      TCS_AZ_BC1[i] = words[36]
+      TCS_AZ_BC2[i] = words[37]
+      TCS_AZ_DC1[i] = words[38]
+      TCS_AZ_DC2[i] = words[39]
+      TCS_BEAM[i] = words[40]
+      TCS_DM_ABS[i] = words[41]
+      TCS_DM_REL[i] = words[42]
+      TCS_EN_DC1[i] = words[43]
+      TCS_EN_DC2[i] = words[44]
+      TCS_INDEX[i] = words[45]
+      TCS_PERCENT_CMP[i] = words[46]
+      TCS_SOURCE[i] = words[47]
+      TCS_TAI[i] = words[48]
+      TCS_TR_AC1[i] = words[49]
+      TCS_TR_AC2[i] = words[50]
+      TCS_TR_ANG[i] = words[51]
+      TCS_TR_BC1[i] = words[52]
+      TCS_TR_BC2[i] = words[53]
+      TCS_TR_DC1[i] = words[54]
+      TCS_TR_DC2[i] = words[55]
+      TCS_TR_SYS[i] = words[56]
+      WVM_T12[i] = words[57]
+      WVM_T42[i] = words[58]
+      WVM_T78[i] = words[59]
+      WVM_TIME[i] = words[60]
     endif else begin
       print, "Incorrect number of values in line", i
       JOS_DRCONTROL[i] = -1
@@ -168,7 +174,10 @@ function scuba2_readstate, filename
            EL:EL, $
            DAZ:DAZ, $
            DEL:DEL, $
+           TELSPEED:TELSPEED, $
            WVMTAU:WVMTAU, $
+           PWVZEN:PWVZEN, $
+           PWVLOS:PWVLOS, $
            FTS_POS:FTS_POS, $
            JOS_DRCONTROL:JOS_DRCONTROL, $
            POL_ANG:POL_ANG, $

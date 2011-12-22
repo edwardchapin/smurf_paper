@@ -1482,10 +1482,71 @@ subsequent iterations.
 \label{sec:examples}
 %------------------------------------------------------------------------------
 
+In this section three different types of data are reduced. In each
+case, the baseline reduction using defaults as described in
+Section~\ref{sec:algorithm} are used first. Then, modifications are
+described to improve each reduction.
+
 \subsection{Point source}
+In this example we produce a map of Uranus, which is a nearly
+point-like source for SCUBA-2 that is commonly used as a primary flux
+calibrator (observation 26 on 20111017). The first reduction uses the
+defaults as described in Section~\ref{sec:algorithm}, but we manually
+set the number of iterations to a fixed value of 100 to illustrate how
+the solution converges in the absence of any boundary conditions.
+
 Reduce a calibrator. Describe the use of a zero mask around the
 source. Compare with \citet{wiebe2009} who used the same method to
 constrain a maximum-likelihood map with poor cross-linking.
+
+\begin{figure*}
+\centering
+\includegraphics[width=\linewidth]{pointmaps.pdf}
+\caption{Multiple reductions of a 450\,\micron\ daisy scan of Uranus,
+  all scaled between -0.002\, pW (white) and +0.002\,pW (black): (a)
+  Reduction in which only common-mode subtraction is used to suppress
+  low-frequency noise, and the reduction is forced to use 2 iterations
+  (after the first iteration an estimate of the source flux is
+  removed, and the noise is measured in the residuals to obtain
+  appropriate weighting for the second and final iteration) ---
+  circular streaks are caused by independent low-frequency noise that
+  is not removed by the common-mode; (b) same as (a) but using 50
+  iterations, illustrating that there is a degeneracy between
+  large-scale structure and the common-mode (the footprint of working
+  bolometers is also shown for reference); (c) reduction in which
+  high-pass filtering above 0.775\,Hz (corresponding to a spatial
+  scale of 200\,arcsec as indicated) is applied after common-mode
+  removal, but before the map estimate --- the map-based convergence
+  test is activated and the solution halts after 10 iterations, but
+  leaving large-scale ringing due to the filter; (d) same as (c), but
+  now the region of the map beyond the white dot-dashed circle is
+  constrained to a value of zero until all but the final iteration ---
+  the map is now extremely flat, there is little attenuation of the
+  source flux, and the diffraction pattern is clearly seen.}
+\label{fig:pointmaps}
+\end{figure*}
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{degeneracy.pdf}
+\caption{Demonstration of the degeneracy between large-scale
+  structures in the map and common-mode removal, corresponding to
+  panels (a) and (b) in Fig.~\ref{fig:pointmaps}. The black and grey
+  lines in the top panel show the residual signal for a single
+  bolometer after 2 and 50 iterations respectively (they are nearly
+  identical). The green and red lines show the \emph{difference}
+  between the \model{COM} and \model{AST} (the signal produced by the
+  current map estimate for a given bolometer) model components for
+  that bolometer between iterations 2 and 50 respectively. This shows
+  that a strong signal has grown over time, and it has equal but
+  opposite signs in the two model components, so that they cancel one
+  another. The bottom panel shows the scan pattern of the telescope
+  over the same period; clearly the \model{COM}/\model{AST} model
+  degeneracy is correlated with the elevation offset, and referring to
+  Fig.~\ref{fig:pointmaps}, panel (b), this clearly corresponds to the
+  strong vertical gradient that has appeared}.
+\label{fig:degeneracy}
+\end{figure}
 
 \subsection{Deep blind survey}
 Heavy initial filtering, and only iteratively solve for map and

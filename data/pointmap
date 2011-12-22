@@ -1,0 +1,131 @@
+#!/bin/tcsh
+#+
+# Generate plots of point source reduction
+#
+
+source $SMURF_DIR/smurf.csh > /dev/null
+source $CONVERT_DIR/convert.csh > /dev/null
+source $KAPPA_DIR/kappa.csh > /dev/null
+source $HDSTOOLS_DIR/hdstools.csh > /dev/null
+
+set dataroot = /scuba2
+#set msg = quiet
+set msg = verbose
+#set msg = normal
+
+# extra cleaning parameters
+set clean_extra = "spikethresh=5,spikebox=50"
+
+# Nice short Uranus map
+set obsdate = 20111017
+set obsnum = 00026
+set lambda = 's4?'
+set allsub = (s4a s4b s4c s4d)
+
+set basename = "$lambda"$obsdate\_$obsnum
+
+set onlyone = 1
+goto default_flt
+
+
+
+
+
+
+
+
+diverge_com:
+
+echo "*** Show divergence problems using only com... ***"
+
+foreach numiter ( 2 50 )
+
+    makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
+        uranus_com_$numiter method=iterate \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,numiter='$numiter',itermap=1,exportndf=(com,gai,res,ast),modelorder=(com,gai,ast,noi)"' \
+        msg_filter=$msg system=azel CROTA=0 ALIGNSYS=true
+
+    ndf2fits uranus_com_$numiter \!uranus_com_$numiter.fits
+
+    mv $allsub[1]$obsdate\_$obsnum\_0003_con_com.sdf com_$numiter.sdf
+    ndf2fits com_$numiter \!com_$numiter.fits
+
+    foreach sub ( $allsub )
+        mv $sub$obsdate\_$obsnum\_0003_con_res.sdf $sub\_res_$numiter.sdf
+        ndf2fits $sub\_res_$numiter \!$sub\_res_$numiter.fits
+
+        mv $sub$obsdate\_$obsnum\_0003_con_gai.sdf $sub\_gai_$numiter.sdf
+        ndf2fits $sub\_gai_$numiter \!$sub\_gai_$numiter.fits
+
+        #mv $sub$obsdate\_$obsnum\_0003_con_flt.sdf $sub\_flt_$numiter.sdf
+        #ndf2fits $sub\_flt_$numiter \!$sub\_flt_$numiter.fits
+
+        mv $sub$obsdate\_$obsnum\_0003_con_ast.sdf $sub\_ast_$numiter.sdf
+        ndf2fits $sub\_ast_$numiter \!$sub\_ast_$numiter.fits
+    end
+end
+
+jcmtstate2cat s4a_res_2 > state_uranus.tst
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+
+default_flt:
+
+echo "*** FLT removes striping, helps flatten somewhat... ***"
+
+makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
+    uranus_default method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_compact.lis,ast.zero_circle=<undef>,itermap=1"' \
+    msg_filter=$msg system=azel CROTA=0 ALIGNSYS=true
+ndf2fits uranus_default \!uranus_default.fits
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+
+bright_compact:
+
+echo "*** Add boundary condition to do even better ***"
+
+makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
+    uranus_brightcompact method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_compact.lis,itermap=1"' \
+    msg_filter=$msg system=azel CROTA=0 ALIGNSYS=true
+
+ndf2fits uranus_brightcompact \!uranus_brightcompact.fits
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+
+
+
+respmap:
+
+foreach sub ( $allsub )
+    calcflat $dataroot/$sub/$obsdate/$obsnum/$sub$obsdate\_$obsnum\_0002 \
+        flat_$sub resp=resp_$sub accept
+
+    smurfcopy $dataroot/$sub/$obsdate/$obsnum/$sub$obsdate\_$obsnum\_0003 \
+        slice_$sub 1
+
+    hcopy resp_$sub.data_array slice_$sub.data_array
+end
+
+wcsmosaic slice\* ref=! out=resp_fplane method=nearest accept
+wcsalign resp_fplane out=resp_fplane_align method=nearest \
+    ref=uranus_brightcompact accept
+ndf2fits resp_fplane_align \!resp_fplane_align.fits
+
+if ( $onlyone == 1 ) goto finish
+
+
+finish:
