@@ -161,12 +161,12 @@ mention scan strategies...
 
 There are numerous ways to attack this problem, most of them evolving
 out of techniques that were developed to produce maps of the
-large-scale anisitropies in the Cosmic Microwave Background (CMB).  Styles
-of map-making: maximum likelihood \citep[e.g.,][]{patanchon2008};
-iterative -- see \citet{johnstone2000} implementation of
-\citet{wright1996} to remove chop, \citet{kovacs2008} for SHARC-2
-etc.; de-correlation using PCA analysis
-\citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
+large-scale anisitropies in the Cosmic Microwave Background (CMB).
+Styles of map-making: least squares \citep{janssen1992} maximum
+likelihood \citep[e.g.,][]{patanchon2008}; iterative -- see
+\citet{johnstone2000} implementation of \citet{wright1996} to remove
+chop, \citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA
+analysis \citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
 
 \scuba\ is presently unique in terms of the shear volume of data that
 it produces on a nightly basis, and the fact that it is observing a
@@ -1183,10 +1183,55 @@ Since we can do most of this stuff either as a pre-processing step or
 iteratively, I thinks this goes in a generic-sounding subsection. This
 can go here, or perhaps earlier?
 
-\subsubsection{Down-sampling}
+\subsubsection{Time-series down-sampling and map pixel size}
 \label{sec:downsamp}
 
-EC
+The highest useful frequency in the nominally 200\,Hz-sampled
+\scuba\ data is that which corresponds to the smallest angular scale
+that the instrument is sensitive to. As mentioned earlier, the usual
+rule-of-thumb for a Gaussian beam is to provide at least 3 samples for
+each FWHM, or roughly 2.5\,arcsec for the 7.5\,arcsec
+450\,\micron\ channel, and 5\,arcsec for the 14.5\,arcsec
+850\,\micron\ channel. For a typical scan speed of
+300\,arcsec\,s$^{-1}$, the maximum useful sample rate is therefore
+about 120\,Hz at 450\,\micron, and 40\,Hz at 850\,\micron. In order to
+save execution time and memory usage (both of which scale linearly
+with data volume), it is clearly advantageous to re-sample the data to
+these lower rates.
+
+Similarly, from the point of view of retaining all of the useful
+information, the size of the output map pixels need not be any smaller
+than the FWHM/3 rule. Larger pixels may be selected, but at the
+expense of retaining information at the diffraction limit of the
+telescope.
+
+The default behaviour of SMURF is to select output map pixel sizes of
+2 and 4\,arcsec at 450 and 850\,\micron, respectively (slightly
+over-sampled). The slew speed of the telescope (approximately constant
+for all standard scan modes) is then used to calculate the highest
+useful frequency for the time-series given the map pixel size,
+$f_\mathrm{max}$. The data are then re-sampled to this new rate prior
+to map-making (as well as the data cleaning steps).
+
+The method used by SMURF to down-sample simply averages together
+multiple samples from the original time-series, $x_i$ to estimate the
+lower-frequency output time-series, $y_j$. In general there will not
+be an integer number of samples from $x_i$ in each of the $y_j$, so
+fractional samples from $x_i$ are used at the $y_j$ time
+boundaries. The algorithm is fast since each sample in $x_i$ need only
+be visited once. From a spectral point of view, this boxcar average is
+equivalent to applying a sinc-function low-pass filter in frequency
+space. Such behaviour is desirable since it serves as an anti-aliasing
+filter; most non-white features above the Nyquist frequency in $y_j$
+that could contaminate the output data are largely removed.
+
+As an alternative, we also investigated an algorithm in which the FFT
+of $x_i$ is simply truncated to the target sample rate before
+transforming back to the time domain (i.e., applying a hard-edged
+low-pass filter). In practice the noise performance was
+indistinguishable, and required slightly more execution time, using
+this method compared to the boxcar method described above. It is
+therefore not currently available to users.
 
 \subsubsection{Whitening filter}
 
