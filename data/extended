@@ -1,0 +1,48 @@
+#!/bin/tcsh
+#+
+# Reduce extended data
+#
+
+source $SMURF_DIR/smurf.csh > /dev/null
+source $CONVERT_DIR/convert.csh > /dev/null
+source $KAPPA_DIR/kappa.csh > /dev/null
+source $HDSTOOLS_DIR/hdstools.csh > /dev/null
+
+setenv ADAM_USER "adam_extended"
+
+set dataroot = /scuba2
+#set msg = quiet
+set msg = verbose
+#set msg = normal
+
+set onlyone = 0
+#goto default_flt
+
+# map of extended stuff from early last year - M17
+set obsdate = 20110531
+set obsnum = 00011
+set lambda = 's8?'
+set allsub = (s8a s8b s8c s8d)
+
+set basename = "$lambda"$obsdate\_$obsnum
+
+
+
+
+map_bright_extended:
+
+echo "*** Reduce M17 map using default bright_extended reduction ***"
+
+makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
+    m17_bright_extended method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1"' \
+    msg_filter=$msg
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+
+
+finish:

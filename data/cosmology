@@ -1,0 +1,177 @@
+#!/bin/tcsh
+#+
+# Reduce cosmology data: lockman hole
+#
+# ***NOTE: ensure that the early data have had their
+#          internal flatfields recalculated first!!!!
+#
+
+source $SMURF_DIR/smurf.csh > /dev/null
+source $CONVERT_DIR/convert.csh > /dev/null
+source $KAPPA_DIR/kappa.csh > /dev/null
+source $HDSTOOLS_DIR/hdstools.csh > /dev/null
+
+setenv ADAM_USER "adam_cosmology"
+
+# map pixel size in arcsec
+set pixsize=2
+set fwhm=14.5
+
+#set msg = quiet
+#set msg = normal
+set msg = verbose
+#set msg = debug
+
+set onlyone = 1
+goto psf
+
+
+
+
+
+
+map_blank_field:
+
+echo "*** Reduce lockman map using default blank_field reduction ***"
+
+makemap ^lockman_s8d_filenames_good.lis \
+    lockman_s8d_blank_field method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_blank_field.lis,itermap=-1"' \
+    pixsize=$pixsize msg_filter=$msg
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+
+map_pca:
+
+echo "*** Reduce lockman map using pca ***"
+
+makemap ^lockman_s8d_filenames_good.lis \
+    lockman_s8d_pca method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_pca.lis,itermap=1"' \
+    pixsize=$pixsize msg_filter=$msg
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+
+
+
+psf:
+
+echo "*** Simulating the PSF and measuring attenuation from map-making ***"
+
+set map = lockman_s8d_blank_field
+
+# create a Gaussian of the correct size
+creframe like=$map mode=fl mean=0 out=temp
+chpix in=temp out=temp2 section=\"0,0\" newval=1
+set npix = `calc exp="'pa/pb'" pa=$fwhm pb=$pixsize`
+gausmooth in=temp2 out=temp fwhm=$npix
+stats psf > /dev/null
+set max = `parget maximum stats`
+cdiv temp $max psf
+
+rm temp.sdf
+rm temp2.sdf
+
+stats $map comp=error > /dev/null
+set minerr = `parget minimum stats`
+set scale = `calc exp="'pa*pb'" pa=$minerr pb=100`
+
+ndftrace $map > /dev/null
+set lbound = (`parget lbound ndftrace`)
+set ubound = (`parget ubound ndftrace`)
+
+makemap /scuba2/s8d/20100311/00072/\*.sdf \
+    lockman_psf method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_blank_field.lis,fakemap=psf,fakescale='$scale'"' \
+    pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
+    ubnd=\[$ubound[1],$ubound[2]\] \
+
+
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+
+
+
+jackknife:
+
+echo "*** Measure noise using jackknife test ***"
+
+set map = lockman_s8d_blank_field
+#set map = uranus
+
+@ nchunks = `hdir $map.more.smurf.itermaps | wc -l` - 14
+
+echo Number of chunks in $map is $nchunks
+
+# first make mosaics of the even and off chunks separately
+
+@ nhalf = $nchunks / 2
+set index = 0
+
+echo "" > chunks_even.lis
+echo "" > chunks_odd.lis
+
+while ($index < $nhalf)
+    @ chunk_even = $index * 2
+    @ chunk_odd = $chunk_even + 1
+
+    set evenstr = `awk 'BEGIN { printf "%02i\n", '$chunk_even' }'`
+    set oddstr = `awk 'BEGIN { printf "%02i\n", '$chunk_odd' }'`
+
+    echo $map.more.smurf.itermaps.ch$evenstr\i005 >> chunks_even.lis
+    echo $map.more.smurf.itermaps.ch$oddstr\i005 >> chunks_odd.lis
+
+    @ index++
+end
+
+ndfcopy $map map_ref trim trimwcs
+
+wcsmosaic ^chunks_even.lis ref=map_ref out=mosaic_even method=nearest \
+    variance accept
+
+wcsmosaic ^chunks_odd.lis ref=map_ref out=mosaic_odd method=nearest \
+    variance accept
+
+rm map_ref.sdf
+
+# the difference is a pure noise map with astronomical signal removed
+
+sub mosaic_even mosaic_odd jackknife
+
+sc2filtermap $map $map\_whitened whiten whiterefmap='jackknife(~100,~100)' \
+    outfilter=whitefilt msg_filter=$msg
+
+sc2filtermap uranus uranus_whitened whiten whiterefmap='jackknife(~100,~100)' \
+    msg_filter=$msg
+
+ndfcopy 'uranus_whitened(-10:11,-10:11,)' psf
+matched-filter -np $map\_whitened $map\_filtered psf
+
+
+echo pspec of map:
+sc2mapfft $map'(~100,~100)' pspec0 azavpspec
+
+echo pspec of jackknife:
+sc2mapfft jackknife'(~100,~100)' pspec1 azavpspec
+
+echo pspec of whitened:
+sc2mapfft $map\_whitened'(~100,~100)' pspec2 azavpspec
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+finish:
