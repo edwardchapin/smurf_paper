@@ -8,6 +8,8 @@ source $CONVERT_DIR/convert.csh > /dev/null
 source $KAPPA_DIR/kappa.csh > /dev/null
 source $HDSTOOLS_DIR/hdstools.csh > /dev/null
 
+setenv ADAM_USER "adam_point"
+
 set dataroot = /scuba2
 #set msg = quiet
 set msg = verbose
