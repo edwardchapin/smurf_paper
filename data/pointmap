@@ -27,7 +27,7 @@ set allsub = (s4a s4b s4c s4d)
 set basename = "$lambda"$obsdate\_$obsnum
 
 set onlyone = 1
-goto default_flt
+goto bright_compact
 
 
 
@@ -81,7 +81,7 @@ echo "*** FLT removes striping, helps flatten somewhat... ***"
 
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     uranus_default method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_compact.lis,ast.zero_circle=<undef>,itermap=1"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,numiter=10,itermap=1,450.flt.filt_edge_largescale=200"' \
     msg_filter=$msg system=azel CROTA=0 ALIGNSYS=true
 ndf2fits uranus_default \!uranus_default.fits
 
