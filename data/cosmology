@@ -18,12 +18,12 @@ set pixsize=2
 set fwhm=14.5
 
 #set msg = quiet
-#set msg = normal
-set msg = verbose
+set msg = normal
+#set msg = verbose
 #set msg = debug
 
-set onlyone = 1
-goto psf
+set onlyone = 0
+#goto jackknife
 
 
 
@@ -39,6 +39,8 @@ makemap ^lockman_s8d_filenames_good.lis \
     config='"^$STARLINK_DIR/share/smurf/dimmconfig_blank_field.lis,itermap=-1"' \
     pixsize=$pixsize msg_filter=$msg
 
+ndf2fits lockman_s8d_blank_field \!lockman_s8d_blank_field.fits > /dev/null
+
 if ( $onlyone == 1 ) goto finish
 
 
@@ -47,12 +49,17 @@ if ( $onlyone == 1 ) goto finish
 
 map_pca:
 
+echo "*** Skipping PCA map... ***"
+goto psf
+
 echo "*** Reduce lockman map using pca ***"
 
 makemap ^lockman_s8d_filenames_good.lis \
     lockman_s8d_pca method=iterate \
     config='"^$STARLINK_DIR/share/smurf/dimmconfig_pca.lis,itermap=1"' \
     pixsize=$pixsize msg_filter=$msg
+
+ndf2fits lockman_s8d_pca \!lockman_s8d_pca.fits > /dev/null
 
 if ( $onlyone == 1 ) goto finish
 
@@ -69,32 +76,66 @@ echo "*** Simulating the PSF and measuring attenuation from map-making ***"
 set map = lockman_s8d_blank_field
 
 # create a Gaussian of the correct size
+ndftrace $map > /dev/null
+set mapdim = (`parget dims ndftrace`)
+
 creframe like=$map mode=fl mean=0 out=temp
 chpix in=temp out=temp2 section=\"0,0\" newval=1
 set npix = `calc exp="'pa/pb'" pa=$fwhm pb=$pixsize`
-gausmooth in=temp2 out=temp fwhm=$npix
-stats psf > /dev/null
+gausmooth in=temp2 out=temp fwhm=$npix box=\"$mapdim[1],$mapdim[2]\"
+stats temp > /dev/null
 set max = `parget maximum stats`
 cdiv temp $max psf
 
-rm temp.sdf
-rm temp2.sdf
-
 stats $map comp=error > /dev/null
 set minerr = `parget minimum stats`
-set scale = `calc exp="'pa*pb'" pa=$minerr pb=100`
+set scale = `calc exp="'pa*pb'" pa=$minerr pb=1000`
 
 ndftrace $map > /dev/null
 set lbound = (`parget lbound ndftrace`)
 set ubound = (`parget ubound ndftrace`)
 
-makemap /scuba2/s8d/20100311/00072/\*.sdf \
+# add a bright scaled version of the Gaussian to some real data to estimate
+# the filtering effect of map-making
+
+echo scale is $scale
+
+makemap ^lockman_s8d_filenames_good.lis \
     lockman_psf method=iterate \
     config='"^$STARLINK_DIR/share/smurf/dimmconfig_blank_field.lis,fakemap=psf,fakescale='$scale'"' \
     pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
     ubnd=\[$ubound[1],$ubound[2]\] \
 
+# copy out the central bit and figure out the attenuation factor by comparing
+# the output peak to the input peak and re-scale. We then stick it back
+# into a large array padded with zeros. This little operation seems to be
+# needed because the wings of the PSF where there is no structure are noisy
+# and produce nasty artifacts in the final smoothed map. We want the PSF map
+# to be big like the map of the field so that when we whiten it it captures
+# all of the ringing out to large radii (i.e., it will be able to pick up
+# a little extra S/N by fitting to the large-scale ringing of sources in
+# the real map).
 
+ndfcopy "lockman_psf(-45:45,-45:45)" temp trim trimwcs
+
+#cdiv temp $scale lockman_psf_mapfilt
+
+cdiv temp $scale temp2
+
+ndfcopy temp2\($lbound[1]\:$ubound[1],$lbound[2]\:$ubound[2]\) \
+        temp
+
+stats temp comp=variance > /dev/null
+set mean = `parget mean stats`
+echo mean variance is $mean
+
+nomagic temp lockman_psf_mapfilt 0
+nomagic temp temp2 $mean comp=variance
+hcopy temp2.variance lockman_psf_mapfilt.variance
+
+
+rm temp.sdf
+rm temp2.sdf
 
 if ( $onlyone == 1 ) goto finish
 
@@ -109,6 +150,7 @@ jackknife:
 echo "*** Measure noise using jackknife test ***"
 
 set map = lockman_s8d_blank_field
+set jacksize = 110
 #set map = uranus
 
 @ nchunks = `hdir $map.more.smurf.itermaps | wc -l` - 14
@@ -150,27 +192,77 @@ rm map_ref.sdf
 
 sub mosaic_even mosaic_odd jackknife
 
-sc2filtermap $map $map\_whitened whiten whiterefmap='jackknife(~100,~100)' \
+ndf2fits jackknife \!jackknife.fits > /dev/null
+
+
+# then use the angular power spectrum of the jackknife to whiten both the
+# map and the effective PSF (and the jackknife map itself...)
+
+sc2filtermap $map $map\_whitened whiten \
+    whiterefmap=jackknife\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\) \
     outfilter=whitefilt msg_filter=$msg
 
-sc2filtermap uranus uranus_whitened whiten whiterefmap='jackknife(~100,~100)' \
+ndf2fits $map\_whitened \!$map\_whitened.fits > /dev/null
+
+sc2filtermap lockman_psf_mapfilt lockman_psf_mapfilt_whitened \
+    whiten whiterefmap=jackknife\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\)\
     msg_filter=$msg
 
-ndfcopy 'uranus_whitened(-10:11,-10:11,)' psf
-matched-filter -np $map\_whitened $map\_filtered psf
+ndf2fits lockman_psf_mapfilt \!lockman_psf_mapfilt_whitened.fits > /dev/null
 
+sc2filtermap jackknife jackknife_whitened whiten \
+    whiterefmap=jackknife\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\) \
+    msg_filter=$msg
+
+ndf2fits jackknife_whitened \!jackknife_whitened.fits > /dev/null
+
+makesnr jackknife_whitened jackknife_whitened_snr
+
+echo Standard deviation of whitened jackknife:
+stats jackknife_whitened_snr\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\) \
+    | grep Standard
+
+# run the whitened map and jackknife through matched-filter using the
+# whitened effective PSF (which is peak normalized in a way that
+# preserves the overall attenuation). Also make SNR maps
+
+matched-filter -np $map\_whitened $map\_filtered lockman_psf_mapfilt_whitened
+
+ndf2fits $map\_filtered \!$map\_filtered.fits > /dev/null
+
+matched-filter -np jackknife\_whitened jackknife\_filtered \
+    lockman_psf_mapfilt_whitened
+
+ndf2fits jackknife_filtered \!jackknife_filtered.fits > /dev/null
+
+makesnr $map\_filtered $map\_filtered_snr
+makesnr jackknife_filtered jackknife_filtered_snr
+
+echo Standard deviation of whitened+filtered jackknife:
+stats jackknife_filtered_snr\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\) \
+    | grep Standard
+
+# angular power spectra of results
 
 echo pspec of map:
-sc2mapfft $map'(~100,~100)' pspec0 azavpspec
+sc2mapfft $map\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\) pspec0 azavpspec
+ndf2fits pspec0 \!pspec0.fits > /dev/null
 
 echo pspec of jackknife:
-sc2mapfft jackknife'(~100,~100)' pspec1 azavpspec
+sc2mapfft jackknife\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\) pspec1 \
+    azavpspec
+ndf2fits pspec1 \!pspec1.fits > /dev/null
 
 echo pspec of whitened:
-sc2mapfft $map\_whitened'(~100,~100)' pspec2 azavpspec
+sc2mapfft $map\_whitened\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\) pspec2 \
+    azavpspec
+ndf2fits pspec2 \!pspec2.fits > /dev/null
+
+echo pspec of jackknife whitened:
+sc2mapfft jackknife\_whitened\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\) \
+    pspec3 azavpspec
 
 if ( $onlyone == 1 ) goto finish
-
 
 
 
