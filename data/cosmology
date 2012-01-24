@@ -4,7 +4,6 @@
 #
 # ***NOTE: ensure that the early data have had their
 #          internal flatfields recalculated first!!!!
-#
 
 source $SMURF_DIR/smurf.csh > /dev/null
 source $CONVERT_DIR/convert.csh > /dev/null
@@ -95,6 +94,8 @@ ndftrace $map > /dev/null
 set lbound = (`parget lbound ndftrace`)
 set ubound = (`parget ubound ndftrace`)
 
+ndf2fits psf \!psf.fits > /dev/null
+
 # add a bright scaled version of the Gaussian to some real data to estimate
 # the filtering effect of map-making
 
@@ -133,6 +134,7 @@ nomagic temp lockman_psf_mapfilt 0
 nomagic temp temp2 $mean comp=variance
 hcopy temp2.variance lockman_psf_mapfilt.variance
 
+ndf2fits lockman_psf_mapfilt \!lockman_psf_mapfilt.fits > /dev/null
 
 rm temp.sdf
 rm temp2.sdf
@@ -208,7 +210,8 @@ sc2filtermap lockman_psf_mapfilt lockman_psf_mapfilt_whitened \
     whiten whiterefmap=jackknife\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\)\
     msg_filter=$msg
 
-ndf2fits lockman_psf_mapfilt \!lockman_psf_mapfilt_whitened.fits > /dev/null
+ndf2fits lockman_psf_mapfilt_whitened \!lockman_psf_mapfilt_whitened.fits \
+    > /dev/null
 
 sc2filtermap jackknife jackknife_whitened whiten \
     whiterefmap=jackknife\(-$jacksize\:$jacksize,-$jacksize\:$jacksize\) \
