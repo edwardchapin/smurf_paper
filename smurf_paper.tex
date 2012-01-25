@@ -1537,9 +1537,10 @@ case, the baseline reduction using defaults as described in
 Section~\ref{sec:algorithm} are used first. Then, modifications are
 described to improve each reduction.
 
-\subsection{Point source}
+\subsection{Known point source}
+\label{sec:point}
 
-The accurate measurement of positions and brightnesses of point
+The accurate measurement of positions and brightnesses of known point
 sources are necessary in real-time to establish telescope pointing
 offsets and focus. They are also necessary to measure the FCF
 (absolute calibration), and hence noise performance of the instrument
@@ -1571,10 +1572,10 @@ low-frequency noise (see Fig.~\ref{fig:pspec}), and therefore each
 bolometer leaves a trace of the circular scan pattern in the map as
 each of their baselines slowly drift independently. Most of the
 larger-scale ripples in the map, however, are probably due to
-degeneracies in the map solution.
+degeneracies in the map solution as we discuss below.
 
-To illustrate how large-scale ripples can form (and in fact, diverge),
-the same map solution is run for 50 iterations and shown in
+To illustrate how large-scale ripples can form (and grow), the same
+map solution is run for 50 iterations and shown in
 Fig.~\ref{fig:pointmaps}b, now exhibiting a strong vertical
 gradient. The degeneracy is easy to understand if the time-domain
 behaviour of each model component is considered. The top panel of
@@ -1583,8 +1584,8 @@ bolometer after 2 (black) and 50 (grey) iterations which are nearly
 identical, yet the \emph{change} in the estimated \model{COM} (green)
 and \model{AST} (red) signals between 2 and 50 iterations are
 large. However, it is also clear that the estimated \model{COM} and
-\model{AST} signals are \emph{complimentary}. In other words, the large
-change in the \model{AST} signal is cancelled by freedom in the
+\model{AST} signals are \emph{complimentary}. In other words, the
+large change in the \model{AST} signal is cancelled by freedom in the
 \model{COM} signal to grow with opposite sign. For comparison, the
 bottom panel of Fig.~\ref{fig:degeneracy} shows the pointing solution
 for this section of data, and the shapes of the \model{AST} and
@@ -1595,46 +1596,46 @@ scales that are larger than the array footprint (outline shown in
 Fig.~\ref{fig:pointmaps}b for reference), meaning that the map
 solution is unconstrained on such large scales.
 
-One simple improvement is to simply restrict the low-frequency signal
-that goes into the maps using a high-pass filter. A third reduction of
-the data uses the default map-making parameters, as described in
-Section~\ref{sec:algorithm}, which adds the \model{FLT} model to
-accomplish this task immediately prior to map estimation. We set the
-filter edge based on an angular scale of 200\,arcsec, which given the
-scan speed of 155\,arcsec\,sec$^{-1}$, corresponds to a frequency of
-0.78\,Hz. Now using the automatic map-based convergence test (Section
-???), the resulting map converges after 10 iterations
-(Fig.~\ref{fig:pointmaps}c). Both the circular streaks and the
-large-scale gradient are now removed, but they have been replaced by
-an obvious, circularly-symmetric ringing pattern about Uranus. The
-reason for this ringing is due to the fact that the hard-edged
+One improvement is to simply restrict the low-frequency signal that
+goes into the maps by applying a high-pass filter to the bolometer
+time-series. A third reduction of the data uses the default map-making
+parameters, as described in Section~\ref{sec:algorithm}, which adds
+the \model{FLT} model to accomplish this task immediately prior to map
+estimation. We set the filter edge based on an angular scale of
+200\,arcsec, which given the scan speed of 155\,arcsec\,sec$^{-1}$,
+corresponds to a frequency of 0.78\,Hz. Now using the automatic
+map-based convergence test (Section ???), the resulting map converges
+after 10 iterations (Fig.~\ref{fig:pointmaps}c). Both the circular
+streaks and the large-scale gradient are now removed, but they have
+been replaced by an obvious, circularly-symmetric ringing pattern
+about Uranus. The reason for this ringing is that the hard-edged
 high-pass filter in frequency space is equivalent to a $\sinc$
 function-like response in map space. Since the scan pattern is
 isotropic (scans equally at all position angles), and there is a
 bright point-like source, the result is an azimuthally-symmetric
 $\sinc$ function-like pattern in the map about Uranus. Note that due
 to the iterative nature of the solution, much of the signal in the
-source is actually removed for subsequent iterations of
-\model{FLT}, but as in the previous case, generacies between the
-map and the \model{FLT} and \model{COM} signal components can still
-lead to complicated structures.
+source is actually removed for subsequent iterations of \model{FLT},
+but as in the previous case, degeneracies between the map and the
+\model{FLT} and \model{COM} signal components can still lead to
+complicated structures.
 
-The preceding examples illustrate the need for prior constraints in
-the map solution. For calibrators (and other previously known bright,
-compact sources), a good, simple prior is to constrain the map to a
-value of zero away from the known locations of emission. In
-Fig.~\ref{fig:pointmaps}d, a map is produced in an identical manner to
-the previous example, but now setting the map explicitly to zero
-beyond a radius of 60\,arcsec from the location of Uranus (much larger
-than the FWHM of the main lobe), for all but the final iteration. In
-this case, the map converges after 22 iterations, and all of the
-previous artifacts have been effectively removed. Since the map is now
-flat away from the source, and constrained to a value of zero, it is
-now appropriate for performing aperture photometry directly, with no
-need for an additional reference annulus. This approach to constrained
-map-making is similar to that employed for poorly cross-linked scans
-of compact (though resolved) sources by \citet{wiebe2009} using BLAST
-data.
+The preceding examples illustrate the need for constraints in the map
+solution in many situations. For calibrators (and other previously
+known bright, compact sources), a good, simple prior is to constrain
+the map to a value of zero away from the known locations of
+emission. In Fig.~\ref{fig:pointmaps}d, a map is produced in an
+identical manner to the previous example, but now setting the map
+explicitly to zero beyond a radius of 60\,arcsec from the location of
+Uranus (much larger than the FWHM of the main lobe), for all but the
+final iteration. In this case, the map converges after 22 iterations,
+and all of the previous artifacts have been effectively removed. Since
+the map is now flat away from the source, and constrained to a value
+of zero, it is appropriate for performing aperture photometry
+directly, with no need for an additional reference annulus. This
+approach to constrained map-making is similar to that employed for
+poorly cross-linked scans of compact (though resolved) sources by
+\citet{wiebe2009} using BLAST data.
 
 \begin{figure*}
 \centering
@@ -1648,20 +1649,19 @@ data.
   appropriate weighting for the second and final iteration) ---
   circular streaks are caused by independent low-frequency noise that
   is not removed by the common-mode (Uranus peak 0.14\,pW); (b) same
-  as (a) but using 50 iterations, illustrating that there is a
-  degeneracy between large-scale structure and the common-mode (the
-  footprint of working bolometers is also shown for reference, Uranus
-  peak 0.14\,pW); (c) reduction in which high-pass filtering above
-  0.775\,Hz (corresponding to a spatial scale of 200\,arcsec as
-  indicated) is applied after common-mode removal, but before the map
-  estimate --- the map-based convergence test is activated and the
-  solution halts after 10 iterations, but leaving large-scale ringing
-  due to the filter (Uranus peak 0.38\,pW); (d) same as (c), but now
-  the region of the map beyond the white dot-dashed circle is
-  constrained to a value of zero until all but the final iteration ---
-  the map is now extremely flat, there is little attenuation of the
-  source flux, and the diffraction pattern is clearly seen (Uranus
-  peak 0.38\,pW).}
+  as (a) but using 50 iterations, illustrating the degeneracy between
+  large-scale structure and the common-mode (the footprint of working
+  bolometers is also shown for reference, Uranus peak 0.14\,pW); (c)
+  reduction in which high-pass filtering above 0.775\,Hz
+  (corresponding to a spatial scale of 200\,arcsec as indicated) is
+  applied after common-mode removal, but before the map estimate ---
+  the map-based convergence test is activated and the solution halts
+  after 10 iterations, but leaving large-scale ringing due to the
+  filter (Uranus peak 0.38\,pW); (d) same as (c), but now the region
+  of the map beyond the white dot-dashed circle is constrained to a
+  value of zero until all but the final iteration --- the map is now
+  extremely flat, there is little attenuation of the source flux, and
+  the diffraction pattern is clearly seen (Uranus peak 0.38\,pW).}
 \label{fig:pointmaps}
 \end{figure*}
 
@@ -1688,70 +1688,154 @@ data.
 \end{figure}
 
 \subsection{Deep blind survey}
+\label{sec:cosmo}
 
 \scuba\ surveys designed to detect extremely faint point-sources
-(e.g. high-redshift star-forming galaxies, and debris disks) need to
-obtain the best noise performance possible. The approach described
-here involves three major steps: (i) generating a map that removes
-most low-frequency noise sources; (ii) \emph{whitening} (essentially
-flattening) the map to make the noise properties of the map easier to
-deal with; and (iii) detecting point sources using a
+(e.g. high-redshift star-forming galaxies, and debris disks) are
+ideally limited by the white-noise performance of the instrument. The
+approach described here for maximizing the S/N of point-sources
+involves three major steps: (i) generating a map that removes most
+low-frequency noise sources with approximately linear response without
+prior knowledge of the location of sources; (ii) \emph{whitening}
+(essentially flattening) the map to make the noise properties of the
+map easier to deal with; and (iii) detecting point sources using a
 \emph{matched-filter}. Note that variations on this general procedure
 have been used extensively in the submm cosmology community using
-previous instruments \citep[e.g.][]{scott2008,perera2008}.  In this
-section we will reduce data of the Lockman Hole taken in 2010 during
-S2SRO as a pilot project for the Cosmology Legacy Survey. It consists
-of $\sim8.5$\,hours of data taken in 36 separate scans (average
-15\,min. each) spread over February and March, covering an area of
-about 50\,arcmin$^2$. ... full obs list ... dropped scans due to
-terrible noise properties ...
-
-The first step, map generation, is accomplished in a way similar to
-the default described in the previous section (without any boundary
-constraints)...
-
-Even though the map \emph{looks} extremely flat, it is clear that
-there is a mixture of faint astronomical sources, and what is probably
-residual low-frequency noise causing faint ripples. With uncertainties
-about what is source, and what is an artifact, the first step is to
-remove the low-frequency noise in a way that does not affect
-(appreciably) the real sources. To accomplish this goal, the map is
-run through a whitening filter that results in a flat angular noise
-power spectrum. The noise power spectrum is estimated from a
-\emph{jackknife map}: maps are produced from two independent halves of
-the total data set, and then a pixel-by-pixel difference is
-calculated. Provided that the noise in one half of the data is
-uncorrelated with that from the other half, the noise in the jackknife
-map should resemble that of the total map, though larger by a factor
-of $\sim\sqrt(2)$ depending on how closely the pixel variances in the
-two maps are matched (if one map pixel is significantly noisier, it
-will dominate the noise in the jackknife).  The astronomical signal,
-however, should be cleanly removed (provided that there are no strong
-time-varying signals, and also assuming that errors due to calibration
-between the two halves are insignificant). The approach we have taken
-to minimize systematics is to produce two halves of the jackknife
-using odd and even scan numbers (i.e., each map will contain an even
-sampling of data across the full dataset).
+previous instruments
+\citep[e.g.][]{scott2002,laurent2005,coppin2006,scott2008,perera2008,devlin2009}.
+In this section we will reduce data of the Lockman Hole taken in 2010
+during S2SRO as a pilot project for the Cosmology Legacy Survey. It
+consists of $\sim8.5$\,hours of data taken in 36 separate scans
+(average 15\,min. each) spread over February and March, covering an
+area of about 50\,arcmin$^2$. ... full obs list ... dropped scans due
+to terrible noise properties ...
 
 \begin{figure*}
 \centering
 \includegraphics[width=\linewidth]{lockman_maps.pdf}
-\caption{Procedure for producing maps of deep fields.}
+\caption{Reduction of a blank-field survey: the Lockman Hole. (a) raw
+  output of SMURF using high-pass filtering as a pre-processing step,
+  followed by 4 iterations using only the \model{COM} model to remove
+  residual low-frequency noise. White contours correspond to estimated
+  noise levels of 1.25, 2.5 and 5.0 times the minimum noise at the
+  centre of the map. (b) the whitened map using a filter based on the
+  angular power spectrum of the jackknife map. (c) The whitened map
+  cross-correlated with the whitened PSF to identify point
+  sources. The image shows the S/N, with 3.8-$\sigma$ peaks indicated
+  with blue circles (radius 8\,arcsec). The orange ``$+$'' give the
+  locations of radio sources from ... . Of the 10 submm peaks, 9 are
+  within this search radius of at least one radio source. (d)
+  jackknife map produced from the difference of two maps ,using the
+  even and odd scan numbers, respectively. Provided that all noise
+  sources are statistically un-correlated between the two halves of
+  the data, the map is a plausible realization of the noise without
+  contamination from astronomical sources. (e) The jackknife map
+  whitened using the same filter as that in panel (b). The whitened
+  jackknife map cross-correlated with the same whitened PSF as in
+  panel (c). Again, orange ``$+$'' and blue circles indicate radio
+  sources and 3.8-$\sigma$ peaks, respectively. Unlike panel (c),
+  there is only a single significant peak, and it is not in the
+  vicinity of a radio source.}
 \label{fig:lockman_maps}
 \end{figure*}
 
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{lockman_pspec.pdf}
-\caption{Azimuthally-average angular power spectra.}
-\label{fig:lockman_pspec}
-\end{figure}
+The first step, map generation, is different from that described in
+Section~\ref{sec:point} in two key ways. Since the locations of
+sources are unknown \emph{a priori}, a map constraint is not
+employed. Large-scale diverging structures in the map must be
+mitigated, and the method used in this example (the default processing
+in SMURF) is to apply a high-pass filter to the data \emph{once} as a
+pre-processing steps. The iterative solution is then run using only
+\model{COM}, \model{EXT}, \model{AST}, and \model{NOI}. In other
+words, there is no information in the bolometer signals below some
+cutoff frequency, and residual noise is removed only using iterative
+estimation of the residual (higher-frequency) common-mode. The map is
+shown in Fig.~\ref{fig:lockman_maps}a. The map-maker has been tested
+in two ways: (i) large numbers of iterations are used to verify that
+the maps converge without the growth of large structure; and (ii)
+adding synthetic sources to the data at a range of brightnesses verify
+that the map-maker response to them is \emph{linear} (i.e. the
+relative shape and amplitude compared to the input source is
+independent of brightness). The results of this second test are shown
+by the solid and dotted lines in Fig.~\ref{fig:psf},
+respectively. Clearly the down-side of using a high-pass filter as a
+pre-processing step, and having no other map-constraints, has the
+down-side of introducing sidelobes around the main peak. ... high-pass
+filter + iterative common-mode removal takes place of PCA cleaning in
+AzTEC reduction ... probably more linear.
+
+Even though the map \emph{looks} extremely flat, there is a mixture of
+faint astronomical sources, and what is probably residual
+low-frequency noise causing faint ripples visible to the naked
+eye. Since the mixture of the two components is unknown, the first
+step is to remove the low-frequency noise in a way that does not
+affect (appreciably) the real sources. To accomplish this goal, the
+map is run through a whitening filter that ideally results in a flat
+angular noise power spectrum. The noise power spectrum is estimated
+from a \emph{jackknife map}: maps are produced from two independent
+halves of the total data set, and then a pixel-by-pixel difference is
+calculated. Specifically, the jackknife signal in a map pixel,
+$S_\mathrm{JK}$, and variance, $\sigma^2_\mathrm{JK}$ are estimated
+from the map quantities, $S_1$, $S_2$, $\sigma^2_1$, and $\sigma^2_2$
+as,
+%
+\begin{eqnarray}
+S_\mathrm{JK} = \frac{S_1 - S_2}{2} \\
+\sigma^2_\mathrm{JK} = \frac{\sigma^2_1 + \sigma^2_2}{2}
+\end{eqnarray}
+
+
+Provided that the noise in one half of the data is uncorrelated with
+that from the other half, the noise in the jackknife map should
+resemble that of the raw map. The astronomical signal, however, should
+be cleanly removed (provided that there are no strong time-varying
+signals, and also assuming that errors due to calibration between the
+two halves are insignificant). The approach we have taken to minimize
+systematics is to produce two halves of the jackknife using odd and
+even scan numbers (i.e., each map will contain an even sampling of
+data across the full dataset).
+
 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{lockman_psf.pdf}
-\caption{Filtering effects on PSF.}
+\caption{Slice through the angular response to an ideal Gaussian point
+  source (solid line) along the R.A. axis following map-making using
+  the default blank-field processing with SMURF (dotted line), and
+  upon application of the whitening filter (dashed line). The ``map
+  filtered'' response is produced by adding the ideal Gaussian to the
+  real data near the centre of the Lockman Hole map, and re-reducing
+  the data. The resulting dotted line gives the expected shape of a
+  source in panel (a) from Fig.~\ref{fig:lockman_maps}. Applying the
+  whitening filter (reciprocal of the solid orange line in
+  Fig.~\ref{fig:lockman_pspec}) to the dotted line gives the whitened
+  line, which is the expected shape of a source in panel (b) from
+  Fig.~\ref{fig:lockman_maps}. Finally, cross-correlating the whitened
+  map with this whitened PSF is an effective ``matched filter'' for
+  identifying point-like sources, and this smoothed map is shown in
+  panel (c) of Fig.~\ref{fig:lockman_maps}.}
 \label{fig:lockman_psf}
+\end{figure}
+
+
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{lockman_pspec.pdf}
+\caption{Azimuthally-averaged angular power spectral densities for the
+  raw map output by SMURF (dashed black line), the jackknife (solid
+  orange line), and whitened (solid black line) maps (panels (a), (d),
+  and (b) from Fig.~\ref{fig:lockman_maps}, respectively. Since the
+  raw map contains spatially correlated signals on large scales both
+  due to noise and astronomical signals (low-spatial frequencies), the
+  jackknife map (difference of two approximately equal-length subsets
+  of the data) is used to generate a plausible realization of pure
+  noise. Assuming that the noise properties are isotropic, a whitening
+  filter is estimated from the reciprocal of the jackknife power
+  spectrum with only a radial dependence. The power spectrum of the
+  resulting signal map has residual power on large scales which is
+  presumably due to astronomical sources.}
+\label{fig:lockman_pspec}
 \end{figure}
 
 Since the \scuba\ scan strategy is usually isotropic (all position
