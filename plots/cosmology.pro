@@ -45,6 +45,11 @@ bad = where( finite(jkmap) eq 0 )
 if bad[0] ne -1 then jkmap[bad] = badval
 jkmap = jkmap/2
 
+fxread, datadir+'jackknife.fits', jkvar, header, extension=1
+bad = where( finite(jkvar) eq 0 )
+if bad[0] ne -1 then jkvar[bad] = badvar
+jkerr = sqrt(jkvar)/2
+
 fxread, datadir+'jackknife_whitened.fits', jkwhite, header
 bad = where( finite(jkwhite) eq 0 )
 if bad[0] ne -1 then jkwhite[bad] = badval
@@ -316,6 +321,95 @@ oplot, [0.02, 0.037], y[0]*[1.,1.]
 xyouts, 0.045, y[0]*0.97, "whitened", charsize=cs, charthick=thick
 
 
+; --- FILTERED PDF -------------------------------------------------------------
+
+ind = where(mask)
+
+n = n_elements(ind)
+
+jksnr = (jkmap/jkerr)[ind]
+rawsnr = (rawmap/rawerr)[ind]
+
+minsnr=-5
+maxsnr=8
+nsnr = (maxsnr-minsnr)*10 + 1
+
+
+rawhist = histogram( rawsnr, min=minsnr, max=maxsnr, nbins=nsnr, $
+                     locations=bins )
+jkhist = histogram( jksnr, min=minsnr, max=maxsnr, nbins=nsnr, locations=bins )
+
+filteredhist = histogram( filteredsnr[ind], min=minsnr, max=maxsnr, nbins=nsnr,$
+                          locations=bins )
+jkfilthist = histogram( jkfiltsnr[ind], min=minsnr, max=maxsnr, nbins=nsnr, $
+                        locations=bins )
+
+print, "Raw: mean=", mean(rawsnr), " sig=", stdev(rawsnr)
+print, " JK: mean=", mean(jksnr), " sig=", stdev(jksnr)
+print, "-------------------------------------------------"
+print, "Flt: mean=", mean(filteredsnr[ind]), " sig=", stdev(filteredsnr[ind])
+print, "JFl: mean=", mean(jkfiltsnr[ind]), " sig=", stdev(jkfiltsnr[ind])
+
+dsnr = bins[1]-bins[0]
+snr = bins+dsnr/2.
+
+g = exp(-snr^2d/2d)
+g = n * g / total(g)
+
+device, filename="lockman_hist.eps", /encapsulated, xsize=20, ysize=20
+
+
+pos = [0.1,0.54,0.99,0.99]
+
+plot, snr, g, xtitle="S/N", ytitle="N pixels", $
+      charsize=1.5, charthick=thick, yrange=[1,max(jkhist)], $
+      ytickformat="exponent", linestyle=2, /ylog, xstyle=5, pos=pos
+xr = [min(snr),max(snr)]
+
+xyouts, 0.12, pos[3]-0.04, "whiten", charsize=cs, charthick=thick, /normal
+
+mycolour
+oplot, snr, jkhist, psym=10, color=orange
+loadct,0
+
+mycolour
+oplot, snr, rawhist, psym=10, color=blue
+loadct,0
+
+axis, xaxis=1, xrange=xr, xstyle=1, xtickformat="(A1)"
+axis, xaxis=0, xrange=xr, xstyle=1, xtickformat="(A1)"
+
+
+pos = [0.1,0.09,0.99,0.54]
+
+plot, snr, g, xtitle="S/N", ytitle="N pixels", $
+      charsize=1.5, charthick=thick, yrange=[1,max(jkhist)], $
+      ytickformat="exponent", linestyle=2, xstyle=5, pos=pos, /noerase, /ylog
+
+xyouts, 0.12, pos[3]-0.04, "whiten + matched-filter", charsize=cs, $
+        charthick=thick, /normal
+
+mycolour
+oplot, snr, jkfilthist, psym=10, color=orange
+loadct,0
+
+mycolour
+oplot, snr, filteredhist, psym=10, color=blue
+loadct,0
+
+axis, xaxis=1, xrange=xr, xstyle=1, xtickformat="(A1)"
+axis, xaxis=0, xrange=xr, xstyle=1, xtitle="S/N", charsize=cs, charthick=thick
+
+mycolour
+plots, [0.65,0.7], (pos[3]-0.05)*[1.,1.], color=blue, /normal
+plots, [0.65,0.7], (pos[3]-0.1)*[1.,1.], color=orange, /normal
+plots, [0.65,0.7], (pos[3]-0.15)*[1.,1.], linestyle=2, /normal
+loadct,0
+
+xyouts, 0.72, pos[3]-0.055, "signal map", /normal, charthick=thick, charsize=cs
+xyouts, 0.72, pos[3]-0.105, "JK map", /normal, charthick=thick, charsize=cs
+xyouts, 0.72, pos[3]-0.155, "ideal Gaussian", /normal, charthick=thick, $
+        charsize=cs
 
 device, /close
 

@@ -1757,7 +1757,7 @@ adding synthetic sources to the data at a range of brightnesses verify
 that the map-maker response to them is \emph{linear} (i.e. the
 relative shape and amplitude compared to the input source is
 independent of brightness). The results of this second test are shown
-by the solid and dotted lines in Fig.~\ref{fig:psf},
+by the solid and dotted lines in Fig.~\ref{fig:lockman_psf},
 respectively. Clearly the down-side of using a high-pass filter as a
 pre-processing step, and having no other map-constraints, has the
 down-side of introducing sidelobes around the main peak. ... high-pass
@@ -1781,19 +1781,20 @@ as,
 %
 \begin{eqnarray}
 S_\mathrm{JK} = \frac{S_1 - S_2}{2} \\
-\sigma^2_\mathrm{JK} = \frac{\sigma^2_1 + \sigma^2_2}{2}
+\sigma^2_\mathrm{JK} = \frac{\sigma^2_1 + \sigma^2_2}{4}
 \end{eqnarray}
 
 
 Provided that the noise in one half of the data is uncorrelated with
-that from the other half, the noise in the jackknife map should
-resemble that of the raw map. The astronomical signal, however, should
-be cleanly removed (provided that there are no strong time-varying
-signals, and also assuming that errors due to calibration between the
-two halves are insignificant). The approach we have taken to minimize
-systematics is to produce two halves of the jackknife using odd and
-even scan numbers (i.e., each map will contain an even sampling of
-data across the full dataset).
+that from the other half, the signal in the jackknife map should
+resemble noise drawn from the same parent distribution as that of the
+real map. The astronomical signal, however, should be cleanly removed
+(provided that there are no strong time-varying signals, and also
+assuming that errors due to calibration between the two halves are
+insignificant). The approach we have taken to minimize systematics is
+to produce two halves of the jackknife using odd and even scan numbers
+(i.e., each map will contain a nearly evenly-spaced sampling of data
+across the full dataset).
 
 
 \begin{figure}
@@ -1845,6 +1846,26 @@ symmetric (inspection of the 2-dimensional FFT confirms
 this). ... calculate filter as slightly-smoothed complement of
 azavpspec ... Finally, the filter is applied to the map, resulting in
 panel...
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{lockman_hist.pdf}
+\caption{Histograms of S/N using pixels from the central region of
+  Lockman Hole (second contour) in Fig.~\ref{fig:lockman_maps}a. The
+  top panel shows the histograme for pixels from the whitened signal
+  and jackknife maps (Figs.~\ref{fig:lockman_maps}b,e), compared to a
+  Gaussian distribution with mean zero, standard deviation one, and an
+  area normalized to the total number of pixels -- the expected
+  distribution for a map of spatially-uncorrelated Gaussian noise. The
+  good agreement indicates that these maps are indeed dominated by
+  white noise, whose amplitude has been accurately estimated during
+  map-making. The lower panel shows the results for matched-filtered
+  signal and jackknife maps (Figs.~\ref{fig:lockman_maps}c,f). The
+  filtered jackknife map distribution is still close to the
+  expectation (Gaussian), but now the matched-filter has picked out
+  significant signal leading to the large positive tail. }
+\label{fig:lockman_hist}
+\end{figure}
 
 An additional test that can be accomplished with the jackknife map, is
 the accuracy of the individual map-pixel variances. If the calculation
