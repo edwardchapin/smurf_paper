@@ -1695,20 +1695,28 @@ poorly cross-linked scans of compact (though resolved) sources by
 ideally limited by the white-noise performance of the instrument. The
 approach described here for maximizing the S/N of point-sources
 involves three major steps: (i) generating a map that removes most
-low-frequency noise sources with approximately linear response without
-prior knowledge of the location of sources; (ii) \emph{whitening}
-(essentially flattening) the map to make the noise properties of the
-map easier to deal with; and (iii) detecting point sources using a
-\emph{matched-filter}. Note that variations on this general procedure
-have been used extensively in the submm cosmology community using
-previous instruments
+low-frequency noise sources with approximately linear response,
+without prior knowledge of the location of sources; (ii)
+\emph{whitening} (essentially flattening) the map to make the noise
+properties of the map easier to deal with; and (iii) detecting point
+sources using a \emph{matched-filter}. Note that variations on this
+general procedure have been used extensively in the submm cosmology
+community using previous instruments
 \citep[e.g.][]{scott2002,laurent2005,coppin2006,scott2008,perera2008,devlin2009}.
-In this section we will reduce data of the Lockman Hole taken in 2010
+In this section we will reduce scans of the Lockman Hole taken in 2010
 during S2SRO as a pilot project for the Cosmology Legacy Survey. It
 consists of $\sim8.5$\,hours of data taken in 36 separate scans
 (average 15\,min. each) spread over February and March, covering an
-area of about 50\,arcmin$^2$. ... full obs list ... dropped scans due
-to terrible noise properties ...
+area of about 50\,arcmin$^2$. The full list of dates and observation
+numbers includes 20100218: 63, 64, 65, 70, 71, 72, 90, 91, 92, 97, 98,
+99; 20100220: 111, 112, 113, 118, 128, 129, 130; 20100303: 61, 62, 64,
+69, 70, 72, 73, 74, 75; 20100309: 87, 88, 90, 91; and 20100311: 59,
+64, 65, 72. These observations represent about 80\% of the total data
+taken as part of the project; the remaining observations were dropped
+due to problems keeping the arrays properly locked during S2SRO, and
+were easily identified by their highly variable and erratic bolometer
+time-series (which resulted in maps full of large streaks).
+
 
 \begin{figure*}
 \centering
@@ -1823,29 +1831,56 @@ across the full dataset).
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{lockman_pspec.pdf}
-\caption{Azimuthally-averaged angular power spectral densities for the
-  raw map output by SMURF (dashed black line), the jackknife (solid
-  orange line), and whitened (solid black line) maps (panels (a), (d),
-  and (b) from Fig.~\ref{fig:lockman_maps}, respectively. Since the
-  raw map contains spatially correlated signals on large scales both
-  due to noise and astronomical signals (low-spatial frequencies), the
-  jackknife map (difference of two approximately equal-length subsets
-  of the data) is used to generate a plausible realization of pure
-  noise. Assuming that the noise properties are isotropic, a whitening
-  filter is estimated from the reciprocal of the jackknife power
-  spectrum with only a radial dependence. The power spectrum of the
-  resulting signal map has residual power on large scales which is
-  presumably due to astronomical sources.}
+\caption{Radial (azimuthally-averaged) angular power spectral
+  densities for the raw map output by SMURF (dashed black line), the
+  jackknife (solid orange line), and whitened (solid black line) maps
+  (panels (a), (d), and (b) from Fig.~\ref{fig:lockman_maps},
+  respectively (considering only the square region indicated in
+  Fig.~\ref{fig:lockman_maps}d). Since the raw map contains spatially
+  correlated signals on large scales both due to noise and
+  astronomical signals (low-spatial frequencies), the jackknife map
+  (difference of two approximately equal-length subsets of the data)
+  is used to generate a plausible realization of pure noise. Assuming
+  that the noise properties are isotropic, a whitening filter is
+  estimated from the reciprocal of the jackknife power spectrum with
+  only a radial dependence. The power spectrum of the resulting signal
+  map still has residual power on large scales, which is presumably
+  due to astronomical sources.}
 \label{fig:lockman_pspec}
 \end{figure}
 
 Since the \scuba\ scan strategy is usually isotropic (all position
 angles scanned with roughly equal weights), we make the simplifying
 assumption that the angular noise power spectrum is azimuthally
-symmetric (inspection of the 2-dimensional FFT confirms
-this). ... calculate filter as slightly-smoothed complement of
-azavpspec ... Finally, the filter is applied to the map, resulting in
-panel...
+symmetric. For these data, there are no obvious anisotropic structures
+in the 2-dimensional FFT. The radial (azimuthally-averaged) angular
+power spectrum therefore encodes all of the useful information about
+the noise properties. These power spectra for the raw output of SMURF,
+and the jackknife map (transforming only the approximately uniform
+region indicated by the square in Fig.~\ref{fig:lockman_maps}d in each
+case) by the dashed black, and solid orange lines in
+Fig.~\ref{fig:lockman_pspec}, respectively. Both power spectra are
+approximately flat at spatial frequencies $\gsim 0.06$\,arcsec$^{-1}$
+(scales $\lsim16$\,arcsec), with the exception of a narrow line
+feature at $\sim0.175$\,arcsec$^{-1}$ (a scale of
+$\sim5.7$\,arcsec). A possible theory for the feature at 5.7\,arcsec
+is that it is related to the inter-bolometer spacing in the focal
+plane (which happens to be this size); due to small relative drifts in
+the baselines of adjacent bolometers, there may be faint parallel
+stripes in the map along the scan direction (the superposition of many
+scans at different angles then results in an isotropic noise
+pattern). It is not likely that this signal is due to astronomical
+sources because it appears with a nearly equal amplitude in both the
+real map and the jackknife.  At lower spatial frequencies, both the
+real map and the jackknife power spectra grow significantly, as a
+result of the more obvious large-scale undulations in
+Figs.~\ref{fig:lockman_maps}(a) and (d).
+
+In this example, to identify point sources, we first filter the maps
+to suppress the large-scale waves. We use the radial power spectrum of
+the jackknife map (orange line in Fig.~\ref{fig:lockman_pspec}) as it
+should contain no appreciable contamination from astronomical sources.
+
 
 \begin{figure}
 \centering
@@ -1890,6 +1925,8 @@ source/background mask to assist the map solution based on thresholds
 in \snr. Compare with BOLOCAM stuff.
 
 \textit{Or now an externally supplied mask.}
+
+default: converges after 21 iterations
 
 %------------------------------------------------------------------------------
 \section{Summary and future work}
