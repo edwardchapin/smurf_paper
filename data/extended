@@ -10,32 +10,47 @@ source $HDSTOOLS_DIR/hdstools.csh > /dev/null
 
 setenv ADAM_USER "adam_extended"
 
-set dataroot = /scuba2
-#set msg = quiet
-set msg = verbose
-#set msg = normal
-
-set onlyone = 0
-#goto default_flt
-
 # map of extended stuff from early last year - M17
 set obsdate = 20110531
 set obsnum = 00011
 set lambda = 's8?'
 set allsub = (s8a s8b s8c s8d)
-
 set basename = "$lambda"$obsdate\_$obsnum
+
+set dataroot = /scuba2
+#set msg = quiet
+set msg = verbose
+#set msg = normal
+
+set onlyone = 1
+goto map_bright_extended
+#goto map_default
+
+
+
+
+map_default:
+
+echo "*** Reduce M17 map using default reduction ***"
+
+makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
+    m17_default method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,itermap=1,chitol=<undef>,maptol=0.05,numiter=-80"' \
+    msg_filter=$msg
+
+if ( $onlyone == 1 ) goto finish
+
 
 
 
 
 map_bright_extended:
 
-echo "*** Reduce M17 map using default bright_extended reduction ***"
+echo "*** Reduce M17 map using bright_extended reduction ***"
 
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     m17_bright_extended method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-80"' \
     msg_filter=$msg
 
 if ( $onlyone == 1 ) goto finish
