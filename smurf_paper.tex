@@ -129,8 +129,8 @@ User Reduction Facility, SMURF, a software package for reducing the
 imaging data. The reduction of FTS-2 and POL-2 data will be described
 at a later date once these additional instruments have been
 commissioned. The details of the instrument design, performance, and
-its calibration are given in two companion papers: \citet{holland2011}
-and \citet{dempsey2011}.
+its calibration are given in two companion papers: \citet{holland2012}
+and \citet{dempsey2012}.
 
 Over the last twenty years, observations in the submillimetre band
 (defined here to be 200--1000\,\micron) have helped revolutionized
@@ -212,7 +212,7 @@ variations (Section~\ref{sec:bolos}), typical \scuba\ scan strategies
 %--------------------------------------------------
 
 While the details of how \scuba\ works is described in
-\citet{holland2011}, and its calibration in \citet{dempsey2011}, we
+\citet{holland2012}, and its calibration in \citet{dempsey2012}, we
 summarize the basic concepts relative to map-making here.
 
 The \scuba\ bolometer temperatures are read-out using superconducting
@@ -253,7 +253,7 @@ are variations in $T_\mathrm{C}$ across each subarray due to
 manufacturing difficulties, considerable effort has gone into
 dynamically applying position-dependent biases as well as an over-all
 focal plane bias to make as many detectors useable as possible
-\citep{holland2011}. In practice, the response of a given detector can
+\citep{holland2012}. In practice, the response of a given detector can
 therefore vary somewhat from observation to observation depending on
 how the bias and amplification parameters were set up. To track these
 responsivity changes, at the start of each observation, the current is
@@ -262,7 +262,7 @@ measured. Note that the bolometers may have a slightly different
 response to heater power due to conductance as compared to the
 response to optical power, so additioanl efficiency corrections must
 also be obtained. While not discussed further in this paper, details
-may be found in \citet{dempsey2011}. We will refer to measurements of
+may be found in \citet{dempsey2012}. We will refer to measurements of
 $dI/dP$ across the focal plane as the
 \emph{flatfield}. Fig.~\ref{fig:sensitivities} shows the flatfield for
 each focal plane.
@@ -307,7 +307,7 @@ the source, and additional optical efficiency factors -- a \emph{flux
 using the JCMT line-of-sight water vapour radiometer (WVM) which is
 calibrated using skydips and the CSO 225\,GHz tipper. The FCF is
 determined empirically using measurements of standard sources. For
-further details on these calibration steps, see \citet{dempsey2011}.
+further details on these calibration steps, see \citet{dempsey2012}.
 
 %--------------------------------------------------
 \subsection{Scan strategies}
@@ -831,7 +831,7 @@ average signal observed by all of the bolometers at each time step,
 and then removed from all of the bolometers. Once this large signal
 has been removed, we apply the extinction correction, which is
 determined completely from external measurements
-\citep[see][]{dempsey2011}. Next, residual noise that differs from
+\citep[see][]{dempsey2012}. Next, residual noise that differs from
 bolometer-to-bolometer (primarily low-frequency) is removed, usually
 using a high-pass filter. The resulting ``clean'' time-series are then
 re-gridded to produce a map estimate using nearest-neighbour
@@ -1012,7 +1012,7 @@ amplitude in the final map! If \model{EXT} is applied after the bulk
 of the low-frequency noise has been removed (e.g., \model{COM,GAI}),
 then there is little potential for such small errors to affect the
 final map.  For details on how it is calculated see
-\citet{dempsey2011}. Note that its numerical value is calculated only
+\citet{dempsey2012}. Note that its numerical value is calculated only
 once, and simply applied as a scale factor in the iterative solution.
 
 \subsubsection{\model{FLT}: fourier transform filter}
