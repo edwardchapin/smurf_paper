@@ -15,6 +15,7 @@
 % --- Some user defined macros ------------------------------------------------
 
 % journals
+\newcommand{\ao}{\rm AO}
 \newcommand{\apj}{\rm ApJ}
 \newcommand{\apjl}{\rm ApJL}
 \newcommand{\apjs}{\rm ApJS}
@@ -58,19 +59,21 @@ Reduction Facility: an iterative map-maker for SCUBA-2}
 
 \author[Edward~L.~Chapin~et~al.]{
   \parbox[t]{\textwidth}{
-    Edward~L.~Chapin$^{1,2}$\thanks{E-mail:~echapin@phas.ubc.ca},
-    David~S.~Berry$^{2}$,
-    Andrew~G.~Gibb$^{1}$,
-    Tim~Jenness$^{2}$,
-    Douglas~Scott$^{1}$,
-    Frossie~Economou$^2$\thanks{Present address: National Optical
+    Edward~L.~Chapin$^{1,2,3}$\thanks{E-mail:~echapin@sciops.esa.int},
+    David~S.~Berry$^{3}$,
+    Andrew~G.~Gibb$^{2}$,
+    Tim~Jenness$^{3}$,
+    Douglas~Scott$^{2}$,
+    Frossie~Economou$^3$\thanks{Present address: National Optical
       Astronomy Observatory, 950 N.\ Cherry Avenue, Tucson, AZ 85719, USA}
   }
   \\
   \\
-  $^{1}$Dept. of Physics \& Astronomy, University of British Columbia,
+  $^{1}$XMM SOC, ESAC, Apartado 78, 28691 Villanueva de la Ca\~nada, Madrid,
+  Spain\\
+  $^{2}$Dept. of Physics \& Astronomy, University of British Columbia,
   6224 Agricultural Road, Vancouver, B.C. V6T 1Z1, Canada\\
-  $^{2}$JointAstronomy Centre, 660 N. A`oh\={o}k\={u} Place, University
+  $^{3}$JointAstronomy Centre, 660 N. A`oh\={o}k\={u} Place, University
   Park, Hilo, Hawaii 96720, USA}
 
 \begin{document}
@@ -102,18 +105,18 @@ chicken, chicken: chicken, chicken: chicken -- chicken
 \label{sec:intro}
 %------------------------------------------------------------------------------
 
-\textbf{Guideline for figures:}
+%\textbf{Guideline for figures:}
 
-\begin{itemize}
-\item minimize excess whitespace around the figure to optimize usage of space
-\item ensure a decent line thickness
-\item use a Times font for labels with a thickness that resembles the
-  text in the body. The font size should be similar to the main body
-  text or larger
-\item avoid using colour unless it is necessary for emphasis
-\end{itemize}
+%\begin{itemize}
+%\item minimize excess whitespace around the figure to optimize usage of space
+%\item ensure a decent line thickness
+%\item use a Times font for labels with a thickness that resembles the
+%  text in the body. The font size should be similar to the main body
+%  text or larger
+%\item avoid using colour unless it is necessary for emphasis
+%\end{itemize}
 
-\textbf{start intro here...}
+%\textbf{start intro here...}
 
 The Submillimetre Common User Bolometer Array 2
 \citep[\scuba,][]{holland2006} is a new instrument for the 15-m James
@@ -133,8 +136,8 @@ its calibration are given in two companion papers: \citet{holland2012}
 and \citet{dempsey2012}.
 
 Over the last twenty years, observations in the submillimetre band
-(defined here to be 200--1000\,\micron) have helped revolutionized
-several important areas of astrophysics including: the
+(defined here to be 200--1000\,\micron) have helped revolutionize
+several important areas of astrophysics, including: the
 characterization of early stages of star-formation by identifying the
 dense, cold regions in molecular clouds where stars may eventually
 form; discovering through blind surveys a class of massive dusty
@@ -145,32 +148,62 @@ $\sim10000$ total detectors, SCUBA-2 is presently the largest
 submillimetre camera in the world, and the fastest wide-area
 ground-based submillimetre imager.
 
-Most submillimetre imaging cameras to date have used bolometers to
-maximize sensitivities: each pixel consists of an efficient thermal
-absorber to collect photons that have passed through a broad-band
-filter, and the signal is read-out using a thermometer. The
-high-frequency broad-band noise in modern systems, such as SCUBA-2, is
-limited by photon noise from the instrument and ambient
-backgrounds. The low-frequency noise, however, is dominated by sources
-such as the low-frequency drift in the readout electronics, and drifts
-in the mean background levels (such as the atmosphere for ground-based
-instruments). The process of making a map therefore amounts to
-separating the component of the bolometer signals that is produced by
-astronomical sources, from the non-white (and therefore correlated)
-contaminating noise components. Fortunately each has a particular
-profile: astronomical sources are typically fixed in a sky reference
-frame (to a good approximation), whereas other noise sources are often
-correlated in time, and usually from bolometer-to-bolometer. ...also
-mention scan strategies...
+Most submillimetre imaging cameras, to date, have used bolometers to
+maximize sensitivities \citep[e.g.][]{griffin2002}. Each pixel
+consists of a thermal absorber to collect photons that have passed
+through broad-band filters, and the signal is read-out using a
+thermometer. The high-frequency broad-band noise in modern systems,
+such as SCUBA-2, is limited by photon noise from the instrument and
+ambient backgrounds. The low-frequency noise, however, is dominated by
+sources such as slow variations in mean backgrounds (such as thermal
+variations within the cryostat, and the atmosphere for ground-based
+cameras), and drift in the readout electronics. Since the
+low-frequency noise is largely correlated between all, or subsets, of
+the bolometers in time, it can be suppressed during map-making, since
+astronomical signals have the distinct property that they are fixed in
+a sky reference frame (assuming they are not time-varying). If
+successful, the noise in the resulting map is said to be ``background
+noise limited'', meaning that the only significant remaining noise
+sources are uncorrelated spatially in the map (the theoretical limit).
 
-There are numerous ways to attack this problem, most of them evolving
-out of techniques that were developed to produce maps of the
-large-scale anisitropies in the Cosmic Microwave Background (CMB).
-Styles of map-making: least squares \citep{janssen1992} maximum
-likelihood \citep[e.g.,][]{patanchon2008}; iterative -- see
-\citet{johnstone2000} implementation of \citet{wright1996} to remove
-chop, \citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA
-analysis \citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
+There are numerous ways to attack this problem, both in terms of the
+data-collection method, and data processing. Historically, both radio
+and submillimetre telescope systems have used ``chopping'' to perform
+rapid differences between target sky locations and some reference
+(e.g., another point on the sky, internal calibrators, and different
+frequencies in the case of heterodyne systems). In fact, spatial
+chopping was used by SCUBA, the predecessor to SCUBA-2, to remove
+low-frequency drifts \citep{holland1999}. However, chopping (in
+particular spatial chopping) has the unfortunate side-effect of
+filtering out information on scales larger than the chop-throw
+\textbf{(references)}.For this reason, modern cameras like SCUBA-2 aim
+to provide a high-degree of inherent detector stability, and rapidly
+slew the telescope so that astronomical signals up to large scales are
+captured in a signal band at considerably higher frequency than the
+residual low-frequency drift.
+
+In the case of chopped data, ideally the resulting data are completely
+free of low-frequency noise, and therefore the data samples are
+statistically uncorrelated.
+
+often used various
+``chopping'' methods to remove low-frequency drifts -- rapid
+differences are made between the sky signal at a given position and an
+internal reference signal; the sky signal in two different bands for
+heterodyne systems (frequency chopping); and a different position in
+the sky \citep[a method employed by SCUBA, the predecessor of
+SCUBA-2][]{holland1999}.
+
+ many of them evolving
+out of techniques for producing maps of the large-scale anisitropies
+in the Cosmic Microwave Background (CMB)
+
+  Styles of map-making: least
+squares \citep{janssen1992} maximum likelihood
+\citep[e.g.,][]{patanchon2008}; iterative -- see \citet{johnstone2000}
+implementation of \citet{wright1996} to remove chop,
+\citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA analysis
+\citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
 
 \scuba\ is presently unique in terms of the shear volume of data that
 it produces on a nightly basis, and the fact that it is observing a
@@ -787,6 +820,7 @@ components,
 \begin{equation}
   \mathbf{n}_i(t) = \mathbf{n}^\mathrm{w}_i(t) + \mathbf{n}^\mathrm{f}_i(t) +
   \mathbf{n}^\mathrm{c}(t),
+\label{eq:noise}
 \end{equation}
 %
 where $\mathbf{n}^\mathrm{w}_i(t)$ is uncorrelated white (thermal)
@@ -1072,6 +1106,7 @@ that went into the average (akin to the formula for standard error on
 the mean, but accounting for weights),
 %
 \begin{equation}
+\label{eq:varmap}
 \mathbf{v}(x_j,y_j) = \frac{\sum_j \mathbf{w}_j
                             \sum_j \mathbf{w}_j \mathbf{b}_j -
                             \left( \sum_j \mathbf{w}_j \mathbf{b}_j \right)^2 }
@@ -1104,16 +1139,17 @@ improve convergences (Section~???).
 \subsubsection{\model{NOI}: noise estimation}
 \label{sec:noi}
 
-The primary purpose of the noise component, \model{NOI} is to measure
-the noise in each bolometer residual once all of the other models have
-been fit and removed. This noise may then be used to estimate weights
-for the data in subsequent iterations.
+The primary purpose of the noise component, \model{NOI}, is to measure
+the white noise of each bolometer ($\mathbf{n}^\mathrm{w}_i(t)$ in
+Eq.~\ref{eq:noise}). The measurement generally occurs once all of the
+other models have been fit and removed. This noise may then be used to
+estimate weights for the data in subsequent iterations.
 
 As in Section~\ref{sec:psd} the FFT of each bolometer time series is
 taken, and the PSD calculated. An average white noise level is then
-measured from 2 to 10\,Hz, a relatively clean region that lies above
-the $1/f$ knee, but below the high-frequency line features for most of
-the bolometer data taken during S2SRO (Fig.~\ref{fig:pspec}). Taking
+measured from 2 to 10\,Hz, a relatively clean region of the PSD that
+tends to lie above the $1/f$ knee, but below the high-frequency line
+features for typical bolometer data (Fig.~\ref{fig:pspec}). Taking
 this constant level for $\mathbf{P}(f)$ we then calculate the expected
 variance of the time-series (in approximately 200\,Hz samples) using
 Eq.~\ref{eq:psd}. If the bolometer noise were produced purely by
@@ -1122,13 +1158,27 @@ no high-frequency line features, and without the attenuation at even
 higher frequencies by the anti-aliasing filter, this is the
 theoretical noise limit of the detectors. These measured variances are
 stored, and then used in subsequent iterations to weight the data
-points when calculating the map estimate (Section~\ref{sec:ast}).
+points when calculating the map estimate (Section~\ref{sec:ast}). They
+are also used for convergence tests (Section~\ref{sec:converge}).
 
-Since noise estimation is usually calculated as the final step, it is
-the cleanest data for which some cleaning operations may be
-performed. For this reason \model{NOI} can optionally use the
+Since noise estimation is usually calculated as the final step in the
+iteration, it is the cleanest data for which some cleaning operations
+may be performed. For this reason \model{NOI} can optionally use the
 time-domain DC step fixer (Section~\ref{sec:steps}) and spike
 detection (Section~\ref{sec:timedespike}).
+
+Finally, it should be noted that the default behaviour is to calculate
+the white noise levels \emph{once} within \emph{NOI}, after the second
+iteration. The reason for fixing these values is to prevent any
+potential divergence in the weight estimates with iterations, and also
+to provide a fixed reference for the convergence tests
+(Section~\ref{sec:converge}). Note that the absolute values of the
+noise, and therefore weights calculated by the model component are
+irrelevant (only their relative values). The reason is that the final
+noise in the map is measured empirically from the scatter of the data
+points that land in each pixel (Section~\ref{sec:ast}), and
+large-scale noise sources can be checked by analyzing the angular
+power spectra of jackknife maps (e.g., Section~\ref{sec:cosmo}).
 
 \subsubsection{\model{DKS}: dark squid cleaning along columns}
 \label{sec:dks}
@@ -1171,15 +1221,74 @@ We can remove a plane at each timeslice but it doesn't seem to improve
 things. Perhaps refer to other papers that claim to have seen coherent
 2d structures in the sky noise?
 
-\subsection{Model degeneracies}
+\subsection{Convergence tests and model degeneracies}
+\label{sec:converge}
 
-A fundamental problem faced by the SMURF algorithm, as described, is
-that there are degeneracies between model parameters. Thinking of each
-pixel in the output map, as well as each sample in the various noise
-model components, such as the common-mode and signal removed by the
-Fourier filtering, any degeneracy can cause the solution to
-diverge. Of particular concern are situations in which the map
-diverges.
+The map-maker will halt if the convergence criteria have been
+met. Presently there are two numerical tests that may be performed by
+SMURF, or alternatively, a fixed number of iterations may be
+specified. The first numerical test is an approximate check of the
+change in reduced chi-squared, $\chi^2_\mathrm{r}$. The standard
+deviations, $\sigma_i$, are measured for each of the residual
+bolometer signals once the modeled signal components have been
+removed. In the early iterations, the residual signals usually contain
+both white noise, and other long-timescale features. However, once the
+solution has converged, this signal should look approximately
+white. Once the white nosie, $\mathbf{n}^\mathrm{w}_i(t)$, has been
+measured from the bolometer PSDs in \model{NOI}
+(Section~\ref{sec:noi}), $\chi^2_\mathrm{r}$ is calculated as $(1/N)
+\sum_i \sigma^2_i / \mathbf{n}^\mathrm{w}_i(t)$, where $i$ runs over
+the $N$ bolometers. In other words, it is the average ratio between
+the measured bolometer variances and their theoretical white-noise
+levels. Note that this expression \emph{does not account for the
+degrees of freedom}. Clearly there are a large number of parameters in
+the model, which will ``fit-out'' some of the uncorrelated white
+noise, and potentially bias this estimate of $\chi^2_r$ low. One
+approach would be to keep track of the degrees of freedom, and
+therefore provide a correction, as in \citet{kovacs2008}. However,
+note that we are only using this value as a convergence test, and its
+value is not used in an absolute sense. Furthermore, the reference
+white noise values are calculated only once in SMURF
+(Section~\ref{sec:noi}), and the number of model parameters are fixed,
+so the value of $\chi^2_r$ should decrease monotonically if the
+solution is behaving well. The convergence criterion is met if the
+change in subsequent values of $\chi^2_r$ is smaller than the
+parameter \texttt{chitol}, which is set to $10^{-3}$ by default.
+
+It was immediately found in the analysis of SCUBA-2 data that the
+$\chi^2_r$ test described above was not a sufficient stopping
+criterion. The reason for this is that various components of the model
+are, under normal circumstances, highly degenerate. Once simple
+example is the degeneracy between large-scale astronomical structures
+(larger than the array footprint), and the common-mode rejection step
+(\model{COM}), which will be illustrated in
+Section~\ref{sec:point}. Since the flatness of the residual only
+reflects the ability of the model to fit the shape of the bolometer
+time-series, it does not necessarily correlate with convergence of the
+most important model component: the map. Indeed, examination of the
+map after large numbers of iterations (e.g., $>10$), shows the
+presence of large-scale structures that are anti-correlated with
+structures in other model components. For this reason, a second
+map-based convergence test was added.
+
+The map-based convergence statistic, $M_c$, is the average absolute
+change in the value of map pixels between subsequent iterations,
+normalized by the map pixel uncertainties (square root of
+Eq.~\ref{eq:varmap}), or
+%
+\begin{equation}
+M^j_c = \frac{1}{N} \sum_i \frac{| \mathbf{m}(x_j,y_j) -
+  \mathbf{m}(x_{j-1},y_{j-1}) |} {\sqrt{\mathbf{v}(x_j,y_j)}} ,
+\end{equation}
+%
+where $i$ runs over the $N$ map pixels, and $j$ enumerates
+iteration. The convergence criterion is met once this average change
+is smaller than the parameter \texttt{maptol}. Experimentally we found
+that a threshold of 0.05 gives good results (on average, map pixels
+change by 5\% of the estimated map RMS in subsequent iterations).
+This provides good correspondance with what we would choose ``by
+eye'', and furthermore, letting the solver run for many more
+iterations in several test cases yields insignificant differences.
 
 %-------------------------------------------------
 \subsection{Data cleaning}
