@@ -352,9 +352,18 @@ print, "JFl: mean=", mean(jkfiltsnr[ind]), " sig=", stdev(jkfiltsnr[ind])
 
 dsnr = bins[1]-bins[0]
 snr = bins+dsnr/2.
-
 g = exp(-snr^2d/2d)
 g = n * g / total(g)
+
+
+ind = (where( snr ge sncut ))[0]
+
+print, "Total pixels = ", n
+print, "Number of pixels > ",sncut,"-sigma:"
+print, "sigsm = ", total( filteredhist[ind:nsnr-1] )
+print, " jksm = ", total( jkfilthist[ind:nsnr-1] )
+print, "gauss = ", total( g[ind:nsnr-1] )
+
 
 device, filename="lockman_hist.eps", /encapsulated, xsize=20, ysize=20
 
@@ -401,14 +410,17 @@ axis, xaxis=1, xrange=xr, xstyle=1, xtickformat="(A1)"
 axis, xaxis=0, xrange=xr, xstyle=1, xtitle="S/N", charsize=cs, charthick=thick
 
 mycolour
-plots, [0.65,0.7], (pos[3]-0.05)*[1.,1.], color=blue, /normal
-plots, [0.65,0.7], (pos[3]-0.1)*[1.,1.], color=orange, /normal
-plots, [0.65,0.7], (pos[3]-0.15)*[1.,1.], linestyle=2, /normal
+xl = [0.72,0.75] & xlt = xl[1]+0.01
+plots, xl, (pos[3]-0.05)*[1.,1.], color=blue, /normal
+plots, xl, (pos[3]-0.1)*[1.,1.], color=orange, /normal
+plots, xl, (pos[3]-0.15)*[1.,1.], linestyle=2, /normal
 loadct,0
 
-xyouts, 0.72, pos[3]-0.055, "signal map", /normal, charthick=thick, charsize=cs
-xyouts, 0.72, pos[3]-0.105, "JK map", /normal, charthick=thick, charsize=cs
-xyouts, 0.72, pos[3]-0.155, "ideal Gaussian", /normal, charthick=thick, $
+oplot, sncut*[1.,1.], [1.,1d10]
+
+xyouts, xlt, pos[3]-0.055, "signal map", /normal, charthick=thick, charsize=cs
+xyouts, xlt, pos[3]-0.105, "JK map", /normal, charthick=thick, charsize=cs
+xyouts, xlt, pos[3]-0.155, "ideal Gaussian", /normal, charthick=thick, $
         charsize=cs
 
 device, /close
