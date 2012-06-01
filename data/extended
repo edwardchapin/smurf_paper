@@ -26,8 +26,8 @@ set onlyone = 1
 #goto map_bright_extended
 #goto map_default
 #goto respmap
-goto fake
-#goto jk
+#goto fake
+goto jk
 
 
 map_default:
@@ -168,21 +168,44 @@ jk:
 echo "*** Jackknife maps of default and bright_extended reductions ***"
 
 
-foreach f ( 150 300 600 )
+# first obtain the region of the map where we will do power spectra in terms
+# of NDF bounds (the text file gives 0-offset lower-left, lower-right,
+# indices from the bottom-left corner, and length of the box on a side)
 
-    foreach srcmap ( m17_default m17_bright_extended )
+set xl = `cat cirrus_position | cut -d" " -f1`
+set yl = `cat cirrus_position | cut -d" " -f2`
+set n = `cat cirrus_position | cut -d" " -f3`
 
-    # take the difference to estimate map of pure noise, and then
-    # measure angular power spectrum
+ndftrace m17_default > /dev/null
+set lbnd_ref = (`parget lbound ndftrace`)
 
-    jk = $srcmap\_$f\_jk
+@ lbnd1 = $xl + $lbnd_ref[1] + 1
+@ ubnd1 = $lbnd1 + $n - 1
+
+@ lbnd2 = $yl + $lbnd_ref[2] + 1
+@ ubnd2 = $lbnd2 + $n - 1
+
+#foreach f ( 150 300 600 )
+foreach f ( 300 )
+
+#    foreach srcmap ( m17_default m17_bright_extended )
+    foreach srcmap ( m17_default )
+
+    # take the sum and difference to estimate signal and noise
+
+    set jk = $srcmap\_$f\_jk
+    set sum = $srcmap\_$f\_sum
 
     sub $srcmap\_half1_$f $srcmap\_half2_$f $jk
+    wcsmosaic $srcmap\_half\*_$f out=$sum method=nearest variance accept
 
     ndf2fits $jk \!$jk.fits > /dev/null
+    ndf2fits $sum \!$sum.fits > /dev/null
 
+    # now make power spectra
 
-
+    sc2mapfft $jk\($lbnd1\:$ubnd1,$lbnd2\:$ubnd2\) pspec_$jk azavpspec
+    ndf2fits pspec_$jk \!pspec_$jk.fits > /dev/null
 
 end
 
