@@ -2164,51 +2164,53 @@ helps with negative ringing.}
 \end{figure*}
 
 The default reduction of these data is shown in the top panels of
-Fig.~\ref{fig:m17}, after 1, 30 iterations (by this last
-iteration the map-based convergence criterion was achieved). The first
-panel also depicts the array footprint, and the angular scale
-corresponding the high-pass filter edge. Much like the reduction of a
-point source without any prior constraints
+Fig.~\ref{fig:m17}, after iterations 2 (the first map estimated after
+the noise weights have been measured) and 30 iterations (when the map
+has converged). The first panel also depicts the array footprint, and
+the angular scale corresponding the high-pass filter edge. Much like
+the reduction of a point source without any prior constraints
 (Fig.~\ref{fig:pointmaps}c), degeneracies on scales larger than the
 array footprint and filter produce ripples in the map.
 
 Unlike the case of a known point-source (Section~\ref{sec:point}), it
-may not be possible for the observer to define, in advance, a mask to
-define regions of source and blank sky. Indeed, for this map, much of
-the field clearly contains extended structures. Furthermore, the goal
-of such maps may be to detect \emph{previously unknown} cool, dense
-regions of the ISM that may not have appeared at other wavelengths
-(e.g. the first optically-thick cloud-collapse stages of
-star-formation). While the option does exist for the user to supply
-their own mask, a facility has been added to SMURF to generate one
-automatically by flagging pixels above some SNR threshold after each
-iteration and is referred to as the ``bright extended'' configuration.
+may not be possible for the observer to define, in advance, a mask of
+regions containing blank sky. Indeed, for this map, much of the field
+clearly contains extended structures. Furthermore, the goal of such
+maps may be to detect \emph{previously unknown} cool, dense regions of
+the ISM that may not have appeared at other wavelengths (e.g. the
+first optically-thick cloud-collapse stages of star-formation). While
+the option does exist for the user to supply their own mask, a
+facility has been added to SMURF to generate one automatically by
+flagging pixels above some SNR threshold after each iteration as part
+of the ``bright extended'' configuration.
 
 The results of this automatic masking are shown in the bottom panels
-of Fig.~\ref{fig:m17}. After the first iteration, only narrow regions
+of Fig.~\ref{fig:m17}. After the second iteration, only narrow regions
 around the brightest peaks are identified. However, as the solution
 progresses, the negative bowls around the bright sources are slowly
 reduced and the mask ``grows'' out from the brightest areas. By the
 final iteration, most of the obvious structures in the data are
-encompasses by the mask.
-
-Note that alternatives to this approach do exist for other iterative
-map-makers. For example, \citet{kovacs2008} restricts the solution to
-a small number of iterations to avoid divergence on large-scales. For
-BOLOCAM data of the Galactic Plane, \citet{aguirre2010} used a
-Maximum-Entropy filtering step to suppress large-scales. The
-zero-masking implemented in SMURF is similar in principle to the
-\citet{aguirre2010}, while being slightly conceptually
-simpler. However, since both methods are non-linear, detailed
-simulations would be required to determine the SNR-dependent transfer
-function.
+encompassed by the mask, negative bowling is significantly reduced,
+and the brightest regions are clearly more extended.
 
 While the reduction in the bottom panels of Fig.~\ref{fig:m17} is
 clearly superior in at least a cosmetic sense to those in the top
 panels, it is important to quantify both the noise properties of the
-maps and their response to real structures. Similar to the previous
-section, we will use a jackknife test to estimate the noise, and then
-inject known sources into the data to observe how they are attenuated.
+maps and their response to real structures (the transfer
+function). Similar to the previous section, we will use a jackknife
+test to estimate the noise, and then inject known sources into the
+data to observe how they are attenuated.
+
+Maps are produced using the first and second continuous halves of the
+data. This is not an ideal situation since the noise properties may
+evolve with time (e.g., due to changing sky conditions) leading to a
+biased estimate of the parent noise distribution from the
+jackknife. Also, since the zero-masking depends on the SNR of the map,
+it will be restricted to regions approximately $\sqrt{2}$ shallower in
+these maps than for the full data set. Ideally one would have many
+full maps as in the case of the Lockman Hole data in the previous
+section, from which alternating maps could be combined. However, for
+the discussion at hand our method 
 
 %A second map of M17 using the same observing mode was made shortly
 %after the first, observation 13 on 20110511. We produce jackknife maps
@@ -2235,6 +2237,18 @@ dominate). However, lower the filter edge can potentially let through
 more independent low-frequency noise. We have therefore re-run the
 previous tests using two other scales for the filters, and show the
 resulting maps and angular SNR spectra in Figs ... .
+
+
+Note that alternatives to the zero-masking approach do exist for other
+iterative map-makers. For example, \citet{kovacs2008} restricts the
+solution to a small number of iterations to avoid divergence on
+large-scales. For BOLOCAM data of the Galactic Plane,
+\citet{aguirre2010} used a Maximum-Entropy filtering step to suppress
+large-scales. The zero-masking implemented in SMURF is similar in
+principle to the \citet{aguirre2010} method, while being slightly
+conceptually simpler. However, since both methods are non-linear,
+detailed simulations would be required to determine their
+SNR-dependent angular transfer functions.
 
 
 
