@@ -26,7 +26,8 @@ set onlyone = 1
 #goto map_bright_extended
 #goto map_default
 #goto respmap
-goto jk
+goto fake
+#goto jk
 
 
 map_default:
@@ -35,7 +36,7 @@ echo "*** Reduce M17 map using default reduction ***"
 
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     m17_default method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,itermap=0,chitol=<undef>,maptol=0.05,numiter=-200,shortmap=-1"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,itermap=0,chitol=<undef>,maptol=0.05,numiter=-900,shortmap=-1"' \
     msg_filter=$msg
 
 foreach iter ( 02 03 10 30 )
@@ -55,7 +56,7 @@ echo "*** Reduce M17 map using bright_extended reduction ***"
 
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     m17_bright_extended method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-200,shortmap=-1"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-900,shortmap=-1"' \
     msg_filter=$msg
 
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
@@ -100,52 +101,81 @@ if ( $onlyone == 1 ) goto finish
 
 
 
+
+fake:
+
+echo "*** Adding fake cirrus data, and creating maps using each half ***"
+
+# generate cirrus fakemap
+
+idl makecirrus.pro
+fits2ndf m17_fakemap.fits m17_fakemap
+
+# stupid code to get each half of the data + fastflats
+
+ls $dataroot/$lambda/$obsdate/$obsnum/*_0002.sdf > m17_half1.lis
+ls $dataroot/$lambda/$obsdate/$obsnum/*_000[3-9].sdf >> m17_half1.lis
+ls $dataroot/$lambda/$obsdate/$obsnum/*_00[12][0-9].sdf >> m17_half1.lis
+ls $dataroot/$lambda/$obsdate/$obsnum/*_003[0-2].sdf >> m17_half1.lis
+ls $dataroot/$lambda/$obsdate/$obsnum/*_0064.sdf >> m17_half1.lis
+
+ls $dataroot/$lambda/$obsdate/$obsnum/*_0002.sdf > m17_half2.lis
+ls $dataroot/$lambda/$obsdate/$obsnum/*_003[3-9].sdf >> m17_half2.lis
+ls $dataroot/$lambda/$obsdate/$obsnum/*_00[4-6][0-9].sdf >> m17_half2.lis
+
+# make sure the two half maps have the right dimensions using the
+# full map as a reference, using 3 different filtering scales
+
+set refmap = m17_default
+ndftrace $refmap > /dev/null
+set lbound = (`parget lbound ndftrace`)
+set ubound = (`parget ubound ndftrace`)
+
+foreach f ( 150 300 600 )
+
+    foreach h ( 1 2 )
+
+        makemap ^m17_half$h.lis m17_default_half$h\_$f method=iterate \
+            config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,chitol=<undef>,maptol=0.05,numiter=-900,itermap=1,fakemap=m17_fakemap,850.flt.filt_edge_largescale=$f"' \
+            msg_filter=$msg ref=$refmap lbnd=\[$lbound[1],$lbound[2]\] \
+            ubnd=\[$ubound[1],$ubound[2]\]
+
+        makemap ^m17_half$h.lis m17_bright_extended_half$h\_$f method=iterate \
+            config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-900,fakemap=m17_fakemap,850.flt.filt_edge_largescale=$f"' \
+            msg_filter=$msg ref=$refmap lbnd=\[$lbound[1],$lbound[2]\] \
+            ubnd=\[$ubound[1],$ubound[2]\]
+end
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+
+
+
+
+
+
+
+
 jk:
 
 echo "*** Jackknife maps of default and bright_extended reductions ***"
 
 
-foreach srcmap ( m17_default m17_bright_extended )
-    # mosaics of even and odd halves
-    @ nchunks = `hdir $srcmap.more.smurf.shortmaps | grep CH00SH | wc -l`
+foreach f ( 150 300 600 )
 
-    @ nhalf = $nchunks / 2
-
-    set index = 0
-
-    echo "" > chunks_even.lis
-    echo "" > chunks_odd.lis
-
-    while ($index < $nhalf)
-        @ chunk_even = $index * 2
-        @ chunk_odd = $chunk_even + 1
-
-        set evenstr = `awk 'BEGIN { printf "%06i\n", '$chunk_even' }'`
-        set oddstr = `awk 'BEGIN { printf "%06i\n", '$chunk_odd' }'`
-
-        echo $srcmap.more.smurf.shortmaps.ch00sh$evenstr >> chunks_even.lis
-        echo $srcmap.more.smurf.shortmaps.ch00sh$oddstr >> chunks_odd.lis
-
-        @ index++
-    end
-
-    ndfcopy $srcmap map_ref trim trimwcs
-
-    wcsmosaic ^chunks_even.lis ref=map_ref out=$srcmap\_even method=nearest \
-        variance accept
-
-    wcsmosaic ^chunks_odd.lis ref=map_ref out=$srcmap\_odd method=nearest \
-        variance accept
-
-    rm map_ref.sdf
-
+    foreach srcmap ( m17_default m17_bright_extended )
 
     # take the difference to estimate map of pure noise, and then
     # measure angular power spectrum
 
-    sub $srcmap\_even $srcmap\_odd $srcmap\_jk
+    jk = $srcmap\_$f\_jk
 
-    ndf2fits $srcmap\_jackknife \!$srcmap\_jk.fits > /dev/null
+    sub $srcmap\_half1_$f $srcmap\_half2_$f $jk
+
+    ndf2fits $jk \!$jk.fits > /dev/null
 
 
 

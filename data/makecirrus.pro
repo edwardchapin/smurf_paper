@@ -16,10 +16,10 @@ pixres = abs( sxpar(header,"CDELT1") )*3600.
 nx = n_elements( data[*,0] )
 ny = n_elements( data[0,*] )
 
-if showplot then begin
-  window,0
-  tvscale, data, /keep, /noint, maxval=0.002, minval=-0.001
-endif
+;if showplot then begin
+;  window,0
+;  tvscale, data, /keep, /noint, maxval=0.002, minval=-0.001
+;endif
 
 
 ; create some cirrus
@@ -42,10 +42,10 @@ apod[ind]=0
 
 c_sm_apod = c_sm * apod
 
-if showplot then begin
-  window,1
-  tvscale, c_sm_apod, /keep, /noint, maxval=0.002, minval=-0.001
-endif
+;if showplot then begin
+;  window,1
+;  tvscale, c_sm_apod, /keep, /noint, maxval=0.002, minval=-0.001
+;endif
 
 ;smooth_data = smooth_map(data,pixres,14.5)
 
@@ -54,10 +54,10 @@ fakemap[xl:xl+n-1, yl:yl+n-1] = c_sm_apod
 
 data = data + fakemap
 
-if showplot then begin
-  window,2
-  tvscale, data, /keep, /noint, maxval=0.002, minval=-0.001
-endif
+;if showplot then begin
+;  window,2
+;  tvscale, data, /keep, /noint, maxval=0.002, minval=-0.001
+;endif
 
 
 mn = -0.001
@@ -68,11 +68,13 @@ map = map < mx
 map = ((map - mn) > 0)-mn
 map = alog10(map)
 
-if showplot then begin
-  window,3
-  tvscale, -map, /noint, /keep, pos=pos
-endif
+;if showplot then begin
+;  window,3
+;  tvscale, -map, /noint, /keep, pos=pos
+;endif
 
 fxwrite, "m17_fakemap.fits", header, fakemap
+
+exit
 
 end
