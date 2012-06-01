@@ -22,11 +22,11 @@ set dataroot = /scuba2
 set msg = verbose
 #set msg = normal
 
-set onlyone = 1
-goto map_bright_extended
+set onlyone = 0
+#goto map_bright_extended
 #goto map_default
-
-
+#goto respmap
+#goto map_obs13
 
 
 map_default:
@@ -35,8 +35,12 @@ echo "*** Reduce M17 map using default reduction ***"
 
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     m17_default method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,itermap=1,chitol=<undef>,maptol=0.05,numiter=-80"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,itermap=0,chitol=<undef>,maptol=0.05,numiter=-200,shortmap=-1"' \
     msg_filter=$msg
+
+foreach iter ( 02 03 10 30 )
+    ndf2fits m17_default.more.smurf.itermaps.ch00i0$iter m17_default_$iter.fits
+end
 
 if ( $onlyone == 1 ) goto finish
 
@@ -48,10 +52,19 @@ map_bright_extended:
 
 echo "*** Reduce M17 map using bright_extended reduction ***"
 
+
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     m17_bright_extended method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-80"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-200,shortmap=-1"' \
     msg_filter=$msg
+
+makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
+    m17_bright_extended_2 method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,numiter=2"' \
+    msg_filter=$msg
+
+ndf2fits m17_bright_extended.sdf m17_bright_extended.fits
+ndf2fits m17_bright_extended_2.sdf m17_bright_extended_2.fits
 
 if ( $onlyone == 1 ) goto finish
 
@@ -59,5 +72,48 @@ if ( $onlyone == 1 ) goto finish
 
 
 
+
+respmap:
+
+foreach sub ( $allsub )
+    calcflat $dataroot/$sub/$obsdate/$obsnum/$sub$obsdate\_$obsnum\_0002 \
+        flat_$sub resp=resp_$sub accept
+
+    smurfcopy $dataroot/$sub/$obsdate/$obsnum/$sub$obsdate\_$obsnum\_0003 \
+        slice_$sub 1
+
+    hcopy resp_$sub.data_array slice_$sub.data_array
+end
+
+wcsmosaic slice_s8\* ref=! out=m17_resp_fplane method=nearest accept
+wcsalign m17_resp_fplane out=m17_resp_fplane_align method=nearest \
+    ref=m17_default accept
+ndf2fits m17_resp_fplane_align \!m17_resp_fplane_align.fits
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+
+#map_obs13:
+
+#echo "*** Reduce obs 13 M17 map using bright_extended reduction ***"
+
+#set obsnum = 00013
+#set basename = "$lambda"$obsdate\_$obsnum
+
+#set refmap = m17_default
+#ndftrace $refmap > /dev/null
+#set lbound = (`parget lbound ndftrace`)
+#set ubound = (`parget ubound ndftrace`)
+
+#makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
+#    m17_bright_extended_obs13 method=iterate \
+#    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-200"' \
+#    msg_filter=$msg ref=$refmap lbnd=\[$lbound[1],$lbound[2]\] \
+#    ubnd=\[$ubound[1],$ubound[2]\] maxmem=64000
+
+
+#if ( $onlyone == 1 ) goto finish
 
 finish:
