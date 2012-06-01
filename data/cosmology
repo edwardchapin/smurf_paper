@@ -159,7 +159,7 @@ set jacksize = 110
 
 echo Number of chunks in $map is $nchunks
 
-# first make mosaics of the even and off chunks separately
+# first make mosaics of the even and odd chunks separately
 
 @ nhalf = $nchunks / 2
 set index = 0
