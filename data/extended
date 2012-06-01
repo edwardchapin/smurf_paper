@@ -133,15 +133,19 @@ set ubound = (`parget ubound ndftrace`)
 
 foreach f ( 150 300 600 )
 
+    echo "^$STARLINK_DIR/share/smurf/dimmconfig.lis,chitol=<undef>,maptol=0.05,numiter=-900,itermap=1,fakemap=m17_fakemap,850.flt.filt_edge_largescale=$f" > conf_half_default.lis
+
+    echo "^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-900,fakemap=m17_fakemap,850.flt.filt_edge_largescale=$f" > conf_half_bright_extended.lis
+
     foreach h ( 1 2 )
 
         makemap ^m17_half$h.lis m17_default_half$h\_$f method=iterate \
-            config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,chitol=<undef>,maptol=0.05,numiter=-900,itermap=1,fakemap=m17_fakemap,850.flt.filt_edge_largescale=$f"' \
+            config=^conf_half_default.lis \
             msg_filter=$msg ref=$refmap lbnd=\[$lbound[1],$lbound[2]\] \
             ubnd=\[$ubound[1],$ubound[2]\]
 
         makemap ^m17_half$h.lis m17_bright_extended_half$h\_$f method=iterate \
-            config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-900,fakemap=m17_fakemap,850.flt.filt_edge_largescale=$f"' \
+            config=^conf_half_bright_extended.lis \
             msg_filter=$msg ref=$refmap lbnd=\[$lbound[1],$lbound[2]\] \
             ubnd=\[$ubound[1],$ubound[2]\]
 end
