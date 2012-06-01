@@ -22,11 +22,11 @@ set dataroot = /scuba2
 set msg = verbose
 #set msg = normal
 
-set onlyone = 0
+set onlyone = 1
 #goto map_bright_extended
 #goto map_default
 #goto respmap
-#goto map_obs13
+goto jk
 
 
 map_default:
@@ -95,25 +95,67 @@ if ( $onlyone == 1 ) goto finish
 
 
 
-#map_obs13:
-
-#echo "*** Reduce obs 13 M17 map using bright_extended reduction ***"
-
-#set obsnum = 00013
-#set basename = "$lambda"$obsdate\_$obsnum
-
-#set refmap = m17_default
-#ndftrace $refmap > /dev/null
-#set lbound = (`parget lbound ndftrace`)
-#set ubound = (`parget ubound ndftrace`)
-
-#makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
-#    m17_bright_extended_obs13 method=iterate \
-#    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-200"' \
-#    msg_filter=$msg ref=$refmap lbnd=\[$lbound[1],$lbound[2]\] \
-#    ubnd=\[$ubound[1],$ubound[2]\] maxmem=64000
 
 
-#if ( $onlyone == 1 ) goto finish
+
+
+
+jk:
+
+echo "*** Jackknife maps of default and bright_extended reductions ***"
+
+
+foreach srcmap ( m17_default m17_bright_extended )
+    # mosaics of even and odd halves
+    @ nchunks = `hdir $srcmap.more.smurf.shortmaps | grep CH00SH | wc -l`
+
+    @ nhalf = $nchunks / 2
+
+    set index = 0
+
+    echo "" > chunks_even.lis
+    echo "" > chunks_odd.lis
+
+    while ($index < $nhalf)
+        @ chunk_even = $index * 2
+        @ chunk_odd = $chunk_even + 1
+
+        set evenstr = `awk 'BEGIN { printf "%06i\n", '$chunk_even' }'`
+        set oddstr = `awk 'BEGIN { printf "%06i\n", '$chunk_odd' }'`
+
+        echo $srcmap.more.smurf.shortmaps.ch00sh$evenstr >> chunks_even.lis
+        echo $srcmap.more.smurf.shortmaps.ch00sh$oddstr >> chunks_odd.lis
+
+        @ index++
+    end
+
+    ndfcopy $srcmap map_ref trim trimwcs
+
+    wcsmosaic ^chunks_even.lis ref=map_ref out=$srcmap\_even method=nearest \
+        variance accept
+
+    wcsmosaic ^chunks_odd.lis ref=map_ref out=$srcmap\_odd method=nearest \
+        variance accept
+
+    rm map_ref.sdf
+
+
+    # take the difference to estimate map of pure noise, and then
+    # measure angular power spectrum
+
+    sub $srcmap\_even $srcmap\_odd $srcmap\_jk
+
+    ndf2fits $srcmap\_jackknife \!$srcmap\_jk.fits > /dev/null
+
+
+
+
+end
+
+
+if ( $onlyone == 1 ) goto finish
+
+
+
 
 finish:
