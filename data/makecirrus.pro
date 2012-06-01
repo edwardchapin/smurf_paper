@@ -24,8 +24,10 @@ ny = n_elements( data[0,*] )
 
 ; create some cirrus
 
-n = 200
-xl = 240 & yl = 40
+openr,1,"cirrus_position"
+xl=0 & yl=0 & n=0
+readf,1,xl,yl,n
+close,1
 
 c = cirrus( n, pixres/60., 1, -3, 100, seed=3 ) ; scale is meaningless
 c = c - min(c)
