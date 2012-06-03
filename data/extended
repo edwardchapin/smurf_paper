@@ -26,8 +26,8 @@ set onlyone = 1
 #goto map_bright_extended
 #goto map_default
 #goto respmap
-#goto fake
-goto jk
+goto fake
+#goto jk
 
 
 map_default:
@@ -132,6 +132,7 @@ set lbound = (`parget lbound ndftrace`)
 set ubound = (`parget ubound ndftrace`)
 
 foreach f ( 150 300 600 )
+#foreach f ( 600 )
 
     echo "^$STARLINK_DIR/share/smurf/dimmconfig.lis,chitol=<undef>,maptol=0.05,numiter=-900,itermap=1,fakemap=m17_fakemap,850.flt.filt_edge_largescale=$f" > conf_half_default.lis
 
@@ -148,6 +149,7 @@ foreach f ( 150 300 600 )
             config=^conf_half_bright_extended.lis \
             msg_filter=$msg ref=$refmap lbnd=\[$lbound[1],$lbound[2]\] \
             ubnd=\[$ubound[1],$ubound[2]\]
+    end
 end
 
 if ( $onlyone == 1 ) goto finish
@@ -185,11 +187,11 @@ set lbnd_ref = (`parget lbound ndftrace`)
 @ lbnd2 = $yl + $lbnd_ref[2] + 1
 @ ubnd2 = $lbnd2 + $n - 1
 
-#foreach f ( 150 300 600 )
-foreach f ( 300 )
+foreach f ( 150 300 600 )
+#foreach f ( 300 )
 
-#    foreach srcmap ( m17_default m17_bright_extended )
-    foreach srcmap ( m17_default )
+    foreach srcmap ( m17_default m17_bright_extended )
+#    foreach srcmap ( m17_default )
 
     # take the sum and difference to estimate signal and noise
 
@@ -216,3 +218,4 @@ if ( $onlyone == 1 ) goto finish
 
 
 finish:
+
