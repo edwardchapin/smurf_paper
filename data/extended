@@ -26,8 +26,8 @@ set onlyone = 1
 #goto map_bright_extended
 #goto map_default
 #goto respmap
-goto fake
-#goto jk
+#goto fake
+goto jk
 
 
 map_default:
@@ -187,30 +187,54 @@ set lbnd_ref = (`parget lbound ndftrace`)
 @ lbnd2 = $yl + $lbnd_ref[2] + 1
 @ ubnd2 = $lbnd2 + $n - 1
 
+
+# the power spectrum of the input
+cp m17_default.sdf temp.sdf
+hcopy m17_fakemap.data_array temp.data_array
+sc2mapfft temp\($lbnd1\:$ubnd1,$lbnd2\:$ubnd2\) pspec_m17_fakemap azavpspec
+ndf2fits pspec_m17_fakemap \!pspec_m17_fakemap.fits
+
 foreach f ( 150 300 600 )
-#foreach f ( 300 )
+#foreach f ( 600 )
 
     foreach srcmap ( m17_default m17_bright_extended )
 #    foreach srcmap ( m17_default )
 
-    # take the sum and difference to estimate signal and noise
+        # take the sum and difference to estimate signal and noise
 
-    set jk = $srcmap\_$f\_jk
-    set sum = $srcmap\_$f\_sum
+        set jk = $srcmap\_$f\_jk
+        set sum = $srcmap\_$f\_sum
 
-    sub $srcmap\_half1_$f $srcmap\_half2_$f $jk
-    wcsmosaic $srcmap\_half\*_$f out=$sum method=nearest variance accept
+        echo making $jk...
 
-    ndf2fits $jk \!$jk.fits > /dev/null
-    ndf2fits $sum \!$sum.fits > /dev/null
+        sub $srcmap\_half1_$f $srcmap\_half2_$f temp
+        cdiv temp 2 $jk
+        rm temp.sdf
 
-    # now make power spectra
+        echo making $sum...
 
-    sc2mapfft $jk\($lbnd1\:$ubnd1,$lbnd2\:$ubnd2\) pspec_$jk azavpspec
-    ndf2fits pspec_$jk \!pspec_$jk.fits > /dev/null
+        wcsmosaic $srcmap\_half\*_$f out=$sum method=nearest variance accept
 
+        ndf2fits $jk \!$jk.fits > /dev/null
+        ndf2fits $sum \!$sum.fits > /dev/null
+
+        # quality maps for the two halves
+
+        ndf2fits $srcmap\_half1_$f \!$srcmap\_half1_$f\_qmask.fits comp=Q
+        ndf2fits $srcmap\_half2_$f \!$srcmap\_half2_$f\_qmask.fits comp=Q
+
+        # now make power spectra
+
+        echo running sc2mapfft...
+
+        sc2mapfft $jk\($lbnd1\:$ubnd1,$lbnd2\:$ubnd2\) pspec_$jk azavpspec
+        ndf2fits pspec_$jk \!pspec_$jk.fits > /dev/null
+
+        sc2mapfft $sum\($lbnd1\:$ubnd1,$lbnd2\:$ubnd2\) pspec_$sum azavpspec
+        ndf2fits pspec_$sum \!pspec_$sum.fits > /dev/null
+
+    end
 end
-
 
 if ( $onlyone == 1 ) goto finish
 

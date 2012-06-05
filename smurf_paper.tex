@@ -2114,30 +2114,6 @@ establish completeness, false-positive rates, as well as the effects
 of point source clustering and confusion. See the aforementioned
 papers and references therein for examples.
 
-For future, significantly deeper SCUBA-2 maps, in which the RMS in a
-PSF-smoothed map is dominated by point-source confusion, rather than
-instrumental noise, a modified matched-filter will offer improved
-results. See Appendix~A in \citet{chapin2011}, which shows how to
-include confusion (when known \emph{a priori}) explicitly as a noise
-term in the calculation of such filters.
-
-\subsection{Bright extended emission}
-
-In this final example, we analyze a map of M17 which contains bright,
-extended emission, in contrast with the earlier two examples. A
-promise of \scuba\ is to recover larger angular scales than what was
-possible with earlier-generation ground-based submillimetre
-cameras. The two main factors contributing to this expectation are:
-(i) a larger array footprint on the sky which should make the
-subtraction of common sky-emission signals more effective; and (ii)
-fast detectors (with a correspondingly fast sample rate) to enable
-higher slew-rates (up to 600\,arcsec\,s$^{-1}$) to capture as much
-large-scale structure as possible above the detector $1/f$ knees. We
-produce maps of observation 11 on 20110531 using the 850\,\micron\
-array. It is a rotating PONG convering a diameter of 0.375\,deg, with
-a scan speed of 300\,arcsec\,s$^{-1}$, and a transverse spacing of
-180\,arcsec, taking 37.5\,min to complete.
-
 \begin{figure*}
 \centering
 \includegraphics[width=\linewidth]{m17.pdf}
@@ -2162,6 +2138,30 @@ identifies most of the bright, extended emission, and it significantly
 helps with negative ringing.}
 \label{fig:m17}
 \end{figure*}
+
+For future, significantly deeper SCUBA-2 maps, in which the RMS in a
+PSF-smoothed map is dominated by point-source confusion, rather than
+instrumental noise, a modified matched-filter will offer improved
+results. See Appendix~A in \citet{chapin2011}, which shows how to
+include confusion (when known \emph{a priori}) explicitly as a noise
+term in the calculation of such filters.
+
+\subsection{Bright extended emission}
+
+In this final example, we analyze a map of M17 which contains bright,
+extended emission, in contrast with the earlier two examples. A
+promise of \scuba\ is to recover larger angular scales than what was
+possible with earlier-generation ground-based submillimetre
+cameras. The two main factors contributing to this expectation are:
+(i) a larger array footprint on the sky which should make the
+subtraction of common sky-emission signals more effective; and (ii)
+fast detectors (with a correspondingly fast sample rate) to enable
+higher slew-rates (up to 600\,arcsec\,s$^{-1}$) to capture as much
+large-scale structure as possible above the detector $1/f$ knees. We
+produce maps of observation 11 on 20110531 using the 850\,\micron\
+array. It is a rotating PONG convering a diameter of 0.375\,deg, with
+a scan speed of 300\,arcsec\,s$^{-1}$, and a transverse spacing of
+180\,arcsec, taking 37.5\,min to complete.
 
 The default reduction of these data is shown in the top panels of
 Fig.~\ref{fig:m17}, after iterations 2 (the first map estimated after
@@ -2193,36 +2193,121 @@ final iteration, most of the obvious structures in the data are
 encompassed by the mask, negative bowling is significantly reduced,
 and the brightest regions are clearly more extended.
 
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.8\linewidth]{m17_jk.pdf}
+\caption{Maps of M17 used to characterize the noise properties and
+transfer function of SMURF. For each column, a different high-pass
+filter edge scale was adopted (indicated in the top panels). First
+(top) row: Average of two halves of the data analyzed independently,
+using the default configuration. The data have had added to them
+synthetic signal within a 600\,arcsec diameter circle (S.E. of M17)
+created as a realization of noise from a $P(k) \propto k^{-3}$ angular
+power spectrum multiplied by the PSF, subtracting the minimum to make
+it positive, scaling it to a similar signal range as M17 itself, and
+rolling-off the edges smoothly using half a period of a radial
+(1+cosine)/2 function across 100\,arcsec beyond the edge of the
+600\,arcsec region. Second row: jackknife maps produced from the
+differences of the maps of each half of the data that went into the
+first row. Third row: average of the two halves of the data using the
+bright extended reduction. The blue and red contours indicated the
+zero-masked regions in each case (note for the 300\,arcsec case that
+the region about M17 matches fairly closely the mask in
+Fig.~\ref{fig:m17}d). Clearly as the filter scale is increased, due to
+the high SNR of the data, larger emissions regions are (correctly)
+detected and reproduced in the map. Fourth (bottom) row: Jackknife
+maps for the bright extended reductions.}
+\label{fig:m17_jk}
+\end{figure*}
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.49\linewidth]{pspec_m17_default.pdf}
+\includegraphics[width=0.49\linewidth]{cor_pspec_m17_default.pdf}
+\caption{Angular power spectral densities (PSDs) for the region of the
+M17 map in Fig.~\ref{fig:m17_jk} containing synthetic data, using the
+default configuration. left: raw PSDs for the input (noiseless)
+simulated data (thick black line), the signal (average of each half)
+PSDs (thin solid lines), and noise PSDs estimated from the jackknives
+(dashed lines). Vertical dotted lines indicate the high-pass filter
+scales. The red, green, and blue colours indicate data filtered at
+150, 300, and 600\,arcsec scales. right: corrected PSDs. Since the
+input PSD is known, it is possible to measure the transfer function of
+the map-maker as the ratio between the output map signal and input
+PSDs (thick solid lines). The remaining lines are as in the left
+panel, but now corrected by the transfer function. This plot shows
+that while increasing the filter scale improves the SNR at large
+scales ($\gsim100$\,arcsec), it also reduces the SNR at smaller scales
+($\lsim100$\,arcsec).}
+\label{fig:m17_def_ps}
+\end{figure*}
+
+\begin{figure*}
+\centering
+\includegraphics[width=0.49\linewidth]{pspec_m17_bright_extended.pdf}
+\includegraphics[width=0.49\linewidth]{cor_pspec_m17_bright_extended.pdf}
+\caption{Lines have same meaning as in Fig.~\ref{fig:m17_def_ps},
+except now using the bright extended configuration. This configuration
+has resulted in an improved transfer function and SNR at large angular
+scales. Also note that increasing the filter scale does not have as
+large of an impact on the small-scale noise as in the default
+configuration.}
+\label{fig:m17_bc_ps}
+\end{figure*}
+
 While the reduction in the bottom panels of Fig.~\ref{fig:m17} is
 clearly superior in at least a cosmetic sense to those in the top
 panels, it is important to quantify both the noise properties of the
-maps and their response to real structures (the transfer
-function). Similar to the previous section, we will use a jackknife
-test to estimate the noise, and then inject known sources into the
-data to observe how they are attenuated.
+maps and their response to real structures (the transfer function). We
+would also like to know these are affected by our choice of filter
+scale.  Similar to the previous section, we will use a jackknife test
+to estimate the noise, and then inject known sources into the data to
+observe how they are attenuated.
 
 Maps are produced using the first and second continuous halves of the
-data. This is not an ideal situation since the noise properties may
-evolve with time (e.g., due to changing sky conditions) leading to a
-biased estimate of the parent noise distribution from the
-jackknife. Also, since the zero-masking depends on the SNR of the map,
-it will be restricted to regions approximately $\sqrt{2}$ shallower in
-these maps than for the full data set. Ideally one would have many
-full maps as in the case of the Lockman Hole data in the previous
-section, from which alternating maps could be combined. However, for
-the discussion at hand our method 
+data in Fig.~\ref{fig:m17_jk}. This is not an ideal situation since
+the noise properties may evolve with time (e.g., due to changing sky
+conditions) leading to a biased estimate of the parent noise
+distribution from the jackknife. Also, since the zero-masking depends
+on the SNR of the map, it will be restricted to regions approximately
+$\sqrt{2}$ shallower in these maps than for the full data
+set. Finally, the cross-linking (positional angles sampled) is
+similar, though not identical in the two halves. Ideally one would
+have many full maps as in the case of the Lockman Hole data in the
+previous section, from which alternating maps could be combined.
 
 %A second map of M17 using the same observing mode was made shortly
 %after the first, observation 13 on 20110511. We produce jackknife maps
 %from the differences between the two ... angular power spectrum of the
 %noise (should be worse at large-scale for the default map).
 
-Next, we inject simulated clouds into a relative empty portion of the
-observation 11 M17 map. It is created by filtering white noise first
-with a power-law index $alpha=$bla (a reasonable approximation for
-Galactic Cirrus... cite bla bla), and then with a 14.5\,arcsec
-Gaussian to model the effect of the SCUBA-2 optical response. Finally,
-the signal is apodized ... Compare power-spectrum before and after.
+In addition to dividing the data into two halves, we also inject
+simulated clouds into a relative empty portion of the map. It is
+created by drawing a realization of noise within an 800\,arcsec
+on-a-side box, from an angular power spectrum $P(k) \propto k^{-3}$
+which is appropriate for Galactic cirrus clouds
+\citep[e.g.][]{gautier1992}. It is then filtered again with a
+14.5\,arcsec Gaussian to model the effect of the SCUBA-2 optical
+response. The RMS of these fluctuations are then normalized to 0.002
+pW so that they are comparable to the dynamic range of M17 itself. The
+minimum is subtracted so that the signal is positive. Finally, half a
+period of a (1+cosine)/2 function is used to roll-off the signal to
+zero between radii of 300 and 400 arcsec.
+
+The first row of Fig.~\ref{fig:m17_jk} shows the total signal image
+averaging the maps made of each independent half of the data, for the
+default configuration (inverse-variance weighting has been used). The
+columns show reductions using 150, 300, and 600\,arcsec filter edges
+in the reductions. The synthetic data are clearly seen as the circular
+region S.E. of M17. As the filter scale is increased, the size of the
+ripples increases accordingly. While larger structures do seem to
+appear, negative bowls are a major problem without any other map
+constraints.The second row of Fig.~\ref{fig:m17_jk} shows the
+jackknife maps. The astronomical emission is almost perfectly removed,
+except for a slight impression of M17 near the centre of the map that
+is probably due to some combination of detector gain and pointing
+drifts.
 
 One fairly arbitrary parameter in our data reduction is the choice of
 angular scale for the \model{FLT} filter. The current default of
@@ -2237,7 +2322,6 @@ dominate). However, lower the filter edge can potentially let through
 more independent low-frequency noise. We have therefore re-run the
 previous tests using two other scales for the filters, and show the
 resulting maps and angular SNR spectra in Figs ... .
-
 
 Note that alternatives to the zero-masking approach do exist for other
 iterative map-makers. For example, \citet{kovacs2008} restricts the
