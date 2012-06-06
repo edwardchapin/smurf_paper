@@ -16,9 +16,9 @@ fxread, datadir+'uranus_com_2.fits', map2, mapheader
 bad = where( finite(map2) eq 0 )
 if bad[0] ne -1 then map2[bad] = badval
 
-fxread, datadir+'uranus_com_50.fits', map50, header
-bad = where( finite(map50) eq 0 )
-if bad[0] ne -1 then map50[bad] = badval
+fxread, datadir+'uranus_com_100.fits', map100, header
+bad = where( finite(map100) eq 0 )
+if bad[0] ne -1 then map100[bad] = badval
 
 fxread, datadir+'uranus_default.fits', map_flt, header
 bad = where( finite(map_flt) eq 0 )
@@ -71,7 +71,7 @@ loadct,0
 m = 0.002
 thick =3.
 
-cs = 1.5
+cs = 1
 ys = 0.027
 xm = 0.00
 
@@ -81,9 +81,9 @@ xyouts, pos[0]+xm, pos[3]-ys, "(a) COM", /normal, charsize=cs, charthick=thick
 xyouts, pos[0]+xm, pos[3]-2*ys, '    n=2', /normal, charsize=cs, charthick=thick
 
 pos = [0.5, 0.5, 1., 1.]
-tvscale, -map50, minval=-m, maxval=m, /noint, pos=pos
+tvscale, -map100, minval=-m, maxval=m, /noint, pos=pos
 xyouts, pos[0]+xm, pos[3]-ys, "(b) COM", /normal, charsize=cs, charthick=thick
-xyouts, pos[0]+xm, pos[3]-2*ys, '    n=50', /normal, charsize=cs,charthick=thick
+xyouts, pos[0]+xm, pos[3]-2*ys, '    n=100', /normal, charsize=cs,charthick=thick
 
 resp = shift(resp,-12,2)
 contour, resp, xmargin=[0,0], ymargin=[0,0], $
@@ -111,10 +111,10 @@ xyouts, xcen, 0.13, '200 arcsec', /normal, charsize=cs, charthick=thick, $
 
 pos = [0.5, 0, 1.0, 0.5]
 tvscale, -map_compact, minval=-m, maxval=m, /noint, pos=pos
-xyouts, pos[0]+xm, pos[3]-ys, "(d) COM+FLT           zeromask", $
+xyouts, pos[0]+xm, pos[3]-ys, "(d) COM+FLT                          zeromask", $
         /normal, charsize=cs, $
         charthick=thick
-xyouts, pos[0]+xm, pos[3]-2*ys, '    n=22', /normal, charsize=cs,charthick=thick
+xyouts, pos[0]+xm, pos[3]-2*ys, '    n=6', /normal, charsize=cs,charthick=thick
 
 contour, map_mask, xmargin=[0,0], ymargin=[0,0], $
          xstyle=5, ystyle=5, pos=pos, /noerase, $
@@ -143,21 +143,23 @@ device, /close
 
 ; plot showing degeneracy between map and COM
 
+cs = 1.5
+
 device, filename='degeneracy.eps', /encapsulated, xsize=20., $
         ysize=15., /color, bits_per_pixel=8
 
-if 0 then begin
+if 1 then begin
   fxread, datadir+'com_2.fits', com2, header
-  fxread, datadir+'com_50.fits', com50, header
+  fxread, datadir+'com_100.fits', com100, header
 
   fxread, datadir+'s4a_gai_2.fits', gai2, header
-  fxread, datadir+'s4a_gai_50.fits', gai50, header
+  fxread, datadir+'s4a_gai_100.fits', gai100, header
 
   fxread, datadir+'s4a_res_2.fits', res2, header
-  fxread, datadir+'s4a_res_50.fits', res50, header
+  fxread, datadir+'s4a_res_100.fits', res100, header
 
   fxread, datadir+'s4a_ast_2.fits', ast2, header
-  fxread, datadir+'s4a_ast_50.fits', ast50, header
+  fxread, datadir+'s4a_ast_100.fits', ast100, header
 
   state = scuba2_readstate( datadir+"state_uranus.tst" )
 endif
@@ -190,15 +192,15 @@ boly = 29;15
 pos = [xl,0.5*yscl+yoff,xr, 1.0*yscl+yoff]
 
 c2 = (com2*gai2[bolx,boly,0])[tstart:tstart+tlen-1]
-c50 = (com50*gai50[bolx,boly,0])[tstart:tstart+tlen-1]
+c100 = (com100*gai100[bolx,boly,0])[tstart:tstart+tlen-1]
 
 a2 = (ast2[bolx,boly,*])[tstart:tstart+tlen-1]
-a50 = (ast50[bolx,boly,*])[tstart:tstart+tlen-1]
+a100 = (ast100[bolx,boly,*])[tstart:tstart+tlen-1]
 
 r2 = (res2[bolx,boly,*])[tstart:tstart+tlen-1]
-r50 = (res50[bolx,boly,*])[tstart:tstart+tlen-1]
+r100 = (res100[bolx,boly,*])[tstart:tstart+tlen-1]
 
-s = [c50-c2,a50-a2,r2,r50]
+s = [c100-c2,a100-a2,r2,r100]
 
 plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='Signal (pW)', $
       charthick=!p.thick,xrange=xrange,yrange=[min(s),max(s)]*1.1
@@ -208,9 +210,9 @@ axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
 mycolour
 
 oplot, t, r2, thick=!p.thick*2.0
-oplot, t, r50, thick=!p.thick*0.6, color=128
-oplot, t, a50-a2, color=green
-oplot, t, c50-c2, color=red
+oplot, t, r100, thick=!p.thick*0.6, color=128
+oplot, t, a100-a2, color=green
+oplot, t, c100-c2, color=red
 
 yt = 0.4
 
@@ -223,16 +225,16 @@ plots, 0.6+pos[0]+xt+[0,0.05], pos[1]+yt*[1.0,1.0]+0.006, /normal, $
 
 xyouts, pos[0]+xt+0.06, pos[1]+yt, '!6RES2', charsize=cs, $
         charthick=!p.thick, /normal
-xyouts, pos[0]+xt+0.26, pos[1]+yt, '!6RES50', charsize=cs, $
+xyouts, pos[0]+xt+0.26, pos[1]+yt, '!6RES100', charsize=cs, $
         charthick=!p.thick, /normal, color=128
 xyouts, pos[0]+xt+0.46, pos[1]+yt, '!7'+!gr.delta+'!6COM', charsize=cs, $
         charthick=!p.thick, /normal, color=green
 xyouts, pos[0]+xt+0.66, pos[1]+yt, '!7'+!gr.delta+'!6AST', charsize=cs, $
         charthick=!p.thick, /normal, color=red
 
-;plot, t, (c50-c2)[tstart:tstart+tlen-1], xstyle=1
+;plot, t, (c100-c2)[tstart:tstart+tlen-1], xstyle=1
 
-;oplot, t, (a50-a2)[tstart:tstart+tlen-1], linestyle=2
+;oplot, t, (a100-a2)[tstart:tstart+tlen-1], linestyle=2
 
 loadct,0
 
