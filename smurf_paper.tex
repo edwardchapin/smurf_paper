@@ -1676,25 +1676,25 @@ estimate of \model{AST} is then removed from the data, and the noise
 is measured in the residuals to estimate weights for the subsequent
 and final iteration. The resulting map after these two iterations is
 shown in Fig.~\ref{fig:pointmaps}a. While the S/N of Uranus is clearly
-large ($\sim$175 as estimated by SMURF), enabling us to see the faint
+large ($\sim$250 as estimated by SMURF), enabling us to see the faint
 sidelobes (circle and cross pattern), the map also has obvious
 circular streaks and other large-scale ripples. The circular streaks
 are due to the fact that \model{COM} does not account for all of the
 low-frequency noise (see Fig.~\ref{fig:pspec}), and therefore each
 bolometer leaves a trace of the circular scan pattern in the map as
-each of their baselines slowly drift independently. Most of the
-larger-scale ripples in the map, however, are probably due to
-degeneracies in the map solution as we discuss below.
+each of their baselines slowly drift independently. A significant
+contribution to the larger-scale ripples in the map, however, can be
+made by degeneracies in the map solution as we discuss below.
 
 To illustrate how large-scale ripples can form (and grow), the same
-map solution is run for 50 iterations and shown in
+map solution is run for 100 iterations and shown in
 Fig.~\ref{fig:pointmaps}b, now exhibiting a strong vertical
 gradient. The degeneracy is easy to understand if the time-domain
 behaviour of each model component is considered. The top panel of
 Fig.~\ref{fig:degeneracy} shows the residual signals for a single
-bolometer after 2 (black) and 50 (grey) iterations which are nearly
+bolometer after 2 (black) and 100 (grey) iterations which are nearly
 identical, yet the \emph{change} in the estimated \model{COM} (green)
-and \model{AST} (red) signals between 2 and 50 iterations are
+and \model{AST} (red) signals between 2 and 100 iterations are
 large. However, it is also clear that the estimated \model{COM} and
 \model{AST} signals are \emph{complimentary}. In other words, the
 large change in the \model{AST} signal is cancelled by freedom in the
@@ -1714,7 +1714,7 @@ time-series. A third reduction of the data uses the default map-making
 parameters, as described in Section~\ref{sec:algorithm}, which adds
 the \model{FLT} model to accomplish this task immediately prior to map
 estimation. We set the filter edge based on an angular scale of
-200\,arcsec, which given the scan speed of 155\,arcsec\,sec$^{-1}$,
+200\,arcsec, which, given the scan speed of 155\,arcsec\,sec$^{-1}$,
 corresponds to a frequency of 0.78\,Hz. Now using the automatic
 map-based convergence test (Section~\ref{sec:converge}), the resulting
 map converges after 10 iterations (Fig.~\ref{fig:pointmaps}c). Both
@@ -1725,12 +1725,12 @@ hard-edged high-pass filter in frequency space is equivalent to a
 $\sinc$ function-like response in map space. Since the scan pattern is
 isotropic (scans equally at all position angles), and there is a
 bright point-like source, the result is an azimuthally-symmetric
-$\sinc$ function-like pattern in the map about Uranus. Note that due
-to the iterative nature of the solution, much of the signal in the
-source is actually removed for subsequent iterations of \model{FLT},
-but as in the previous case, degeneracies between the map and the
-\model{FLT} and \model{COM} signal components can still lead to
-complicated structures.
+$\sinc$ function-like pattern in the map. Note that due to the
+iterative nature of the solution, much of the signal in the source is
+actually removed for subsequent iterations of \model{FLT}, but as in
+the previous case, degeneracies between the map and the \model{FLT}
+and \model{COM} signal components can still lead to complicated
+structures.
 
 The preceding examples illustrate the need for constraints in the map
 solution in many situations. For calibrators (and other previously
@@ -1740,7 +1740,7 @@ emission. In Fig.~\ref{fig:pointmaps}d, a map is produced in an
 identical manner to the previous example, but now setting the map
 explicitly to zero beyond a radius of 60\,arcsec from the location of
 Uranus (much larger than the FWHM of the main lobe), for all but the
-final iteration. In this case, the map converges after 22 iterations,
+final iteration. In this case, the map converges after 6 iterations,
 and all of the previous artifacts have been effectively removed. Since
 the map is now flat away from the source, and constrained to a value
 of zero, it is appropriate for performing aperture photometry
@@ -1760,20 +1760,20 @@ poorly cross-linked scans of compact (though resolved) sources by
   removed, and the noise is measured in the residuals to obtain
   appropriate weighting for the second and final iteration) ---
   circular streaks are caused by independent low-frequency noise that
-  is not removed by the common-mode (Uranus peak 0.14\,pW); (b) same
+  is not removed by the common-mode (Uranus peak 0.15\,pW); (b) same
   as (a) but using 50 iterations, illustrating the degeneracy between
   large-scale structure and the common-mode (the footprint of working
-  bolometers is also shown for reference, Uranus peak 0.14\,pW); (c)
+  bolometers is also shown for reference, Uranus peak 0.15\,pW); (c)
   reduction in which high-pass filtering above 0.775\,Hz
   (corresponding to a spatial scale of 200\,arcsec as indicated) is
   applied after common-mode removal, but before the map estimate ---
   the map-based convergence test is activated and the solution halts
   after 10 iterations, but leaving large-scale ringing due to the
-  filter (Uranus peak 0.38\,pW); (d) same as (c), but now the region
+  filter (Uranus peak 0.27\,pW); (d) same as (c), but now the region
   of the map beyond the white dot-dashed circle is constrained to a
   value of zero until all but the final iteration --- the map is now
   extremely flat, there is little attenuation of the source flux, and
-  the diffraction pattern is clearly seen (Uranus peak 0.38\,pW).}
+  the diffraction pattern is clearly seen (Uranus peak 0.27\,pW).}
 \label{fig:pointmaps}
 \end{figure*}
 
@@ -1784,11 +1784,11 @@ poorly cross-linked scans of compact (though resolved) sources by
   structures in the map and common-mode removal, corresponding to
   panels (a) and (b) in Fig.~\ref{fig:pointmaps}. The black and grey
   lines in the top panel show the residual signal for a single
-  bolometer after 2 and 50 iterations respectively (they are nearly
+  bolometer after 2 and 100 iterations respectively (they are nearly
   identical). The green and red lines show the \emph{difference}
   between the \model{COM} and \model{AST} (the signal produced by the
   current map estimate for a given bolometer) model components for
-  that bolometer between iterations 2 and 50 respectively. This shows
+  that bolometer between iterations 2 and 100 respectively. This shows
   that a strong signal has grown over time, and it has equal but
   opposite signs in the two model components, so that they cancel one
   another. The bottom panel shows the scan pattern of the telescope
