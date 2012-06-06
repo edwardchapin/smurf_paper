@@ -26,8 +26,8 @@ set allsub = (s4a s4b s4c s4d)
 
 set basename = "$lambda"$obsdate\_$obsnum
 
-set onlyone = 1
-goto bright_compact
+set onlyone = 0
+#goto diverge_com
 
 
 
@@ -40,7 +40,7 @@ diverge_com:
 
 echo "*** Show divergence problems using only com... ***"
 
-foreach numiter ( 2 50 )
+foreach numiter ( 2 100 )
 
     makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
         uranus_com_$numiter method=iterate \
@@ -113,6 +113,7 @@ if ( $onlyone == 1 ) goto finish
 respmap:
 
 foreach sub ( $allsub )
+
     calcflat $dataroot/$sub/$obsdate/$obsnum/$sub$obsdate\_$obsnum\_0002 \
         flat_$sub resp=resp_$sub accept
 
@@ -122,7 +123,7 @@ foreach sub ( $allsub )
     hcopy resp_$sub.data_array slice_$sub.data_array
 end
 
-wcsmosaic slice\* ref=! out=resp_fplane method=nearest accept
+wcsmosaic slice_s4\* ref=! out=resp_fplane method=nearest accept
 wcsalign resp_fplane out=resp_fplane_align method=nearest \
     ref=uranus_brightcompact accept
 ndf2fits resp_fplane_align \!resp_fplane_align.fits
