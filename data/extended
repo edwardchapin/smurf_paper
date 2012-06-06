@@ -22,12 +22,12 @@ set dataroot = /scuba2
 set msg = verbose
 #set msg = normal
 
-set onlyone = 1
+set onlyone = 0
 #goto map_bright_extended
 #goto map_default
 #goto respmap
 #goto fake
-goto jk
+#goto jk
 
 
 map_default:
@@ -37,7 +37,7 @@ echo "*** Reduce M17 map using default reduction ***"
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     m17_default method=iterate \
     config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,itermap=0,chitol=<undef>,maptol=0.05,numiter=-900,shortmap=-1"' \
-    msg_filter=$msg
+    msg_filter=$msg | tee m17_default.log
 
 foreach iter ( 02 03 10 30 )
     ndf2fits m17_default.more.smurf.itermaps.ch00i0$iter m17_default_$iter.fits
@@ -57,7 +57,7 @@ echo "*** Reduce M17 map using bright_extended reduction ***"
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     m17_bright_extended method=iterate \
     config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,numiter=-900,shortmap=-1"' \
-    msg_filter=$msg
+    msg_filter=$msg | tee m17_bright_extended.log
 
 makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     m17_bright_extended_2 method=iterate \
@@ -131,7 +131,7 @@ ndftrace $refmap > /dev/null
 set lbound = (`parget lbound ndftrace`)
 set ubound = (`parget ubound ndftrace`)
 
-foreach f ( 150 300 600 )
+foreach f ( 150 300 600 1200 )
 #foreach f ( 600 )
 
     echo "^$STARLINK_DIR/share/smurf/dimmconfig.lis,chitol=<undef>,maptol=0.05,numiter=-900,itermap=1,fakemap=m17_fakemap,850.flt.filt_edge_largescale=$f" > conf_half_default.lis
@@ -143,12 +143,12 @@ foreach f ( 150 300 600 )
         makemap ^m17_half$h.lis m17_default_half$h\_$f method=iterate \
             config=^conf_half_default.lis \
             msg_filter=$msg ref=$refmap lbnd=\[$lbound[1],$lbound[2]\] \
-            ubnd=\[$ubound[1],$ubound[2]\]
+            ubnd=\[$ubound[1],$ubound[2]\] | tee m17_default_half$h\_$f.log
 
         makemap ^m17_half$h.lis m17_bright_extended_half$h\_$f method=iterate \
             config=^conf_half_bright_extended.lis \
             msg_filter=$msg ref=$refmap lbnd=\[$lbound[1],$lbound[2]\] \
-            ubnd=\[$ubound[1],$ubound[2]\]
+            ubnd=\[$ubound[1],$ubound[2]\] | tee m17_bright_extended_half$h\_$f.log
     end
 end
 
@@ -194,7 +194,7 @@ hcopy m17_fakemap.data_array temp.data_array
 sc2mapfft temp\($lbnd1\:$ubnd1,$lbnd2\:$ubnd2\) pspec_m17_fakemap azavpspec
 ndf2fits pspec_m17_fakemap \!pspec_m17_fakemap.fits
 
-foreach f ( 150 300 600 )
+foreach f ( 150 300 600 1200 )
 #foreach f ( 600 )
 
     foreach srcmap ( m17_default m17_bright_extended )
