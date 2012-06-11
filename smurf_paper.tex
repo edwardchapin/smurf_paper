@@ -124,7 +124,7 @@ Clerk Maxwell Telescope (JCMT) on Mauna Kea, Hawai'i. The camera
 simultaneously images the sky in two broad bands centered over 450 and
 850\,\micron. The focal planes at each wavelength are populated with 4
 rectangular subarrays, consisting of $40 \times 32$ bolometers each,
-and subtend a nearly contiguous $4' \times 4'$ footprint on the sky.
+and subtend a nearly contiguous $7' \times 7'$ footprint on the sky.
 Ultimately, the instrument will also be equipped with a Fourier
 transform spectrometer \citep[FTS-2,][]{gom2010}, and a polarimeter
 \cite[POL-2,][]{bastien2005}. This paper describes the Submillimetre
@@ -926,8 +926,9 @@ describe their implementation in detail.
     \model{NOI} & noise estimation \\
     \hline
     \model{DKS} & dark squid cleaning along columns \\
-    \model{SMO} & time-domain smoothing filter \\
     \model{PLN} & 2-dimensional time-varying plane removal \\
+    \model{SMO} & time-domain smoothing filter \\
+    \model{TMP} & pointing as baseline template \\
     \hline
     \end{tabular}
   \label{tab:components}
@@ -1018,7 +1019,7 @@ Any extended astronomical emission on a scale comparable to or larger
 than the spatial extent of the area used to estimate the common-mode will
 contribute a similar signal to all bolometers. Therefore such extended
 emission is indistinguishable from the other sources of common-mode
-signal (fridge and atmosphere variations) and will be removed by the 
+signal (fridge and atmosphere variations) and will be removed by the
 model. This places a limit on the spatial extent of astronomical
 structure that can be recovered.
 
@@ -1181,8 +1182,12 @@ points that land in each pixel (Section~\ref{sec:ast}), and
 large-scale noise sources can be checked by analyzing the angular
 power spectra of jackknife maps (e.g., Section~\ref{sec:cosmo}).
 
-\subsubsection{\model{DKS}: dark squid cleaning along columns}
-\label{sec:dks}
+\subsubsection{Other experimental models}
+
+We don't use them, but we should mention them since a reviewer might
+ask us if we tried them: \model{DKS}, \model{TMP}, \model{SMO},
+\model{PLN}.
+
 
 Columns share significant magnetic field pickup which is measured by
 the dark squids. This model has been included although it makes little
@@ -1194,8 +1199,6 @@ use the \model{TMP} model described below.
 \textit{There are also the popped bolometers that could help fill the
 gaps.}
 
-\subsubsection{\model{TMP}: remove a scaled template}
-
 Since the \model{DKS} cannot generally be used due to the missing
 dark squids, an alternative is to use the telescope pointing as a
 proxy for the signal due to magnetic field pickup
@@ -1204,19 +1207,9 @@ sine) as a function of time is used as a template that is simply
 scaled and removed from each bolometer signal. Some modest
 improvements can be achieved with this model.
 
-\subsubsection{\model{SMO}: time-domain smoothing filter}
-\label{sec:smo}
-
-TJ
-
 We also have the SMO filter that's useful for very short scans
 because edge effects don't matter so much. Two sorts - median which is
 more robust, or mean which is more accurate.
-
-\subsubsection{\model{PLN}: 2d time-varying sky noise plane removal}
-\label{sec:pln}
-
-TJ
 
 We can remove a plane at each timeslice but it doesn't seem to improve
 things. Perhaps refer to other papers that claim to have seen coherent
@@ -1292,6 +1285,19 @@ This provides good correspondance with what we would choose ``by
 eye'', and furthermore, letting the solver run for many more
 iterations in several test cases yields insignificant differences.
 
+Another major source of divergence is correlation between \model{COM}
+and \model{FLT}. Since \model{FLT} usually consists of a high-pass
+filter following the application of \model{COM}, \model{COM} is
+completely free to grow any large-scale structure at frequencies below
+the chosen filter edge. While such structure does not appear in the
+map (as it is removed by \model{FLT}), we found that the solution
+could be made to converge significantly faster by ``re-mixing''
+\model{COM} and \model{FLT} at the start of each iteration. In
+practice, at the start of each iteration, the previous iterations of
+each model are both added back into the residual immediately prior to
+re-calculating \model{COM}. In this way, truly common-mode signals,
+even at low-frequencies, do not leak into \model{FLT}.
+
 %-------------------------------------------------
 \subsection{Data cleaning}
 %-------------------------------------------------
@@ -1350,9 +1356,41 @@ indistinguishable, and required slightly more execution time, using
 this method compared to the boxcar method described above. It is
 therefore not currently available to users.
 
-\subsubsection{Whitening filter}
+\subsubsection{Bolometer Filtering}
 
-EC
+Despite the ability of the map-maker to iterative remove many noise
+components, under some circumstances it may be desirable to filter the
+data \emph{once} during the pre-processing step. Three main filtering
+options are available:
+
+\begin{itemize}
+
+\item The most commonly-used pre-processing filter is polynomial
+subtraction. A polynomial of the requested order is fit and removed
+from each bolometer time-series. At a bare minimum, the mean is
+removed from all of the bolometers (order 0) in all reductions
+described in this paper.
+
+\item All of the filters available as part of the iterative Fourier
+Transform Filter (Section~\ref{sec:flt}) can also be applied once
+during pre-processing.
+
+\item As a complete alternative to the iterative map-making procedure,
+cleaning by principal component analysis (PCA) is available as an
+experimental pre-processing option. As described in
+Section~\ref{sec:pca}, a new set of basic vectors for the bolometer
+data are found which diagonalize their covariance matrix. The
+brightest components can then be subtracted from the data. A single
+parameter specifies the threshold on the amplitude of the eigenvalues
+to be removed, as a number of standard deviations away from the mean
+value. Subarrays are cleaned independently once for the full length of
+each continuousy chunk of data. Given the computational expense of
+this method, and initial tests which showed little improvement over
+simple high-pass filtering, this method has not yet been explored in
+detail with SCUBA-2 data.
+
+\end{itemize}
+
 
 \subsubsection{Time-domain de-spiking}
 \label{sec:timedespike}
@@ -1644,13 +1682,18 @@ subsequent iterations.
 \label{sec:examples}
 %------------------------------------------------------------------------------
 
-In this section three different types of data are reduced. In each
-case, the baseline reduction using defaults as described in
-Section~\ref{sec:algorithm} are used first. Then, modifications are
-described to improve each reduction.
+In this section three different common types of data are reduced: a
+bright point source, Uranus (Section~\ref{sec:point}); a bind survey
+of high-redshift galaxies in the Lockman Hole
+(Section~\ref{sec:cosmo}); and a map of a bright extended star-forming
+region in our Galaxy, M17 (Section~\ref{sec:extended}). In each case,
+variations on the default algorithm from Section~\ref{sec:algorithm}
+are described.
 
+%-------------------------------------------------
 \subsection{Known point source}
 \label{sec:point}
+%-------------------------------------------------
 
 The accurate measurement of positions and brightnesses of known point
 sources are necessary in real-time to establish telescope pointing
@@ -1799,8 +1842,10 @@ poorly cross-linked scans of compact (though resolved) sources by
 \label{fig:degeneracy}
 \end{figure}
 
+%-------------------------------------------------
 \subsection{Deep blind survey}
 \label{sec:cosmo}
+%-------------------------------------------------
 
 \scuba\ surveys designed to detect extremely faint point-sources
 (e.g. high-redshift star-forming galaxies, and debris disks) are
@@ -2146,7 +2191,10 @@ results. See Appendix~A in \citet{chapin2011}, which shows how to
 include confusion (when known \emph{a priori}) explicitly as a noise
 term in the calculation of such filters.
 
+%-------------------------------------------------
 \subsection{Bright extended emission}
+\label{sec:extended}
+%-------------------------------------------------
 
 In this final example, we analyze a map of M17 which contains bright,
 extended emission, in contrast with the earlier two examples. A
@@ -2159,16 +2207,16 @@ fast detectors (with a correspondingly fast sample rate) to enable
 higher slew-rates (up to 600\,arcsec\,s$^{-1}$) to capture as much
 large-scale structure as possible above the detector $1/f$ knees. We
 produce maps of observation 11 on 20110531 using the 850\,\micron\
-array. It is a rotating PONG convering a diameter of 0.375\,deg, with
-a scan speed of 300\,arcsec\,s$^{-1}$, and a transverse spacing of
+array. It is a rotating PONG covering a diameter of 0.375\,deg, with a
+scan speed of 300\,arcsec\,s$^{-1}$, and a transverse spacing of
 180\,arcsec, taking 37.5\,min to complete.
 
 The default reduction of these data is shown in the top panels of
 Fig.~\ref{fig:m17}, after iterations 2 (the first map estimated after
-the noise weights have been measured) and 30 iterations (when the map
+the noise weights have been measured) and 17 iterations (when the map
 has converged). The first panel also depicts the array footprint, and
-the angular scale corresponding the high-pass filter edge. Much like
-the reduction of a point source without any prior constraints
+the angular scale corresponding to the high-pass filter edge. Much
+like the reduction of a point source without any prior constraints
 (Fig.~\ref{fig:pointmaps}c), degeneracies on scales larger than the
 array footprint and filter produce ripples in the map.
 
@@ -2196,16 +2244,17 @@ and the brightest regions are clearly more extended.
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.8\linewidth]{m17_jk.pdf}
+\includegraphics[width=\linewidth]{m17_jk.pdf}
 \caption{Maps of M17 used to characterize the noise properties and
-transfer function of SMURF. For each column, a different high-pass
-filter edge scale was adopted (indicated in the top panels). First
-(top) row: Average of two halves of the data analyzed independently,
-using the default configuration. The data have had added to them
-synthetic signal within a 600\,arcsec diameter circle (S.E. of M17)
-created as a realization of noise from a $P(k) \propto k^{-3}$ angular
-power spectrum multiplied by the PSF, subtracting the minimum to make
-it positive, scaling it to a similar signal range as M17 itself, and
+transfer function of SMURF (same intensity scale as
+Fig.~\ref{fig:m17}). For each column, a different high-pass filter
+edge scale was adopted (indicated in the top panels). First (top) row:
+Average of two halves of the data analyzed independently, using the
+default configuration. The data have had added to them synthetic
+signal within a 600\,arcsec diameter circle (S.E. of M17) created as a
+realization of noise from a $P(k) \propto k^{-3}$ angular power
+spectrum multiplied by the PSF, subtracting the minimum to make it
+positive, scaling it to a similar signal range as M17 itself, and
 rolling-off the edges smoothly using half a period of a radial
 (1+cosine)/2 function across 100\,arcsec beyond the edge of the
 600\,arcsec region. Second row: jackknife maps produced from the
@@ -2231,15 +2280,16 @@ default configuration. left: raw PSDs for the input (noiseless)
 simulated data (thick black line), the signal (average of each half)
 PSDs (thin solid lines), and noise PSDs estimated from the jackknives
 (dashed lines). Vertical dotted lines indicate the high-pass filter
-scales. The red, green, and blue colours indicate data filtered at
-150, 300, and 600\,arcsec scales. right: corrected PSDs. Since the
-input PSD is known, it is possible to measure the transfer function of
-the map-maker as the ratio between the output map signal and input
-PSDs (thick solid lines). The remaining lines are as in the left
-panel, but now corrected by the transfer function. This plot shows
-that while increasing the filter scale improves the SNR at large
-scales ($\gsim100$\,arcsec), it also reduces the SNR at smaller scales
-($\lsim100$\,arcsec).}
+scales: 150\,arcsec (red); 300\,arcsec (orange); 600\,arcsec (green);
+and 900\,arcsec (blue). Since the input PSD is known, it is possible
+to measure the transfer function of the map-maker as the ratio between
+the output map signal PSDs and the input PSD (from the left panel),
+giving the thin coloured lines (linear vertical axis shown on right of
+plot). The remaining lines are as in the left panel, but now corrected
+by the transfer function. This plot shows that increasing the filter
+scale improves the SNR at intermediates scales
+($\sim$200--600\,arcsec), although the SNR worsens at smaller scales
+($\lsim$200\,arcsec).}
 \label{fig:m17_def_ps}
 \end{figure*}
 
@@ -2252,40 +2302,37 @@ except now using the bright extended configuration. This configuration
 has resulted in an improved transfer function and SNR at large angular
 scales. Also note that increasing the filter scale does not have as
 large of an impact on the small-scale noise as in the default
-configuration.}
-\label{fig:m17_bc_ps}
+configuration, although it is still noticeably larger up to scales of
+about $\sim$60\,arcsec.}
+\label{fig:m17_be_ps}
 \end{figure*}
 
 While the reduction in the bottom panels of Fig.~\ref{fig:m17} is
 clearly superior in at least a cosmetic sense to those in the top
 panels, it is important to quantify both the noise properties of the
 maps and their response to real structures (the transfer function). We
-would also like to know these are affected by our choice of filter
+would also like to know how each are affected by our choice of filter
 scale.  Similar to the previous section, we will use a jackknife test
-to estimate the noise, and then inject known sources into the data to
-observe how they are attenuated.
+to estimate the noise, as well as injecting known sources into the
+data to observe how they are attenuated.
 
 Maps are produced using the first and second continuous halves of the
 data in Fig.~\ref{fig:m17_jk}. This is not an ideal situation since
 the noise properties may evolve with time (e.g., due to changing sky
 conditions) leading to a biased estimate of the parent noise
-distribution from the jackknife. Also, since the zero-masking depends
-on the SNR of the map, it will be restricted to regions approximately
-$\sqrt{2}$ shallower in these maps than for the full data
-set. Finally, the cross-linking (positional angles sampled) is
-similar, though not identical in the two halves. Ideally one would
+distribution in the complete map from the jackknife. Also, since the
+zero-masking depends on the SNR of the map, it will be restricted to
+regions approximately $\sqrt{2}$ shallower in these maps than for the
+full data set. Finally, the cross-linking (positional angles sampled)
+is similar, though not identical in the two halves. Ideally one would
 have many full maps as in the case of the Lockman Hole data in the
 previous section, from which alternating maps could be combined.
 
-%A second map of M17 using the same observing mode was made shortly
-%after the first, observation 13 on 20110511. We produce jackknife maps
-%from the differences between the two ... angular power spectrum of the
-%noise (should be worse at large-scale for the default map).
-
-In addition to dividing the data into two halves, we also inject
-simulated clouds into a relative empty portion of the map. It is
-created by drawing a realization of noise within an 800\,arcsec
-on-a-side box, from an angular power spectrum $P(k) \propto k^{-3}$
+Since our goal in this section is to measure the response of the
+map-maker to extended structures, we inject a simulated signal with
+power at a range of scales to a relatively empty region of the map.
+It is created by drawing a realization of noise within an 800\,arcsec
+on-a-side box, with an angular power spectrum $P(k) \propto k^{-3}$
 which is appropriate for Galactic cirrus clouds
 \citep[e.g.][]{gautier1992}. It is then filtered again with a
 14.5\,arcsec Gaussian to model the effect of the SCUBA-2 optical
@@ -2298,45 +2345,117 @@ zero between radii of 300 and 400 arcsec.
 The first row of Fig.~\ref{fig:m17_jk} shows the total signal image
 averaging the maps made of each independent half of the data, for the
 default configuration (inverse-variance weighting has been used). The
-columns show reductions using 150, 300, and 600\,arcsec filter edges
-in the reductions. The synthetic data are clearly seen as the circular
-region S.E. of M17. As the filter scale is increased, the size of the
-ripples increases accordingly. While larger structures do seem to
-appear, negative bowls are a major problem without any other map
-constraints.The second row of Fig.~\ref{fig:m17_jk} shows the
+columns show reductions using 150, 300, 600, and 900\,arcsec filter
+edges in the reductions. For reference, the largest scale that is
+completely inscribed by the array footprint is about 400\,arcsec, and
+the diagonal of the array is about 600\,arcsec (meaning that scales
+beyond 600\,arcsec are completely unconstrained when common-mode
+rejection is used).  The synthetic data are clearly seen as the
+circular region S.E. of M17. As the filter scale is increased, the
+size of the ripples increases accordingly. While larger structures do
+seem to appear, negative bowls are a major problem without any other
+map constraints.The second row of Fig.~\ref{fig:m17_jk} shows the
 jackknife maps. The astronomical emission is almost perfectly removed,
 except for a slight impression of M17 near the centre of the map that
 is probably due to some combination of detector gain and pointing
-drifts.
+drifts. Otherwise the jackknife appears to be a plausible realization
+of noise from the same parent distribution as for the averaged maps.
 
-One fairly arbitrary parameter in our data reduction is the choice of
-angular scale for the \model{FLT} filter. The current default of
-300\,arcsec\ was chosen ``by-eye'' as a compromise that would provides
-aesthetically reasonable results for a range of observing
-modes. However, there is a simple tradeoff that warrants
-experimentation for specific fields. By choosing a larger scale (lower
-frequency in the bolometers signals) for the filter, potentially more
-structure will be faithfully re-produced in the map (up to the scale
-of the array footprint, at which point the common-mode removal will
-dominate). However, lower the filter edge can potentially let through
-more independent low-frequency noise. We have therefore re-run the
-previous tests using two other scales for the filters, and show the
-resulting maps and angular SNR spectra in Figs ... .
+The third and fourth rows in Fig.~\ref{fig:m17_jk} repeat this
+exercise using the bright extended configuration, in which the SNR
+threshold of 5 is again used to constrain the map. As the filter scale
+is increased, more of the extended structure in M17 is reproduced in
+the map, as evidenced by the blue and red contours (masks generated
+from the first and second halves of the data, respectively). The
+masking does a generally good job of suppressing the largest-scale
+ripples that are produced by the default reduction. However, the noise
+away from regions of bright emission does increase noticeably (mottled
+appearance). With filter scales $\gsim600$\,arcsec, virtually the
+entire region of synthetic emission is correctly identified by the SNR
+mask and allowed to vary freely in the solution.
+
+Next, we analyze the angular power spectra densities (PSDs) of the
+maps to understand the signal and noise properties of the map-maker in
+the region of synthetic sources, as a function of filter scale. The
+left panel of Fig.~\ref{fig:m17_def_ps} shows the raw PSDs for the
+input synthetic signal (thick black line), the output map signals
+(thin solid lines), and the jackknife maps (dashed lines). Colours
+encode the filter scales used: 150\,arcsec (red); 300\,arcsec
+(orange); 600\,arcsec (green); and 900\,arcsec (blue). Note that, in
+the exception of the synthetic data, we only plot the PSDs down two
+the second-lowest spatial frequency bin of
+$1.875\times10^{-3}$\,arcsec$^{-1}$, or 533\,arcsec, due to the fact
+that the smallest is very poorly sampled, and therefore noisy. As the
+filter edge is increased, more power is measured in the map PSDs at
+larger scales. However, much of this power is clearly produced by
+noise which appears in the jackknife PSDs. We estimate the map-maker
+transfer function as the ratio between the portion of the signal PSDs
+\emph{not} produced by noise, to the input PSD, or
+%
+\begin{equation}
+G(k) = \frac{P_\mathrm{M}(k) - P_\mathrm{JK}(k)}{P_\mathrm{S}(k)},
+\end{equation}
+%
+where $k$ is the spatial frequency, and the subscripts ``M'', ``JK'',
+and ``S'' refer to the signal map, jackknife map, and synthetic map,
+respectively.
+
+The transfer functions $G(k)$ are plotted as thin solid lines in the
+right panel of Fig.~\ref{fig:m17_def_ps}. This formula produced
+extremely noisy values at large frequencies (small scales), and was
+set to a value of 1 above 0.015\,arcsec$^{-1}$, as well as any point
+in the curve where $P_\mathrm{M}(k)$ exceeded $P_\mathrm{S}(k)$
+(i.e. $G(K)$ is assumed to be $\le$1). As expected, the larger the
+scale of the filter, the lower the spatial frequency at which the map
+transfer function falls. We then correct the map and jackknife PSDs by
+dividing by $G(k)$ to produce the thick solid, and dashed lines in the
+right panel of Fig.~\ref{fig:m17_def_ps}. This shows us that, even
+though the raw noise in the left panel is lower at small scales when a
+smaller-scale filter is used (e.g. the red dashed line), once we
+correct for the transfer function, we actually win in a SNR sense at
+large scales using the larger-scale filter as you would expect.
+
+These tests are then repeated using the bright extended reduction in
+Fig.~\ref{fig:m17_be_ps}. The most obvious improvement with this
+reduction over the default reduction is that the transfer functions
+fall more slowly at large angular scales, accompanied by a slower
+increase in noise; in other words, there is greatly improved SNR at
+large angular scales (an obvious conclusion given the appearence of
+the maps in Fig.~\ref{fig:m17_jk}). In fact, using the 900\,arcsec
+filter edge, the map response is still above 80\% right out to the
+largest scale accurately measured in the PSDs, 533\,arcsec, which is
+about the largest scale that should be recoverable given the size of
+the array footprint and the fact that we use common-mode rejection.
+Another interesting feature of these reductions is that the increase
+in small-scale noise as the filter edge is increased is not as drastic
+as in the default reduction, and the SNR improves at scales
+$\gsim$60\,arcsec.
+
+One case in which the SNR is \emph{worse} using the bright extended
+reduction is using a 150\,arcsec filter. In this case the noise is
+considerably larger in the bright extended reduction as evidenced by
+the ``kink'' near 150\,arcsec. Referring to the mask contours in the
+left panel of the third row, it is clear that the map-maker has failed
+to identify much of the bright, extended emission in the region of the
+synthetic source. Each area that is not within the contours is
+constrained to zero throughout the solution, therefore suppressing
+power (and lowering the transfer function), and subsequently reducing
+the SNR of the final result. This measurement serves as a warning: the
+map-maker response is non-linear when using SNR masking. Harsh
+filtering can provide misleading results as in this example. Maps of
+\emph{faint} extended emission will also suffer considerably, as the
+structures of interest may not clear the SNR threshold for the mask.
 
 Note that alternatives to the zero-masking approach do exist for other
-iterative map-makers. For example, \citet{kovacs2008} restricts the
-solution to a small number of iterations to avoid divergence on
-large-scales. For BOLOCAM data of the Galactic Plane,
-\citet{aguirre2010} used a Maximum-Entropy filtering step to suppress
-large-scales. The zero-masking implemented in SMURF is similar in
-principle to the \citet{aguirre2010} method, while being slightly
-conceptually simpler. However, since both methods are non-linear,
-detailed simulations would be required to determine their
-SNR-dependent angular transfer functions.
-
-
-
-\textit{Or now an externally supplied mask.}
+iterative map-makers. For example, \citet{kovacs2008} typically
+restricts the solution to a small fixed number of iterations (of order
+$\sim$10), although we note that there is no guarantee that maps will
+have reasonably converged with such a strategy. For BOLOCAM data of
+the Galactic Plane, \citet{aguirre2010} used a Maximum-Entropy
+filtering step to suppress large-scales. As in the case of the
+SNR-based masking described here, Maximum-Entropy filtering is also
+non-linear, meaning that it too requires simulations to establish its
+transfer function and noise properties as a function of angular scale.
 
 
 %------------------------------------------------------------------------------
@@ -2344,25 +2463,62 @@ SNR-dependent angular transfer functions.
 \label{sec:summary}
 %------------------------------------------------------------------------------
 
-\scuba\ is being re-commissioned. Maybe we will have some initial data
-on fridge performance? If both it, and sky noise are relatively
-well-behaved, might be able to restrict filtering to lower frequencies
-and get larger-scale structures.
+\begin{enumerate}
 
-Larger array footprint also helps.
+\item SMURF is an iterative map-maker that can produce SCUBA-2 maps on
+single high-end modern desktops in a reasonable amount of time.
 
-Talk about potential of Pascale et al. method to get closer to
-max-likelihood map solution (handle maps at constant scan angles with
-weights in Fourier space separately).
+\item A simple model which removes most noise in a common-mode
+rejection step, along with high-pass filtering, results in maps that
+approach the white-noise performance of the detectors.
+
+\item The main problem to overcome with our strategy is the divergence
+of the map on large angular scales, due to the degeneracy between the
+map, common-mode, and other residual low-frequency noise. A simple
+strategy of constraining empty regions of the map to zero (either a
+user-supplied mask for known sources, or an iterative determination of
+signal above some SNR threshold) provides good constraints for compact
+objects, and bright/extended structures.
+
+\item For maps of faint point sources, a single (non-iterative)
+high-pass filter at the start of the reduction produces maps that are
+nearly white-noise limited. We illustatre how to completely whiten the
+maps using jackknife measurements of the angular noise power spectrum
+in order to reliably extract sources down to the limits of the map.
+
+\item The map-maker has an automatic stopping criterion based on the
+change in the map and $\chi^2$ between subsequent iterations, allowing
+it to adapt to a wide range of data in a pipeline setting.
+
+\item It is believed that a maximum-likelihood map-maker, such as
+SANEPIC, will provide improved maps over the iterative algorithm
+described here. However, SMURF will most likely be used as an initial
+step in such processing since it can quickly clean the bolometer
+time-series, as well as perform map-based despiking (a necessarily
+iterative step).
+
+
+\end{enumerate}
+
+%\scuba\ is being re-commissioned. Maybe we will have some initial data
+%on fridge performance? If both it, and sky noise are relatively
+%well-behaved, might be able to restrict filtering to lower frequencies
+%and get larger-scale structures.
+
+%Larger array footprint also helps.
+
+%Talk about potential of Pascale et al. method to get closer to
+%max-likelihood map solution (handle maps at constant scan angles with
+%weights in Fourier space separately).
 
 %------------------------------------------------------------------------------
 \section{Acknowledgements}
 %------------------------------------------------------------------------------
 
-\textit{Presumably the standard telescope acknowledgment here plus a thank you
-to CFI for funding the DR work. Ed should probably thank both CANFAR
-and JAC for additionally funding although his JAC funding is noted in
-the affiliation.}
+\textit{Presumably the standard telescope acknowledgment here plus a
+thank you to CFI for funding the DR work. Ed should probably thank
+both CANFAR and JAC for additionally funding although his JAC funding
+is noted in the affiliation.}
 
 %------------------------------------------------------------------------------
 \bibliographystyle{mn2e}

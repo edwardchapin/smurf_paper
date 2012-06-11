@@ -17,7 +17,7 @@ lightblue=12
 
 ; default reduction showing ripples at different iteration numbers
 
-iter = ['02', '30', '02', '84']
+iter = ['02', '17','02','63']
 labels = ["!6(a) default", "(b) default", "(c) bright extended", $
           "(d) bright extended"]
 
@@ -171,7 +171,7 @@ device, /close
 
 ; --- show jackknife and sum images for 3 different filter scales ---
 
-scale = ['150','300','600']
+scale = ['150','300','600','900']
 nscale = n_elements(scale)
 
 device, filename="m17_jk.eps", /encapsulated, bits_per_pixel=8, $
@@ -223,14 +223,14 @@ for i=0, nscale-1 do begin
   len = (scale[i]/3600.)/pixres
   len_norm = (len/double(nx)) * (pos[2]-pos[0])
   xcen = (pos[2]+pos[0])/2. + 0.26*dxplot
-  ycen = (pos[3]+pos[1])/2. + 0.06*dyplot
+  ycen = (pos[3]+pos[1])/2. + 0.15*dyplot ; 0.06
   plots, xcen+len_norm*[-0.5,0.5], ycen*[1., 1.], /normal, thick=thick*3, $
     color=255
   plots, xcen+len_norm*[-0.5,0.5], ycen*[1., 1.], /normal, thick=thick, $
     color=0
-  xyouts, xcen, ycen-0.015, scale[i]+' arcsec', /normal, charsize=2.*cs/3., $
+  xyouts, xcen, ycen+0.012, scale[i]+' arcsec', /normal, charsize=2.*cs/3., $
     charthick=thick*3., align=0.5, color=255
-  xyouts, xcen, ycen-0.015, scale[i]+' arcsec', /normal, charsize=2.*cs/3., $
+  xyouts, xcen, ycen+0.012, scale[i]+' arcsec', /normal, charsize=2.*cs/3., $
     charthick=thick, align=0.5, color=0
 
   ; default jk
@@ -287,8 +287,8 @@ device, /close
 
 ; --- power spectra plots -----------------------------------------------------
 
-col = [red,green,blue]
-scale = ['150','300','600']
+col = [red,orange,green,blue]
+scale = ['150','300','600','900']
 ;scale = ['600']
 type = 'pspec_m17_'+['bright_extended','default']
 nscale = n_elements(scale)
@@ -299,9 +299,12 @@ pspec_df = sxpar(pheader,"CDELT1")
 pspec_nf = n_elements(fakeps)
 pspec_f = (dindgen(pspec_nf)+0.5)*pspec_df
 
-prange = [1d-8, max(fakeps)]
+g = where(pspec_f gt 0.001)
 
 pos = [0.13,0.09,0.9,0.94]
+
+prange = [1d-8, 3]
+frange=[0.001,max(pspec_f)]
 
 for i=0, n_elements(type)-1 do begin
 
@@ -313,32 +316,32 @@ for i=0, n_elements(type)-1 do begin
   plot, pspec_f, fakeps, /xlog, /ylog, xstyle=5, $
     ytitle="Raw PSD (pW!u2!n arcsec!u2!n)", ystyle=1, $
     charthick=thick, charsize=cs*2., $
-    yrange=prange, thick=thick*4., pos=pos
+    yrange=prange, thick=thick*4., pos=pos, xrange=frange
 
   for j=0, n_elements(scale)-1 do begin
     mycolour
     fxread, datadir+type[i]+'_'+scale[j]+'_jk.fits', jkps, pheader
     fxread, datadir+type[i]+'_'+scale[j]+'_sum.fits', sumps, pheader
 
-    oplot, pspec_f, jkps, color=col[j], thick=thick*2, linestyle=2
+    oplot, pspec_f[g], jkps[g], color=col[j], thick=thick*2, linestyle=2
     oplot, 1./scale[j]*[1.,1.],[1d-10,1d10], linestyle=1, col=col[j]
 
-    oplot, pspec_f, sumps, color=col[j], thick=thick*2,linestyle=0
+    oplot, pspec_f[g], sumps[g], color=col[j], thick=thick*2,linestyle=0
 
     loadct,0
   endfor
 
-  axis, xaxis=0, xstyle=1, xrange=[min(pspec_f),max(pspec_f)], $
+  axis, xaxis=0, xstyle=1, xrange=frange, $
     xtitle="!6spatial frequency ("+pspec_xunit+")", charsize=cs*2, $
     /xlog, charthick=thick
 
-  axis, xaxis=1, xstyle=1, xrange=1d/[min(pspec_f),max(pspec_f)], $
+  axis, xaxis=1, xstyle=1, xrange=1d/frange, $
     xtitle="!6angular scale (arcsec)", charsize=cs*2, $
     /xlog, charthick=thick
 
 
   xl = 0.6
-  yl = 0.8
+  yl = 0.7
   ys = 0.04
   xt = 0.06
 
@@ -370,7 +373,7 @@ for i=0, n_elements(type)-1 do begin
   plot, [1d-7,1d-7], fakeps, /xlog, /ylog, xstyle=5, $
     ystyle=5, charthick=thick, charsize=cs*2., $
     yrange=prange, thick=thick*2., pos=pos, $
-    xrange=[min(pspec_f),max(pspec_f)]
+    xrange=frange
 
   for j=0, n_elements(scale)-1 do begin
     mycolour
@@ -379,24 +382,24 @@ for i=0, n_elements(type)-1 do begin
 
     ; work out transfer function
     xfer = jkps*0 + 1.
-    ind = where(fakeps gt sumps)
-    xfer[ind] = sumps[ind]/fakeps[ind]
+    ind = where((fakeps gt sumps) and (pspec_f lt 0.015) )
+    xfer[ind] = (sumps[ind]-jkps[ind])/fakeps[ind]
     jkps_cor = jkps/xfer
     sumps_cor = sumps/xfer
 
-    oplot, pspec_f, jkps_cor, color=col[j], thick=thick*2, linestyle=2
+    oplot, pspec_f[g], jkps_cor[g], color=col[j], thick=thick*2, linestyle=2
     oplot, 1./scale[j]*[1.,1.],[1d-10,1d10], linestyle=1, col=col[j]
 
-    oplot, pspec_f, sumps_cor, thick=thick*2, color=col[j], linestyle=0
+    oplot, pspec_f[g], sumps_cor[g], thick=thick*2, color=col[j], linestyle=0
 
     loadct,0
   endfor
 
-  axis, xaxis=0, xstyle=1, xrange=[min(pspec_f),max(pspec_f)], $
+  axis, xaxis=0, xstyle=1, xrange=frange, $
     xtitle="!6spatial frequency ("+pspec_xunit+")", charsize=cs*2, $
     /xlog, charthick=thick
 
-  axis, xaxis=1, xstyle=1, xrange=1d/[min(pspec_f),max(pspec_f)], $
+  axis, xaxis=1, xstyle=1, xrange=1d/frange, $
     xtitle="!6angular scale (arcsec)", charsize=cs*2, $
     /xlog, charthick=thick
 
@@ -413,10 +416,10 @@ for i=0, n_elements(type)-1 do begin
 
     ; work out transfer function again...
     xfer = jkps*0 + 1.
-    ind = where(fakeps gt sumps)
-    xfer[ind] = sumps[ind]/fakeps[ind]
+    ind = where( (fakeps gt sumps) and (pspec_f lt 0.015) )
+    xfer[ind] = (sumps[ind]-jkps[ind])/fakeps[ind]
 
-    oplot, pspec_f, xfer, color=col[j], linestyle=0, thick=0
+    oplot, pspec_f[g], xfer[g], color=col[j], linestyle=0, thick=0
 
     loadct,0
   endfor

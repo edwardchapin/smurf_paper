@@ -39,7 +39,9 @@ makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
     config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,itermap=0,chitol=<undef>,maptol=0.05,numiter=-900,itermap=1"' \
     msg_filter=$msg | tee m17_default.log
 
-foreach iter ( 02 03 10 30 )
+set lastiter = `hdir m17_default.more.smurf.itermaps | grep CH | wc -l`
+
+foreach iter ( 02 $lastiter )
     ndf2fits m17_default.more.smurf.itermaps.ch00i0$iter \!m17_default_$iter.fits
 end
 
