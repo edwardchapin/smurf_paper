@@ -54,8 +54,8 @@
 
 % ----------------------------------------------------------------------------
 
-\title[SMURF: an iterative map-maker for SCUBA-2]{The Sub-Millimetre User
-Reduction Facility: an iterative map-maker for SCUBA-2}
+\title[SMURF: an iterative map-maker for \scuba]{The Sub-Millimetre User
+Reduction Facility: an iterative map-maker for \scuba}
 
 \author[Edward~L.~Chapin~et~al.]{
   \parbox[t]{\textwidth}{
@@ -84,15 +84,28 @@ Reduction Facility: an iterative map-maker for SCUBA-2}
 
 \begin{abstract}
   We describe the properties of data from the Submillimetre Common
-  User Bolometer Array 2 (\scuba) taken during the Shared Risk
-  Observing period from 2010 February 11 to 2010 March 25, and the
-  production of maps using the Sub-Millimetre User Reduction Facility
-  (SMURF). Our iterative approach is similar to those used to reduce
-  data from other ground-based submillimetre telescopes in recent
-  years, and recovers angular scales up to the size of the array
-  footprint (approximately 2\,arcmin). The method is also able to
-  achieve the theoretical white-noise limit of the instrument for
-  point-source studies.
+  User Bolometer Array 2 (\scuba), a camera for the 15-m James Clerk
+  Maxwell Telescope that provides simultaneous imaging capabilities at
+  450 and 850\,\micron, and the production of maps using the
+  Sub-Millimetre User Reduction Facility (SMURF). With nearly 5000
+  bolometers in each imaging band, and an approximately 5\,arcmin
+  field-of-view, \scuba\ is presently the largest submillimetre camera
+  in the world, and produces data at rates an order-of-magnitude
+  faster than previous instruments. We have adopted a fast, iterative
+  approach to map-making that enables data reduction on single,
+  modern, high-end desktop computers with execution times that are
+  shorter than the observing times.  SMURF is used in an automated
+  setting both at the telescope for real-time feedback to observers,
+  as well as for the production of generic science products at the
+  Canadian Astronomical Data Centre. A suite of tools are also
+  provided for interactive data analysis.  Three detailed case studies
+  are used to: (i) explore convergence properties of the map-maker
+  using simple prior constraints (Uranus -- a point source); (ii)
+  demonstrate that our strategy is capable of recovering angular
+  scales up to the size of the array footprint (approximately
+  5\,arcmin) for bright extended sources (star-forming region M17);
+  and (iii) achieve the white-noise limit of the instrument for faint
+  point-source studies (blank-field survey of the Lockman Hole).
 \end{abstract}
 
 
@@ -122,21 +135,24 @@ The Submillimetre Common User Bolometer Array 2
 \citep[\scuba,][]{holland2006} is a new instrument for the 15-m James
 Clerk Maxwell Telescope (JCMT) on Mauna Kea, Hawai'i. The camera
 simultaneously images the sky in two broad bands centered over 450 and
-850\,\micron. The focal planes at each wavelength are populated with 4
-rectangular subarrays, consisting of $40 \times 32$ bolometers each,
-and subtend a nearly contiguous $7' \times 7'$ footprint on the sky.
-Ultimately, the instrument will also be equipped with a Fourier
-transform spectrometer \citep[FTS-2,][]{gom2010}, and a polarimeter
-\cite[POL-2,][]{bastien2005}. This paper describes the Submillimetre
-User Reduction Facility, SMURF, a software package for reducing the
-imaging data. The reduction of FTS-2 and POL-2 data will be described
-at a later date once these additional instruments have been
-commissioned. The details of the instrument design, performance, and
-its calibration are given in two companion papers: \citet{holland2012}
-and \citet{dempsey2012}.
+850\,\micron, with approximately 7.5 and 14.5\,arcsec full-width at
+half-maximum (FWHM) point spread functions (PSFs). The focal planes at
+each wavelength are populated with 4 rectangular subarrays, consisting
+of $40 \times 32$ bolometers each, and subtend a nearly contiguous $7'
+\times 7'$ footprint on the sky.  Ultimately, the instrument will also
+be equipped with a Fourier transform spectrometer
+\citep[FTS-2,][]{gom2010}, and a polarimeter
+\cite[POL-2,][]{bastien2005}. This paper describes the properties of
+\scuba\ data that are relevant to producing maps of the imaging data,
+and the Submillimetre User Reduction Facility, SMURF, a software
+package for perfoming the reduction. The analysis of FTS-2 and POL-2
+data will be described at a later date once these additional
+instruments have been commissioned. The details of the instrument
+design, performance, and its calibration are given in two companion
+papers: \citet{holland2012} and \citet{dempsey2012}.
 
 Over the last twenty years, observations in the submillimetre band
-(defined here to be 200--1000\,\micron) have helped revolutionize
+(defined here to be 200--1200\,\micron) have helped revolutionize
 several important areas of astrophysics, including: the
 characterization of early stages of star-formation by identifying the
 dense, cold regions in molecular clouds where stars may eventually
@@ -148,55 +164,65 @@ $\sim10000$ total detectors, \scuba\ is presently the largest
 submillimetre camera in the world, and the fastest wide-area
 ground-based submillimetre imager.
 
-Most submillimetre imaging cameras, to date, have used bolometers to
-maximize sensitivities \citep[e.g.][]{griffin2002}. Each pixel
-consists of a thermal absorber to collect photons that have passed
-through broad-band filters, and the signal is read-out using a
-thermometer. The high-frequency broad-band noise in modern systems,
-such as \scuba, is limited by photon noise from the instrument and
+Submillimetre imaging cameras generally use bolometers to maximize
+sensitivity, in which an absorber collects photons that pass through
+broad-band filters, and the signal is read out-out using a thermometer
+\citep[e.g.][]{griffin2002}. The sensitivity of bolometers in a camera
+like \scuba\ are limited by photon noise from the instrument and
 ambient backgrounds. The low-frequency noise, however, is dominated by
-sources such as slow variations in mean backgrounds (such as thermal
+sources such as slow variations in mean backgrounds (e.g., thermal
 variations within the cryostat, and the atmosphere for ground-based
-cameras), and drift in the readout electronics. Since the
-low-frequency noise is largely correlated between all, or subsets, of
-the bolometers in time, it can be suppressed during map-making, since
-astronomical signals have the distinct property that they are fixed in
-a sky reference frame (assuming they are not time-varying). If
-successful, the noise in the resulting map is said to be ``background
-noise limited'', meaning that the only significant remaining noise
-sources are uncorrelated spatially in the map (the theoretical limit).
+cameras), and drift in the readout electronics. Such noise has a power
+spectrum $\propto 1/f^\alpha$ ($\alpha>0$), and the frequency at which
+it is comparable to the white noise level is called the ``$1/f$
+knee''. Since the low-frequency noise is largely correlated between
+all, or subsets, of the bolometers in time, it can be suppressed
+during map-making, since astronomical signals have the distinct
+property that they are fixed in a sky reference frame (assuming they
+are not time-varying). If successful, the noise in the resulting map
+is said to be ``background noise limited'', meaning that the map noise
+is uncorrelated spatially, and has an amplitude that scales as the
+$\mathrm{NEFD}/\sqrt{t}$, where the NEFD is the noise-equivalent
+flux-density (the white noise level of a bolometer in 1\,s of
+integration), and $t$ is the amount of integration time in a map
+pixel.
 
-There are numerous ways to attack this problem, both in terms of the
-data-collection method, and data processing. Historically, both radio
-and submillimetre telescope systems have used ``chopping'' to perform
-rapid differences between target sky locations and some reference
-(e.g., another point on the sky, internal calibrators, and different
-frequencies in the case of heterodyne systems). In fact, spatial
-chopping was used by SCUBA, the predecessor to \scuba, to remove
-low-frequency drifts \citep{holland1999}. However, chopping (in
-particular spatial chopping) has the unfortunate side-effect of
-filtering out information on scales larger than the chop-throw
-\textbf{(references)}.For this reason, modern cameras like \scuba\ aim
-to provide a high-degree of inherent detector stability, and rapidly
-slew the telescope so that astronomical signals up to large scales are
-captured in a signal band at considerably higher frequency than the
-residual low-frequency drift.
+There are numerous ways to attack the problem of map production, both
+in terms of the data-collection method, and processing. The two most
+important principles to follow in terms of scan strategy are: (i) to
+modulate the astronomical signals of interest in such a way that they
+appear in the lowest-noise regions of the bolometer noise power
+spectrum, i.e., above the $1/f$ knee; and (ii) to provide good
+``cross-linking'', in which each portion of the map is sampled on a
+range of temporal scales, again, to help distinguish time-varying
+noise features from fixed astronomical sources. In the case of \scuba,
+(i) is achieved through fast-scanning of the entire telescope (up to
+600\,arcsec\,sec$^{-1}$ slew speeds); and (ii) by offering scan
+patterns that cross the sky at a wide range of position angles,
+ultimately observing each portion of the map at a number of different
+times. Such methods are now used by virtually all existing
+ground-based submillimetre cameras, in favour of ``chopping'' methods
+(where the secondary is quickly moved to modulate the signal) that
+were more appropriate for older instruments that had poorer
+low-frequency noise performance, and were only sensivitve to modest
+angular scales
+\citep[e.g.][]{glenn1998,weferling2002,laurent2005,wilson2008,kovacs2008b}.
 
-In the case of chopped data, ideally the resulting data are completely
-free of low-frequency noise, and therefore the data samples are
-statistically uncorrelated.
-
-often used various
-``chopping'' methods to remove low-frequency drifts -- rapid
-differences are made between the sky signal at a given position and an
-internal reference signal; the sky signal in two different bands for
-heterodyne systems (frequency chopping); and a different position in
-the sky \citep[a method employed by SCUBA, the predecessor of
-\scuba][]{holland1999}.
-
- many of them evolving
-out of techniques for producing maps of the large-scale anisitropies
-in the Cosmic Microwave Background (CMB)
+There are three general styles of map-making that are described in the
+literature for bolometer data. The best maps are produced using
+\emph{maximum likelihood} techniques, in which the map is expressed as
+a linear combination of the data using weights that are a function of
+the time-domain noise properties of the bolometers. The first good
+description of this method appears in \citet{janssen1992} for the
+production of maps from the COsmic Background Explorer
+(COBE). However, this method can be extremely computationally
+expensive, even when small numbers of bolometers are involved,
+although we note that an algorithm called ``SANEPIC'' for reducing
+maps from the Balloon-borne Large-Aperture Submillimeter Telescope
+(BLAST) involving hundreds of bolometers and correctly incorporating
+inter-bolometer noise correlations, has been implemented with
+reasonable execution speeds and memory requirements
+\citep[][]{patanchon2008}.
 
   Styles of map-making: least
 squares \citep{janssen1992} maximum likelihood
@@ -225,10 +251,37 @@ used only a single subarray at each of the two observing wavelengths,
 and had considerably different noise properties and poorer performance
 than the fully-commissioned instrument in 2011.
 
-Another paper worth citing? \citet{weferling2002}
-
 \textit{May want to note that the pipeline is discussed elsewhere,
   e.g. Gibb et al 2006.}
+
+
+
+% Historically, both radio
+%and submillimetre telescope systems have used ``chopping'' to perform
+%rapid differences between target sky locations and some reference
+%(e.g., another point on the sky, internal calibrators, and different
+%frequencies in the case of heterodyne systems). In fact, spatial
+%chopping was used by SCUBA, the predecessor to \scuba, to remove
+%low-frequency drifts \citep{holland1999}. However, chopping (in
+%particular spatial chopping) has the unfortunate side-effect of
+%filtering out information on scales larger than the chop-throw
+%\textbf{(references)}.For this reason, modern cameras like \scuba\ aim
+%to provide a high-degree of inherent detector stability, and rapidly
+%slew the telescope so that astronomical signals up to large scales are
+%captured in a signal band at considerably higher frequency than the
+%residual low-frequency drift.
+
+%In the case of chopped data, ideally the resulting data are completely
+%free of low-frequency noise, and therefore the data samples are
+statistically uncorrelated.
+
+%often used various
+%``chopping'' methods to remove low-frequency drifts -- rapid
+%differences are made between the sky signal at a given position and an
+%internal reference signal; the sky signal in two different bands for
+%heterodyne systems (frequency chopping); and a different position in
+%the sky \citep[a method employed by SCUBA, the predecessor of
+%\scuba][]{holland1999}.
 
 %------------------------------------------------------------------------------
 \section{\scuba\ data properties}
@@ -1387,7 +1440,7 @@ value. Subarrays are cleaned independently once for the full length of
 each continuousy chunk of data. Given the computational expense of
 this method, and initial tests which showed little improvement over
 simple high-pass filtering, this method has not yet been explored in
-detail with SCUBA-2 data.
+detail with \scuba\ data.
 
 \end{itemize}
 
@@ -2184,7 +2237,7 @@ helps with negative ringing.}
 \label{fig:m17}
 \end{figure*}
 
-For future, significantly deeper SCUBA-2 maps, in which the RMS in a
+For future, significantly deeper \scuba\ maps, in which the RMS in a
 PSF-smoothed map is dominated by point-source confusion, rather than
 instrumental noise, a modified matched-filter will offer improved
 results. See Appendix~A in \citet{chapin2011}, which shows how to
@@ -2335,7 +2388,7 @@ It is created by drawing a realization of noise within an 800\,arcsec
 on-a-side box, with an angular power spectrum $P(k) \propto k^{-3}$
 which is appropriate for Galactic cirrus clouds
 \citep[e.g.][]{gautier1992}. It is then filtered again with a
-14.5\,arcsec Gaussian to model the effect of the SCUBA-2 optical
+14.5\,arcsec Gaussian to model the effect of the \scuba\ optical
 response. The RMS of these fluctuations are then normalized to 0.002
 pW so that they are comparable to the dynamic range of M17 itself. The
 minimum is subtracted so that the signal is positive. Finally, half a
@@ -2465,7 +2518,7 @@ transfer function and noise properties as a function of angular scale.
 
 \begin{enumerate}
 
-\item SMURF is an iterative map-maker that can produce SCUBA-2 maps on
+\item SMURF is an iterative map-maker that can produce \scuba\ maps on
 single high-end modern desktops in a reasonable amount of time.
 
 \item A simple model which removes most noise in a common-mode
