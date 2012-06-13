@@ -83,8 +83,8 @@ Reduction Facility: an iterative map-maker for \scuba}
 \maketitle
 
 \begin{abstract}
-  We describe the properties of data from the Submillimetre Common
-  User Bolometer Array 2 (\scuba), a camera for the 15-m James Clerk
+  We describe data properties of the Submillimetre Common User
+  Bolometer Array 2 (\scuba), a camera for the 15-m James Clerk
   Maxwell Telescope that provides simultaneous imaging capabilities at
   450 and 850\,\micron, and the production of maps using the
   Sub-Millimetre User Reduction Facility (SMURF). With nearly 5000
@@ -180,8 +180,8 @@ all, or subsets, of the bolometers in time, it can be suppressed
 during map-making, since astronomical signals have the distinct
 property that they are fixed in a sky reference frame (assuming they
 are not time-varying). If successful, the noise in the resulting map
-is said to be ``background noise limited'', meaning that the map noise
-is uncorrelated spatially, and has an amplitude that scales as the
+is said to be ``white noise limited'', meaning that the map noise is
+uncorrelated spatially, and has an amplitude that scales as the
 $\mathrm{NEFD}/\sqrt{t}$, where the NEFD is the noise-equivalent
 flux-density (the white noise level of a bolometer in 1\,s of
 integration), and $t$ is the amount of integration time in a map
@@ -197,39 +197,71 @@ spectrum, i.e., above the $1/f$ knee; and (ii) to provide good
 range of temporal scales, again, to help distinguish time-varying
 noise features from fixed astronomical sources. In the case of \scuba,
 (i) is achieved through fast-scanning of the entire telescope (up to
-600\,arcsec\,sec$^{-1}$ slew speeds); and (ii) by offering scan
-patterns that cross the sky at a wide range of position angles,
-ultimately observing each portion of the map at a number of different
-times. Such methods are now used by virtually all existing
+600\,arcsec\,sec$^{-1}$ slew speeds), such that significant drift in
+the bolometers due to low-frequency noise occurs more slowly than the
+crossing times for the astronomical scales of interest; and (ii) by
+offering scan patterns that cross the sky at a wide range of position
+angles, ultimately observing each portion of the map at a number of
+different times. Such methods are now used by virtually all existing
 ground-based submillimetre cameras, in favour of ``chopping'' methods
 (where the secondary is quickly moved to modulate the signal) that
 were more appropriate for older instruments that had poorer
 low-frequency noise performance, and were only sensivitve to modest
 angular scales
-\citep[e.g.][]{glenn1998,weferling2002,laurent2005,wilson2008,kovacs2008b}.
+\citep[e.g.][]{glenn1998,weferling2002,wilson2008,kovacs2008b}.
 
-There are three general styles of map-making that are described in the
-literature for bolometer data. The best maps are produced using
-\emph{maximum likelihood} techniques, in which the map is expressed as
-a linear combination of the data using weights that are a function of
-the time-domain noise properties of the bolometers. The first good
-description of this method appears in \citet{janssen1992} for the
-production of maps from the COsmic Background Explorer
-(COBE). However, this method can be extremely computationally
-expensive, even when small numbers of bolometers are involved,
-although we note that an algorithm called ``SANEPIC'' for reducing
-maps from the Balloon-borne Large-Aperture Submillimeter Telescope
-(BLAST) involving hundreds of bolometers and correctly incorporating
-inter-bolometer noise correlations, has been implemented with
-reasonable execution speeds and memory requirements
-\citep[][]{patanchon2008}.
+There are three general styles of map-making that are relevant to
+reducing bolomter data in the literature. The simplest methods involve
+some basic processing of the data to remove as much noise
+contamination as possible, e.g., using baseline removal, filters, and
+then simply re-gridding the data into a map. Such was the basic recipe
+for the baseline reduction of chopped data from SCUBA-2's predecessor
+SCUBA (reference?), and MAMBO, another camera from the same
+generation. Generally speaking, such methods are fast, although
+dependending on the science goals and noise properties of the data,
+they may not achieve the best theoretical noise performance on the
+angular scales of interest. A particular case of this method was
+successfully used for the reduction of data from BOLOCAM
+\citep[e.g.][]{laurent2005}, and its younger sibling AzTEC
+\citep[e.g.][]{scott2008}, using ``principal component analysis''
+(PCA) cleaning. A statistical black-box is used to remove the most
+correlated components of the bolometer signals, enabling the detection
+of point-sources very close to the theoretical white-noise limits of
+the detectors with reasonable computation times. However, PCA cleaning
+is not a good generic solution for producing maps of extended
+structures, since large astronomical sources produce correlated
+signals amongst many detectors, and are removed by this procedure.
 
-  Styles of map-making: least
-squares \citep{janssen1992} maximum likelihood
-\citep[e.g.,][]{patanchon2008}; iterative -- see \citet{johnstone2000}
-implementation of \citet{wright1996} to remove chop,
-\citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA analysis
-\citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
+The best map-making strategies for recovering information on all
+angular scales are \emph{maximum likelihood} techniques, in which the
+time-series data are expressed as a sampling of the ``true'' map of
+the sky plus noise, and then the equation is inverted to estimate the
+map as some weighted linear combination of the data that minimizes the
+variance.  The first good description of this method appears in
+\citet{janssen1992} for the production of maps from the COsmic
+Background Explorer (COBE -- the description is relevant despite the
+fact that it used a differential radiometer instead of
+bolometers). Other descriptions in the CMB literature include
+\citet{tegmark1997} and \citet{stompor2002}.  The downside to such
+methods is that they can be both computationally expensive and have
+large memory requirements. While for some experimental designs fast
+iterative methods for the inversion do exist with minimal memory usage
+\citep[e.g.][]{wright1996}, for the more general map-making problem
+involving many detectors, the problem is significantly complicated
+both by the need to measure the cross power-spectra for all unique
+pairs of bolometers, and then to perform the inversion itself. The
+most promising maximum-likelihood method that may one day be applied
+to SCUBA-2 data is ``SANEPIC'', which successfully reduced maps from
+the Balloon-borne Large-Aperture Submillimeter Telescope, involving
+hundreds of bolometers, and correctly incorporating inter-bolometer
+noise correlations \citep[][]{patanchon2008}.
+
+%  Styles of map-making: least
+%squares \citep{janssen1992} maximum likelihood
+%\citep[e.g.,][]{patanchon2008}; iterative -- see \citet{johnstone2000}
+%implementation of \citet{wright1996} to remove chop,
+%\citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA analysis
+%\citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
 
 \scuba\ is presently unique in terms of the shear volume of data that
 it produces on a nightly basis, and the fact that it is observing a
