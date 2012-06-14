@@ -168,24 +168,24 @@ Submillimetre imaging cameras generally use bolometers to maximize
 sensitivity, in which an absorber collects photons that pass through
 broad-band filters, and the signal is read out-out using a thermometer
 \citep[e.g.][]{griffin2002}. The sensitivity of bolometers in a camera
-like \scuba\ are limited by photon noise from the instrument and
-ambient backgrounds. The low-frequency noise, however, is dominated by
-sources such as slow variations in mean backgrounds (e.g., thermal
-variations within the cryostat, and the atmosphere for ground-based
-cameras), and drift in the readout electronics. Such noise has a power
-spectrum $\propto 1/f^\alpha$ ($\alpha>0$), and the frequency at which
-it is comparable to the white noise level is called the ``$1/f$
-knee''. Since the low-frequency noise is largely correlated between
-all, or subsets, of the bolometers in time, it can be suppressed
-during map-making, since astronomical signals have the distinct
-property that they are fixed in a sky reference frame (assuming they
-are not time-varying). If successful, the noise in the resulting map
-is said to be ``white noise limited'', meaning that the map noise is
-uncorrelated spatially, and has an amplitude that scales as the
-$\mathrm{NEFD}/\sqrt{t}$, where the NEFD is the noise-equivalent
-flux-density (the white noise level of a bolometer in 1\,s of
-integration), and $t$ is the amount of integration time in a map
-pixel.
+like \scuba\ are limited by white photon and phonon noise from the
+instrument and ambient backgrounds. The low-frequency noise, however,
+is dominated by sources such as slow variations in mean backgrounds
+(e.g., thermal variations within the cryostat, and the atmosphere for
+ground-based cameras), and drift in the readout electronics. Such
+noise has a power spectrum $\propto 1/f^\alpha$ ($\alpha>0$), and the
+frequency at which it is comparable to the white noise level is called
+the ``$1/f$ knee''. Since the low-frequency noise is largely
+correlated between all, or subsets, of the bolometers in time, it can
+be suppressed during map-making, since astronomical signals have the
+distinct property that they are fixed in a sky reference frame
+(assuming they are not time-varying). If successful, the noise in the
+resulting map is said to be ``white noise limited'', meaning that the
+map noise is uncorrelated spatially, and has an amplitude that scales
+as the $\mathrm{NEFD}/\sqrt{t}$, where the NEFD is the
+noise-equivalent flux-density (the white noise level of a bolometer in
+1\,s of integration), and $t$ is the amount of integration time in a
+map pixel.
 
 There are numerous ways to attack the problem of map production, both
 in terms of the data-collection method, and processing. The two most
@@ -211,13 +211,13 @@ angular scales
 \citep[e.g.][]{glenn1998,weferling2002,wilson2008,kovacs2008b}.
 
 There are three general styles of map-making that are relevant to
-reducing bolomter data in the literature. The simplest methods involve
-some basic processing of the data to remove as much noise
-contamination as possible, e.g., using baseline removal, filters, and
-then simply re-gridding the data into a map. Such was the basic recipe
-for the baseline reduction of chopped data from SCUBA-2's predecessor
-SCUBA (reference?), and MAMBO, another camera from the same
-generation. Generally speaking, such methods are fast, although
+reducing bolomter data in the literature. The simplest ``direct
+methods'' involve some basic processing of the data to remove as much
+noise contamination as possible, e.g., using baseline removal,
+filters, and then simply re-gridding the data into a map. Such was the
+basic recipe for the baseline reduction of chopped data from SCUBA-2's
+predecessor SCUBA (reference?), and MAMBO, another camera from the
+same generation. Generally speaking, such methods are fast, although
 dependending on the science goals and noise properties of the data,
 they may not achieve the best theoretical noise performance on the
 angular scales of interest. A particular case of this method was
@@ -263,28 +263,83 @@ noise correlations \citep[][]{patanchon2008}.
 %\citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA analysis
 %\citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
 
-\scuba\ is presently unique in terms of the shear volume of data that
-it produces on a nightly basis, and the fact that it is observing a
-wide variety of science targets for multiple users (unlike dedicated
-CMB experiments, for example). For this reason, SMURF has been
-designed to use a faster, and less memory-intensive algorithm than
-CMB-style maximum likelihood map-makers, although it is less accurate
-at reproducing large-scale structures. The basic procedure is to
-iteratively model and remove most of the bolometer-bolometer
-correlated signal components and independent low-frequency noise, and
-then regrid the residual signals. This method is similar in spirit to
-the Comprehensive Reduction Utility for SHARC-2
+The third approach adopted here for \scuba\ is a compromise between
+the previous two methods. Under the assumption that a significant
+portion of the (predominantly low-frequency) non-white noise sources
+can be modeled, an iterative solution is obtained for both the
+astronomical image and the parameters of the noise model. Since the
+remaining (non-modelled) noise sources are assumed to be white, a
+single scalar noise may be calculated for all of the data points from
+a given bolometer (since the noise at any instant in time is
+uncorrelated with others, nor with the data from other bolometers),
+greatly simplifying the measurement of noise properties and the
+inversion step that is so complicated in the maximum-likelihood
+methods. In principle, it should also be possible to recover a wider
+dynamic range in angular scales than the simplest ``direct'' methods,
+with an increase in calculation time that is merely linear in the
+number of iterations needed, while using a comparable amount of
+memory. A fast iterative method for handling chopped data from CMB
+experiments was described in \citet{wright1996}, and later applied to
+chopped SCUBA data by \citet{johnstone2000}, although in each case the
+chopping renders the data essentially white without the need to model
+additional noise components. More similar to the algorithm described
+here was the iterative method for fitting and removing baseline drifts
+in SCUBA scan-map data as the astronomical image estimate improved
+(...SURF reference?...). The two closest modern relatives of SMURF are the
+Comprehensive Reduction Utility for SHARC-2
 \citep[CRUSH,][]{kovacs2008}, and the pipeline developed for the
-Bolocam Galactic Plane Survey \citep{aguirre2010}. While most of the
-analysis described here applies equally to all of the data taken
-to-date with \scuba, we note that the \scuba\ Shared-Risks Observing
-period (S2SRO) which took place from 2010 February 11 to 2010 March 25
-used only a single subarray at each of the two observing wavelengths,
-and had considerably different noise properties and poorer performance
-than the fully-commissioned instrument in 2011.
+Bolocam Galactic Plane Survey \citep{aguirre2010}.
 
-\textit{May want to note that the pipeline is discussed elsewhere,
-  e.g. Gibb et al 2006.}
+A reasonable model for correlated noise in \scuba\ is a single
+``common-mode'' signal seen by all of the bolometers. Iterative
+estimation and removal of this signal significantly lowers the $1/f$
+knee, without compromosing structures on angular scales larger than
+the array footprint. Residual independent drifts at lower frequencies
+are removed with an iterative high-pass filter. This strategy enables
+SMURF to reduce data faster than they are taken, on single high-end
+desktop computers, and it has successfully been used as part of a
+real-time pipeline offering feedback to observers at the
+telescope. The pipeline is also used to generate near-science grade
+products at the Canadian Astronomical Data Centre (CADC). Details of
+the pipeline design are given in \citet{gibb2005}
+
+This paper is divided in the following way. We first describe the
+properties of \scuba\ data and scan patterns in Section~\ref{sec:data}
+to motivate the data model that we have adopted. Note that while most
+of the analysis described here applies equally to all of the data
+taken to-date with \scuba, the \scuba\ Shared-Risks Observing period
+(S2SRO) which took place from 2010 February 11 to 2010 March 25 used
+only a single subarray at each of the two observing wavelengths, and
+had considerably different noise properties and poorer performance
+than the fully-commissioned instrument in 2011 (a comparison is
+provided in Section~\ref{sec:s2sro}. Next, the details of the SMURF
+algorithm are given in Section~\ref{sec:algorithm}. The paper is
+concluded in Section~\ref{sec:examples} with three detailed test cases
+that span the majority of observation types likely to be undertaken
+with \scuba, with an emphasis on the mitigation of divergence
+problems, and characterizing the output maps: (i) Uranus, a bright,
+compact source (Section~\ref{sec:point}); (ii) the Lockman Hole, a
+blind survey of faint point-like source (Section~\ref{sec:cosmo}); and
+(iii) the star-forming region M17, including bright, extended emission
+(Section~\ref{sec:extended}). All of the data analyzed in this paper
+are publicly available through the CADC SCUBA-2 raw-data queries page
+for the dates and observation numbers given in the
+text\footnote{\texttt{http://www3.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/
+jcmt/search/scuba2}}. All of the analysis was performed using
+\texttt{Starlink} version ... .
+
+
+%\scuba\ is presently unique in terms of the shear volume of data that
+%it produces on a nightly basis, and the fact that it is observing a
+%wide variety of science targets for multiple users (unlike dedicated
+%CMB experiments, for example). For this reason, SMURF has been
+%designed to use a faster, and less memory-intensive algorithm than
+%CMB-style maximum likelihood map-makers, although it is less accurate
+%at reproducing large-scale structures. The basic procedure is to
+%iteratively model and remove most of the bolometer-bolometer
+%correlated signal components and independent low-frequency noise, and
+%then regrid the residual signals.
+
 
 
 
@@ -305,7 +360,7 @@ than the fully-commissioned instrument in 2011.
 
 %In the case of chopped data, ideally the resulting data are completely
 %free of low-frequency noise, and therefore the data samples are
-statistically uncorrelated.
+%statistically uncorrelated.
 
 %often used various
 %``chopping'' methods to remove low-frequency drifts -- rapid
@@ -682,6 +737,7 @@ conspired to produce these large signals.
 
 %-------------------------------------------------
 \subsection{Differences between the S2SRO and 2011 re-commissioned instrument}
+\label{sec:s2sro}
 %-------------------------------------------------
 
 The S2SRO period took place during February and March 2010. For the
