@@ -15,9 +15,13 @@ set msg = verbose
 
 # extra cleaning parameters
 set clean_extra = "spikethresh=5,spikebox=50"
+#set clean_extra = ""
 
 # where should we start?
-goto magpickup
+set onlyone = 1
+goto intro
+
+
 
 # illustrate model divergence with lots of iterations --------------------------
 
@@ -45,7 +49,8 @@ makemap $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
     config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,numiter=100"' \
     msg_filter=$msg
 
-exit
+if ( $onlyone == 1 ) goto finish
+
 
 # some data for showing magnetic field pickup, magdksquid.pro ------------------
 
@@ -81,7 +86,11 @@ echo "    Getting JCMTState..."
 
 jcmtstate2cat $lambda$obsdate\_$obsnum\_con > state_$obsdate\_$obsnum.tst
 
-# the following outputs are used by intro.pro and pca2band.pro -----------------
+if ( $onlyone == 1 ) goto finish
+
+
+
+# the following outputs are used by intro.pro and spca2band.pro ----------------
 
 intro:
 
@@ -91,9 +100,9 @@ intro:
 #set subfile = "000[23]"
 
 # Wayne's debris disk from cookbook -- use this for paper!!!
-set obsdate = 20100313
-set obsnum = 00029
-set subfile = "001[345]".sdf
+#set obsdate = 20100313
+#set obsnum = 00029
+#set subfile = "001[345]".sdf
 
 # Some Lockman data
 #set obsdate = 20100311
@@ -105,10 +114,16 @@ set subfile = "001[345]".sdf
 #set obsnum = 00016
 #set subfile = "000[345]"
 
+# 2011 obs recommended by Harriet. 900" pong.: new data for paper
+set obsdate = 20111112
+set obsnum = 00038
+set subfile = "001[345]".sdf
 
 echo "*** Processing $obsdate $obsnum ***"
 
-foreach lambda (s4a s4c s4d s8a s8b s8d)
+foreach lambda (s4a s4b s4c s4d s8a s8b s8c s8d)
+#foreach lambda (s4a s8d)
+
     echo "--- $lambda ---"
 
     echo "    Concatenating..."
@@ -130,8 +145,8 @@ foreach lambda (s4a s4c s4d s8a s8b s8d)
     echo "    Removing common-mode..."
 
     sc2clean $basename\_con $basename\_con_nocom \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.boxcar=0,com.gain_box=600000"' \
-        msg_filter=$msg
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.gain_box=-999,noiseclipprecom=1"' \
+        msg_filter=$msg com=true
 
     echo "    Copy out QUALITY at single time slice as a mask..."
 
@@ -153,14 +168,16 @@ echo "    Getting JCMTState..."
 
 jcmtstate2cat s4a$obsdate\_$obsnum\_con > state_$obsdate\_$obsnum.tst
 
+if ( $onlyone == 1 ) goto finish
 
 
 
 
-
-
-# The plot for section "COM, GAI: common-mode estimation". First
+# The plot for section "COM, GAI: common-mode estimation". First -------------
 # flatfield the raw data.
+
+comgai:
+
 $SMURF_DIR/flatfield $dataroot/s8a/20110907/00029/s8a20110907_00029_0023 \
                      ./s8a20110907_00029_0023_ff
 
@@ -186,9 +203,11 @@ mv pgplot.pdf com.pdf
 rm pgplot.ps s8a20110907_00029_0023_ff.sdf out=s8a20110907_00029_0023_cl.sdf \
              s8a20110907_00029_0023_bk.sdf s8a20110907_00029_0023_res.sdf
 
+if ( $onlyone == 1 ) goto finish
 
 
 
+#------------------------------------------------------------------------------
 # The following long section produces the plots for the step fixing section
 steps:
 
@@ -319,6 +338,8 @@ rm -f a1.ps diff.sdf median.sdf rms.sdf steps1.ps a2.ps fixed.sdf \
    steps5.ps bbb.sdf mdiff2.sdf rhs3.ps steps3.ps ff.sdf, cl.sdf, bk.sdf, \
    resid.sdf
 
+if ( $onlyone == 1 ) goto finish
 
 
+finish:
 
