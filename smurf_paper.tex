@@ -440,19 +440,19 @@ $dI/dP$ across the focal plane as the
 \emph{flatfield}. Fig.~\ref{fig:sensitivities} shows the flatfield for
 each focal plane.
 
-\begin{figure}
-\vspace{2cm}
-\textbf{This will be a figure showing s4a and s8d responsivity maps}
-\vspace{2cm}
-\caption{The response of each bolometer to known input heater power
-  for a typical night during S2SRO. The s4a subarray had a
-  particularly large variation in $T_\mathrm{C}$ towards the
-  bottom-right which resulted in lower responsivity, and
-  correspondingly larger noise. The s8d array also suffered
-  significant variations across the focal plane, in particular
-  removing larger number of useful detectors from the bottom-left.}
-\label{fig:sensitivities}
-\end{figure}
+%\begin{figure}
+%\vspace{2cm}
+%\textbf{This will be a figure showing s4a and s8d responsivity maps}
+%\vspace{2cm}
+%\caption{The response of each bolometer to known input heater power
+%  for a typical night during S2SRO. The s4a subarray had a
+%  particularly large variation in $T_\mathrm{C}$ towards the
+%  bottom-right which resulted in lower responsivity, and
+%  correspondingly larger noise. The s8d array also suffered
+%  significant variations across the focal plane, in particular
+%  removing larger number of useful detectors from the bottom-left.}
+%\label{fig:sensitivities}
+%\end{figure}
 
 
 In general, bolometers have two predominant noise components: (i) the
@@ -546,9 +546,10 @@ bolometers in each of the subarrays, as well as variations in the
 mixing chamber temperature (as a proxy for the focal-plane
 temperature), and the telescope pointing during a PONG scan.
 
-\begin{figure}
+\begin{figure*}
 \centering
-\includegraphics[width=\linewidth]{bolos_point_mix.pdf}
+\includegraphics[width=0.49\linewidth]{bolos_point_mix_s2sro.pdf}
+\includegraphics[width=0.49\linewidth]{bolos_point_mix.pdf}
 \caption{A comparison between single bolometer time series in each
   band (top two plots), with the mixing chamber temperature and
   azimuth/elevation pointing offsets. There is a strong correlation
@@ -563,7 +564,7 @@ temperature), and the telescope pointing during a PONG scan.
   predominantly white noise at 450\,\micron\ is significantly larger
   than at 850\,\micron.}
 \label{fig:bolos_mix}
-\end{figure}
+\end{figure*}
 
 Both bolometers share significant long-timescale structure
 ($\gsim10$\,s) that appears to be related to variations in the fridge
@@ -607,9 +608,10 @@ conversion from variance measured in the frequency domain to the time
 domain requires and additional multiplcation by 2; hence the units are
 pW$^2$\,Hz$^{-1}$ rather than pW$^2$\,s.
 
-\begin{figure}
+\begin{figure*}
 \centering
-\includegraphics[width=\linewidth]{pspec.pdf}
+\includegraphics[width=0.49\linewidth]{pspec_s2sro.pdf}
+\includegraphics[width=0.49\linewidth]{pspec.pdf}
 \caption{Bolometer power spectral densities. Four representative
   bolometers have been selected from each sub-array, and the
   flat-fielded (but otherwise raw) PSDs are shown as coloured dotted
@@ -636,7 +638,7 @@ pW$^2$\,Hz$^{-1}$ rather than pW$^2$\,s.
   dominate on scales of approximately 8.3 and 1.7\,arcmin; these scales
   are comparable to the array footprint.}
 \label{fig:pspec}
-\end{figure}
+\end{figure*}
 
 The dotted coloured lines in Fig~\ref{fig:pspec} show the PSDs for
 raw, though flatfielded data. At each wavelength, there is a clear

@@ -28,21 +28,28 @@ cs = 1.5
 
 loadct, 0
 
-if 0 then begin
+if 1 then begin
   ; cookbook uranus
   ;obs = '20091214_00015'
 
-  ; cookbook debris disk
-  obs = '20100313_00029'
+  ; cookbook debris disk -- paper plots for S2SRO
+  ;obs = '20100313_00029'
+  ;suffix = "_s2sro"
 
   ; lockman
   ;obs = '20100311_00065'
 
+  ; 2011 obs recommended by Harriet. 900" pong.
+  obs = '20111112_00038'
+  suffix = ""
+
   fxread, datadir+'s4a'+obs+'_con_clean.fits', data450, header
-  fxread, datadir+'s8d'+obs+'_con_clean.fits', data850, header
+  ;fxread, datadir+'s8d'+obs+'_con_clean.fits', data850, heade
+  fxread, datadir+'s8b'+obs+'_con_clean.fits', data850, header
 
   fxread, datadir+'s4a'+obs+'_con_nocom.fits', nocom450, header
-  fxread, datadir+'s8d'+obs+'_con_nocom.fits', nocom850, header
+  ;fxread, datadir+'s8d'+obs+'_con_nocom.fits', nocom850, header
+  fxread, datadir+'s8b'+obs+'_con_nocom.fits', nocom850, header
 
   state = scuba2_readstate( datadir+'state_'+obs+'.tst' )
 endif
@@ -57,11 +64,42 @@ set_plot,'ps'
 !x.thick=!p.thick
 !y.thick=!p.thick
 
-device, filename='bolos_point_mix.eps', /encapsulated, xsize=20., $
+device, filename='bolos_point_mix'+suffix+'.eps', /encapsulated, xsize=20., $
         ysize=30.
 
-;thex = 16 & they = 15
-thex = 18 & they = 22
+; 20100313_00029
+;thex = 18 & they = 22
+;x450 = [ 3,10,16,thex]
+;y450 = [30,13,16,they]
+;x850 = [ 4,31,25,thex]
+;y850 = [16,20,32,they]
+;temprange = 0.07
+;offrange = 300
+;range450=[-1.8d5,1.8d5]
+;range850=[-1.8e5,1.8d5]
+;vel = 120.  ; arcsec/sec
+;prange = [1d2,1d11]
+;psd450psf = 1d7
+;ref450=2d5
+;psd850psf = 1d8
+;ref850=5d4
+
+; 20111112_00038
+thex = 16 & they = 7
+x450 = [13,24,16,thex]
+y450 = [11,24, 9,they]
+x850 = [15,19,22,thex]
+y850 = [15, 5, 6,they]
+temprange = 0.225
+offrange = 700
+range450=[-4d4,4d4]
+range850=[-2.5d5,2.5d5]
+vel = 190.  ; arcsec/sec
+prange = [1d2,1d11]
+psd450psf = 1d7
+ref450=2d5
+psd850psf = 1d8
+ref850=5d4
 
 b450 = data450[thex,they,*]
 b850 = data850[thex,they,*]
@@ -78,13 +116,13 @@ com450[nt-1] = com450[nt-2]
 com850[nt-1] = com850[nt-2]
 
 
-xl = 0.15
+xl = 0.19
 xr = 0.99
 
 yscl = 0.93
 yoff = 0.06
 
-yt = 0.2
+yt = 0.21
 xt = 0.03
 xrange = [min(t),max(t)]
 
@@ -92,7 +130,7 @@ label = strarr(30)+' '
 
 pos = [xl,0.75*yscl+yoff,xr, 1.0*yscl+yoff]
 plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='Power (pW)', ystyle=1, $
-      charthick=!p.thick,xrange=xrange,yrange=[min(b450),max(b450)]
+      charthick=!p.thick,xrange=xrange,yrange=range450
 oplot, t, nc450, color=128
 oplot, t, b450
 ;oplot, t, com450, color=128, linestyle=2
@@ -103,7 +141,7 @@ xyouts, pos[0]+xt, pos[1]+yt, '450'+micron, charsize=cs, $
 
 pos = [xl,0.5*yscl+yoff,xr, 0.75*yscl+yoff]
 plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='Power (pW)', /noerase, $
-      ystyle=1, charthick=!p.thick,xrange=xrange,yrange=[min(b850),max(b850)]
+      ystyle=1, charthick=!p.thick,xrange=xrange,yrange=range850
 oplot, t, nc850, color=128
 oplot, t, b850
 ;oplot, t, com850, color=128, linestyle=2
@@ -117,7 +155,7 @@ m = state.sc2_mixtemp
 m = m-mean(m)
 plot, t, m*1d3, xstyle=5, charsize=cs, pos=pos, ystyle=1,$
       ytitle='Temperature (mK)', /noerase, charthick=!p.thick, $
-      yrange=[-0.07 ,0.07 ]
+      yrange=[-temprange,temprange ]
 axis, xaxis=0, xstyle=1, xrange=xrange, xtickname=label
 axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
 xyouts, pos[0]+xt, pos[1]+yt, 'Mixing Chamber', charsize=cs,$
@@ -126,7 +164,7 @@ xyouts, pos[0]+xt, pos[1]+yt, 'Mixing Chamber', charsize=cs,$
 pos = [xl,0.+yoff,xr, 0.25*yscl+yoff]
 plot, t, state.daz, xstyle=5, charsize=cs, pos=pos, $
       ytitle='Offset (arcsec)', /noerase, charthick=!p.thick, $
-      yrange=[-300,300]
+      yrange=[-offrange,offrange], ystyle=1
 oplot, t, state.del, linestyle=2
 axis, xaxis=0, xstyle=1, xrange=xrange, xtitle='Time (s)', charthick=!p.thick, $
       charsize=cs
@@ -155,19 +193,9 @@ nf = nt / 2
 freq = (srate/2d)*dindgen(nf)/double(nf)
 df = srate / nt
 
-
-x450 = [ 3,10,16,thex];,28]
-y450 = [30,13,16,they];,10]
-
-;x850 = [ 5,13,16,thex]
-;y850 = [10,10,16,they]
-
-x850 = [ 4,31,25,thex]
-y850 = [16,20,32,they]
-
 box = round(0.1/df) ; width of boxcar in Hz / freq. step size
 
-device, filename='pspec.eps', xsize=20, ysize=20, /color, $
+device, filename='pspec'+suffix+'.eps', xsize=20, ysize=20, /color, $
         bits_per_pixel=24
 
 xl = 0.14
@@ -176,26 +204,23 @@ xr = 0.99
 yscl = 0.845
 yoff = 0.09
 
-vel = 200.  ; arcsec/sec
-
-xrange = [0.1,max(freq)]
-yrange = [2d-10,1.5d-4]
+frange = [0.1,max(freq)]
 
 pos = [xl,0.5*yscl+yoff,xr, 1.0*yscl+yoff]
 
 loadct,0
 
-plot, [0], [0], /xlog, /ylog, xrange=xrange, $
-      yrange=yrange, xstyle=5, ystyle=1, $
+plot, [0], [0], /xlog, /ylog, xrange=frange, $
+      yrange=prange, xstyle=5, ystyle=1, $
       ytitle='PSD (pW!u2!n Hz!u-1!n)', $
       charsize=cs, charthick=!p.thick, pos=pos, xtickname=label
 
-thetarange = (1/xrange)*vel/60.
+thetarange = (1/frange)*vel/60.
 
 axis, xaxis=1, xrange=thetarange, xstyle=1, xtitle='Angular scale (arcmin)', $
       charsize=cs, charthick=!p.thick
 
-axis, xaxis=0, xrange=xrange, xstyle=1, xtickname=label
+axis, xaxis=0, xrange=frange, xstyle=1, xtickname=label
 
 
 mycolour
@@ -204,11 +229,18 @@ mycolour
 xyouts, 0.85, pos[3]-0.04, '450'+micron, charsize=cs, charthick=!p.thick, $
         /normal
 
-xt = 0.6
-yt = 0.43 ;0.90
+; old draft
+;xt = 0.6
+;yt = 0.43
+;dx = 0.025
+;dy = 0.03
 
+; new draft
+xt = 0.6
+yt = 0.85
 dx = 0.025
-dy = 0.03
+dy = 0.025
+
 
 for i=0, 3 do begin
   plots, xt+[i*dx,(i+1)*dx],      yt*[1.,1.], linestyle=1.,color=col[i], /normal
@@ -240,7 +272,7 @@ endfor
 
 ; PSD 450 PSF
 fwhm_f = vel / 7.5
-psf = 1d-6 * ( exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) ) )^2d
+psf = psd450psf * ( exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) ) )^2d
 oplot, freq, psf, linestyle=2, color=black
 
 ; 450 common-mode power spectrum
@@ -250,20 +282,20 @@ oplot, freq, smooth(p,box), color=white, thick=!p.thick*3.
 oplot, freq, smooth(p,box), color=black, thick=!p.thick*1.
 
 ; 450 reference noise value
-oplot, [1d-10,1d10], 5d-8*[1.,1.], linestyle=1, thick=!p.thick*3.,color=white
-oplot, [1d-10,1d10], 5d-8*[1.,1.], linestyle=1, color=black
+oplot, [1d-10,1d10], ref450*[1.,1.], linestyle=1, thick=!p.thick*3.,color=white
+oplot, [1d-10,1d10], ref450*[1.,1.], linestyle=1, color=black
 
-axis, yaxis=1, yrange=yrange, ytickname=label, ystyle=1
+axis, yaxis=1, yrange=prange, ytickname=label, ystyle=1
 
 pos = [xl,0.0*yscl+yoff,xr, 0.5*yscl+yoff]
 
 loadct,0
-plot, [0], [0], /xlog, /ylog, xrange=xrange, $
-      yrange=yrange, xstyle=1, ystyle=1, $
+plot, [0], [0], /xlog, /ylog, xrange=frange, $
+      yrange=prange, xstyle=1, ystyle=1, $
       ytitle='PSD (pW!u2!n Hz!u-1!n)', $
       charsize=cs, charthick=!p.thick, pos=pos, xtickname=label, /noerase
 
-axis, xaxis=0, xstyle=1, xrange=xrange, xtitle='Frequency (Hz)', $
+axis, xaxis=0, xstyle=1, xrange=frange, xtitle='Frequency (Hz)', $
       charsize=cs, charthick=!p.thick
 
 mycolour
@@ -283,6 +315,8 @@ for i=0, n_elements(x850)-1 do begin
   oplot, freq, smooth(p,box), color=col[i]
 endfor
 
+
+
 ; 850 common-mode power spectrum
 f = fft(com850)
 p = (abs(f)^2d)/df
@@ -291,14 +325,14 @@ oplot, freq, smooth(p,box), color=black, thick=!p.thick*1.
 
 ; PSD 850 PSF
 fwhm_f = vel / 14.5
-psf = 1d-7 * ( exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) ) )^2d
+psf = psd850psf * ( exp( -freq^2d/(2d*(2.35*fwhm_f)^2d) ) )^2d
 oplot, freq, psf, linestyle=2, color=black
 
 ; 850 reference noise value
-oplot, [1d-10,1d10], 6d-9*[1.,1.], linestyle=1, thick=!p.thick*3.,color=white
-oplot, [1d-10,1d10], 6d-9*[1.,1.], linestyle=1, color=black
+oplot, [1d-10,1d10], ref850*[1.,1.], linestyle=1, thick=!p.thick*3.,color=white
+oplot, [1d-10,1d10], ref850*[1.,1.], linestyle=1, color=black
 
-axis, yaxis=1, yrange=yrange, ytickname=label, ystyle=1
+axis, yaxis=1, yrange=prange, ytickname=label, ystyle=1
 
 device, /close
 
