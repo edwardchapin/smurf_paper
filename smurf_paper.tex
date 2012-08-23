@@ -2764,10 +2764,7 @@ the United Kingdom, the Netherlands Organisation for Scientific
 Research, and the National Research Council of Canada. Additional
 funds for the contruction of SCUBA-2 were provided by the Canada
 Foundation for Innovation. EC thanks CANARIE/CANFAR for additional
-funding.
-
-\textit{Is there some kind of grant number that has to be referenced
-  for Ed's CANFAR funding?}
+funding. Also mention NSERC.
 
 %------------------------------------------------------------------------------
 \bibliographystyle{mn2e}
@@ -2787,19 +2784,20 @@ Detecting and correcting steps in a single bolometer time stream involves:
 
 \begin{enumerate}
 
-\item Locating each candidate step.
+\item locating each candidate step;
 
-\item Determining the widths of the candidate steps.
+\item determining the widths of the candidate steps;
 
-\item Determine the height of the step. Steps can vary enormously in height.
-For instance the step in the left plot of Fig.~\ref{fig:steps1} is
-roughly 3 pW in height, whereas the step at sample 5100 in the right hand
-plot is only 0.01 pW in height. The height of a step is taken as the
-difference in the local median value just before and just after the step.
+\item determining the height of the step (steps can vary enormously in
+height -- for instance the step in the left-hand panel of
+Fig.~\ref{fig:steps1} is roughly 3\,pW in height, whereas the step at
+sample 5100 in the right-hand panel is only 0.01\,pW in height -- the
+height of a step is taken as the difference in the local median value
+just before and just after the step);
 
-\item Correcting all subsequent data values by the step height.
+\item correcting all subsequent data values by the step height;
 
-\item Once all steps have been corrected, a global offset is added to the
+\item once all steps have been corrected, a global offset is added to the
 corrected bolometer time stream to ensure that the mean value before and
 after step correction is unchanged.
 
@@ -2812,7 +2810,7 @@ compared to the neighbouring samples. Each such block of samples is
 considered to be a candidate step. The starting and ending time of each
 such block is noted. Once all candidate steps have been found for a
 bolometer, the algorithm proceeds to the next stage. Candidate steps are
-found as follows:
+found as follows.
 
 \begin{enumerate}
 
@@ -2824,8 +2822,9 @@ at each step, and is robust against spikes, etc.
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{steps2.pdf}
-\caption{A section of the right hand bolometer from  Fig.~\ref{fig:steps1}
-with the median smoothed data overlayed in red.}
+\caption{A section of the bolometer signal from the right-hand panel
+of Fig.~\ref{fig:steps1} with the median smoothed data overlaid in
+red.}
 \label{fig:steps2}
 \end{figure}
 
@@ -2842,8 +2841,8 @@ indices 5040, 5100 and 5280.
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{steps3.pdf}
-\caption{Differences between adjacent values of the median smoothed data
-in  Fig.~\ref{fig:steps2}.}
+\caption{Differences between adjacent values of the median smoothed
+data shown in Fig.~\ref{fig:steps2}.}
 \label{fig:steps3}
 \end{figure}
 
@@ -2886,7 +2885,7 @@ curve. Points omitted from the red curve are shown in black.}
 \item The differences for the remaining samples are smoothed
 using a mean filter of width 50 samples. The smoothing process fills in small
 holes in the array (up to 40 samples), but will not fill in larger holes.
-Such larger holes are filled in later by linear interpolation. The
+Such larger gaps are filled in later by linear interpolation. The
 resulting smoothed differences (shown in blue in Fig.~\ref{fig:steps4})
 provide an estimate of the local gradient of the underlying noise-free
 median-filtered data stream.
@@ -2910,21 +2909,21 @@ over a box width of 200 samples.}
 \label{fig:steps5}
 \end{figure}
 
-\item Blocks of contiguous samples for which the residual difference exceeds
-25 times the local RMS of the residual differences are found. Any two
-such blocks that are separated by fewer than 100 samples are merged into
-a single block. Blocks are ignored if they fail any of the following
-tests:
+\item Blocks of contiguous samples for which the residual difference
+exceeds 25 times the local RMS of the residual differences are
+found. Any two such blocks that are separated by fewer than 100
+samples are merged into a single block. Blocks are only kept if they
+pass all of the following tests:
 
 \begin{enumerate}
 
-\item The width of the block must be less than 200 samples.
+\item the width of the block must be less than 200 samples;
 
-\item The total of all the \snr\ values (the absolute residual difference
+\item the total of all the \snr\ values (the absolute residual difference
 divided by the local RMS of the residual differences) in the block must be
-at least 25.
+at least 25;
 
-\item The total of all \snr\ values in the block must exceed half the value of
+\item the total of all \snr\ values in the block must exceed half the value of
 the largest single \snr\ value in the block.
 
 \end{enumerate}
@@ -2933,12 +2932,12 @@ The second and third tests are intended to prevent spikes being treated as
 two very close steps, since such steps will have \snr\ values of opposite
 signs and will thus cancel out.
 
-The data in Fig.~\ref{fig:steps5} results in two blocks being defined -
-one between samples 5037 and 5102 and another between samples 5286 and
-5296. Each of these blocks define the start and end of a candidate step.
-The first block includes two visible steps, but they have been merged
-into a single candidate step due to their small separation (less than 100
-samples).
+The data in Fig.~\ref{fig:steps5} results in two blocks being defined,
+one between samples 5037 and 5102, and another between samples 5286
+and 5296. Each of these blocks define the start and end of a candidate
+step.  The first block includes two visible steps, but they have been
+merged into a single candidate step due to their small separation
+(less than 100 samples).
 
 \end{enumerate}
 
