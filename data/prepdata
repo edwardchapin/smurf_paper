@@ -102,7 +102,7 @@ intro:
 # Wayne's debris disk from cookbook -- use this for paper!!!
 #set obsdate = 20100313
 #set obsnum = 00029
-#set subfile = "001[345]".sdf
+#set subfile = "000[12345]".sdf # "001[345]".sdf
 
 # Some Lockman data
 #set obsdate = 20100311
@@ -117,7 +117,7 @@ intro:
 # 2011 obs recommended by Harriet. 900" pong.: new data for paper
 set obsdate = 20111112
 set obsnum = 00038
-set subfile = "001[345]".sdf
+set subfile = "000[12345]".sdf # "001[345]".sdf
 
 echo "*** Processing $obsdate $obsnum ***"
 
