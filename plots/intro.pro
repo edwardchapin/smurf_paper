@@ -73,33 +73,31 @@ device, filename='bolos_point_mix'+suffix+'.eps', /encapsulated, xsize=20., $
 ;y450 = [30,13,16,they]
 ;x850 = [ 4,31,25,thex]
 ;y850 = [16,20,32,they]
-;temprange = 0.07
-;offrange = 300
-;range450=[-1.8d5,1.8d5]
+;temprange = 0.1
+;offrange = 350
+;range450=[-1.6d5,1.6d5]
 ;range850=[-1.8e5,1.8d5]
 ;vel = 120.  ; arcsec/sec
 ;prange = [1d2,1d11]
-;psd450psf = 1d7
-;ref450=2d5
-;psd850psf = 1d8
-;ref850=5d4
 
 ; 20111112_00038
-thex = 16 & they = 7
+thex = 17 & they = 4
 x450 = [13,24,16,thex]
 y450 = [11,24, 9,they]
-x850 = [15,19,22,thex]
-y850 = [15, 5, 6,they]
+x850 = [ 7,23, 3,thex]
+y850 = [ 5,15,30,they]
 temprange = 0.225
-offrange = 700
-range450=[-4d4,4d4]
-range850=[-2.5d5,2.5d5]
+offrange = 800
+range450=[-4.5d4,4.5d4]
+range850=[-4.5d4,4.5d4]
 vel = 190.  ; arcsec/sec
 prange = [1d2,1d11]
+
+
 psd450psf = 1d7
 ref450=2d5
 psd850psf = 1d8
-ref850=5d4
+ref850=1d5
 
 b450 = data450[thex,they,*]
 b850 = data850[thex,they,*]

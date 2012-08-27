@@ -586,7 +586,6 @@ achieve the greatest overall array sensitivity is described in
 \citet{holland2012}.
 
 \begin{figure*}
-\centering
 \includegraphics[width=0.49\linewidth]{bolos_point_mix_s2sro.pdf}
 \includegraphics[width=0.49\linewidth]{bolos_point_mix.pdf}
 \caption{A comparison between single bolometer time series in each of
@@ -596,10 +595,8 @@ achieve the greatest overall array sensitivity is described in
   show the residual time-series after removing the common-mode
   signals.  Left: data taken during the S2SRO period, observation 29
   on 20100313. There is a strong correlation between the bolometers
-  and the roughly $\sim$25\,s oscillation in the fridge, but not with
-  the telescope motion. Also note that the total power in this primary
-  signal is similar at both 450 and 850\,\micron, pointing to an
-  internal rather than an external source.  The nearly flat
+  and the roughly $\sim$25\,s oscillation in the fridge, but only a
+  minor correlation with the telescope motion. The nearly flat
   common-mode subtracted signals show: (i) that most of the
   low-frequency signal is common to all of the bolometers; and (ii)
   the non-correlated, and predominantly white noise at 450\,\micron\
@@ -609,9 +606,11 @@ achieve the greatest overall array sensitivity is described in
   by variations in the fridge temperature. The 450\,\micron\ data have
   minimal correlated low-frequency noise (as evidenced by the lack of
   a difference between the raw and common-mode subtracted signals),
-  although the 850\,\micron data show a common signal correlated with
+  although the 850\,\micron\ data show a common signal correlated with
   the telescope motion (note that this scan has a significantly larger
-  amplitude than the S2SRO data set).}
+  amplitude than the S2SRO data set), mostly likely caused by magnetic
+  field pickup (see Section~\ref{sec:magpickup} and
+  Fig.~\ref{fig:magpickup}).}
 \label{fig:bolos_mix}
 \end{figure*}
 
@@ -621,39 +620,38 @@ achieve the greatest overall array sensitivity is described in
 \includegraphics[width=0.49\linewidth]{pspec.pdf}
 \caption{Bolometer power spectral densities for the same two data sets
   (before and after upgrades) used in Fig.~\ref{fig:bolos_mix}. Four
-  representative bolometers have been selected at each wavelength, and
-  the flat-fielded (but otherwise raw) PSDs are shown as coloured
-  dotted lines (the blue signals are for the same time series as those
-  shown in Fig.~\ref{fig:bolos_mix}).  The solid black lines are the
-  PSDs of the common-mode signals at each wavelength, and the solid
-  coloured lines show the PSDs of the bolometers once the common-mode
-  is removed.  Finally, the dashed black lines show the spectral shape
-  produced by a point source given the scan speeds for the two
-  observations (120\,arcsec\,s$^{-1}$ in the left-hand plot, and
-  190\,arcsec\,s$^{-1}$ in the right-hand plot); for reference, the
-  top horizontal axes shows the conversion from frequency to angular
-  scale. Horizontal dotted lines at $2 \times 10^5$ and $5 \times
-  10^4$\,pW\,Hz$^{-1}$ at 450 and 850\,\micron, respectively, are
-  provided as a visual reference for the white-noise levels. In
-  addition to $1/f$ and white noise components, and line features, all
-  of the PSDs exhibit the gradual roll-off of the anti-aliasing filter
-  just below the Nyquist frequency.  Left: for the S2SRO data there
-  are broad line features in the PSDs at both wavelengths above
-  $\sim$35\,Hz.  At lower frequencies, the bolometer signals exhibit
-  clear $1/f$ knees at approximately 2 and 4\,Hz at 450 and
-  850\,\micron. Common-mode subtraction removes most of the correlated
-  fridge oscillation signal, lowering the $1/f$ knees to approximately
-  0.4 and 2\,Hz (or angular scales of 1.7 and 8,3\,arcmin) at 450 and
-  850\,\micron, respectively. Right: data from the fully-commissioned
-  instrument tend to have lower $1/f$ knees, and fewer line
-  features. The remaining low-frequency noise, now that the fridge
-  oscillations have been removed, is considerably more independent
-  from bolometer to bolometer than in the S2SRO data (note the larger
-  spread in the dotted lines at low frequencies compared to the
-  left-hand plot). Finally, this example shows how much the noise in
-  the arrays can vary over time. Despite selecting bolometers from the
-  same subarrays in each example, these particular 850\,\micron\ data
-  from the fully-commissioned instrument are somewhat noisier.}
+  of the most sensitive bolometers have been selected at each
+  wavelength, and the flat-fielded (but otherwise raw) PSDs are shown
+  as coloured dotted lines (the blue signals are for the same time
+  series as those shown in Fig.~\ref{fig:bolos_mix}).  The solid black
+  lines are the PSDs of the common-mode signals at each wavelength,
+  and the solid coloured lines show the PSDs of the bolometers once
+  the common-mode is removed.  Finally, the dashed black lines show
+  the spectral shape produced by a point source given the scan speeds
+  for the two observations (120\,arcsec\,s$^{-1}$ in the left-hand
+  plot, and 190\,arcsec\,s$^{-1}$ in the right-hand plot); for
+  reference, the top horizontal axes shows the conversion from
+  frequency to angular scale. Horizontal dotted lines at $2 \times
+  10^5$ and $1 \times 10^5$\,pW\,Hz$^{-1}$ at 450 and 850\,\micron,
+  respectively, are provided as a visual reference for the white-noise
+  levels. In addition to $1/f$ and white noise components, and line
+  features, all of the PSDs exhibit the gradual roll-off of the
+  anti-aliasing filter just below the Nyquist frequency.  Left: for
+  the S2SRO data there are broad line features in the PSDs at both
+  wavelengths above $\sim$35\,Hz.  At lower frequencies, the bolometer
+  signals exhibit clear $1/f$ knees at approximately 1 and 2\,Hz at
+  450 and 850\,\micron. Common-mode subtraction removes most of the
+  correlated fridge oscillation signal, lowering the $1/f$ knees to
+  approximately 0.2 and 0.7\,Hz at 450 and 850\,\micron,
+  respectively. Right: data from the fully-commissioned instrument
+  tend to have lower $1/f$ knees, and fewer line features. The
+  remaining low-frequency noise, now that the fridge oscillations have
+  been removed, is considerably more independent from bolometer to
+  bolometer than in the S2SRO data (note the larger spread in the
+  dotted lines at low frequencies compared to the left-hand plot,
+  particularly at 450\,\micron). Finally, this example shows that the
+  white noise performance is in factor similar for the two subarrays
+  (s4a and s8b) that were used both before and after the upgrades.}
 \label{fig:pspec}
 \end{figure*}
 
@@ -664,7 +662,7 @@ achieve the greatest overall array sensitivity is described in
 %-------------------------------------------------
 
 In Fig.~\ref{fig:bolos_mix} we show sample time series from single
-bolometers in each of the 450 and 850\,micron\ focal planes, as well
+bolometers in each of the 450 and 850\,\micron\ focal planes, as well
 as variations in the mixing chamber temperature (as a proxy for the
 focal-plane temperature), and the telescope pointing, for two data
 sets, before and after the upgrades that followed S2SRO.
@@ -674,14 +672,12 @@ bolometers share significant long-timescale structure ($\gsim10$\,s)
 that appears to be related to variations in the fridge base
 temperature, although the similarity is clearly greater at
 850\,\micron. In this particular case, the total power in the
-fluctuations at 450\,\micron, from $-0.04$\,pW to $+0.08$\,pW, are
-larger than the $-0.03$\,pW to $+0.05$\,pW fluctuations at
+fluctuations at 450\,\micron, are comparable to those at
 850\,\micron. Such behaviour might be expected if there is a
-comparable varying thermal load from the fridge at each wavelength,
-but a larger contribution of atmospheric variations through the
-450\,\micron\ bandpass filters. We also note that there is no obvious
-strong correlation between the low-frequency signal structure, at
-either wavelength, with the telescope motion.
+comparable varying thermal load from the fridge at each wavelength
+that dominates. We also note that there is no obvious strong
+correlation between the low-frequency signal structure, at either
+wavelength, with the telescope motion.
 
 The low-frequency signal component of the S2SRO bolometer output is
 also highly correlated amongst bolometers in the same subarray. We
@@ -703,17 +699,17 @@ is likely that these are not observed at the focal plane itself, where
 the NTD thermometry used in the servo loop is performed). There is
 minimal correlated low-frequency noise in these 450\,\micron\ data
 (note that there is almost no difference once the common-mode has been
-subtarcted). The 850\,\micron\ channel, however, exhibits a
+subtarcted). The 850\,\micron\ channel, however, exhibits a more
 significant signal that is obviously correlated with the telescope
-motion. This signal is correlated amongs many of the detectors, and
-common-mode removal yields fairly flat residuals. Part of the reason
+motion. It is also correlated amongs many of the detectors, and
+common-mode removal corrects it to some extent. Part of the reason
 that this is seen here, and not in the S2SRO data set shown, is that
-the amplitude of the scan pattern is somewhat larger. Most of this
+the amplitude of the scan pattern is larger. Most of this
 ``scan-synchronous'' noise is attributed to magnetic field pickup, as
 described in Section~\ref{sec:magpickup}.
 
-Next, we produce power spectral density (PSD) plots for several
-representative bolometers from both focal planes, using the same two
+Next, we produce power spectral density (PSD) plots for four of the
+most sensitive bolometers from both focal planes, using the same two
 data sets, in Fig.~\ref{fig:pspec}. To produce this figure, we follow
 the convention that the PSD as a function of frequency,
 $\mathbf{P}(f)$, is normalized such that the integral over frequency
@@ -737,7 +733,7 @@ normalisations.
 The dotted coloured lines in Fig~\ref{fig:pspec} show the PSDs for
 raw, though flat-fielded data. At each wavelength, and in both data
 sets, there are clear $1/f$ knees at frequencies ranging from roughly
-1 to 10\,Hz, followed by a predominantly white spectrum punctuated by
+1 to 2\,Hz, followed by a predominantly white spectrum punctuated by
 line features at higher frequencies, and finally a roll-off caused by
 the anti-aliasing filter above $\gsim 70$\,Hz. As indicated in the
 previous section, the correlation between the low-frequency components
@@ -747,17 +743,18 @@ $\mathbf{c}(t)$ at each wavelength, which reproduce much of the
 low-frequency structure, as well as some of the higher-frequency line
 features. The $\mathbf{c}(t)$ otherwise drop substantially below the
 individual bolometer PSDs at high-frequency, as expected if the
-bolometers are dominated by un-correlated white noise. The common-mode
-signals are fit to each bolometer time series and removed as in
-Fig.~\ref{fig:bolos_mix}, and the resulting PSDs are shown as solid
-coloured lines.  For reference, the top horizontal axes have been
-converted to angular scale assuming the scan speeds of each
-observation (120\,arcsec\,s$^{-1}$ in the left-hand plot, and
-190\,arcsec\,s$^{-1}$ in the right-hand plot). The power spectra of
-unresolved point-sources are also shown as dashed lines in each band
-(arbitrarily normalized), showing that the smallest features
+bolometers are dominated by un-correlated white noise in that part of
+the spectrum. The common-mode signals are fit to each bolometer time
+series and removed as in Fig.~\ref{fig:bolos_mix}, and the resulting
+PSDs are shown as solid coloured lines.  For reference, the top
+horizontal axes have been converted to angular scale assuming the scan
+speeds of each observation (120\,arcsec\,s$^{-1}$ in the left-hand
+plot, and 190\,arcsec\,s$^{-1}$ in the right-hand plot). The power
+spectra of unresolved point-sources are also shown as dashed lines in
+each band (arbitrarily normalized), showing that the smallest features
 resolvable by the telescope are only minimally affected by the excess
-noise in the line features.
+noise in the line features at these scan speeds (this may not be the
+case at higher scan speeds).
 
 In the S2SRO data (left-hand panel of Fig.~\ref{fig:pspec}), the
 low-frequency noise is very correlated between the detectors (note the
@@ -767,25 +764,23 @@ oscillations. Common-mode subtraction is very effective, reducing the
 $1/f$ knees in both wavelengths by about a factor of 5.
 
 Raw data from the fully-commissioned instrument (right-hand panel of
-Fig.~\ref{fig:pspec}) generally have noticeably lower $1/f$ knees
-(with the exception of some of the noisier 850\,\micron\ bolometers in
-this example) as compared with the S2SRO data. The residual
-low-frequency noise is considerably less correlated amongst detectors
-(larger spread in the dotted colour lines), leading to a less drastic
-improvement upon common-mode removal. However, since the data are less
-dominated by low-frequency noise to begin with, the signals generally
-require less low-frequency filtering to produce maps, and therefore
-retain larger-scale structures than with the S2SRO data. Furthermore,
-there are generally fewer line features in the PSDs of bolometers in
-the fully-commissioned instrument. Finally, these two data sets
-illustrate how the white noise performance (NEFD) can vary. For this
-particular data set, the 850\,\micron\ noise performance is
-substantially worse than in the example from the S2SRO
-period. Generally speaking such noise steps occur in only a subset of
-the \scuba\ subarrays. However, given the 4-fold increase in available
-working bolometers since S2SRO, and the improved low-frequency noise
-performance, \scuba\ is now a significantly faster mapping instrument,
-and preserves information up to larger angular scales.
+Fig.~\ref{fig:pspec}) generally have less significant $1/f$ noise as
+compared with the S2SRO data. The residual low-frequency noise is
+considerably less correlated amongst detectors (larger spread in the
+dotted colour lines, particularly noticeable in these 450\,\micron\
+data), leading to a less drastic improvement upon common-mode
+removal. However, since the data are less dominated by low-frequency
+noise to begin with, the signals generally require less low-frequency
+filtering to produce maps, and therefore retain larger-scale
+structures than with the S2SRO data. Furthermore, there are generally
+fewer line features in the PSDs of bolometers in the
+fully-commissioned instrument. Finally, these two data sets illustrate
+that the white noise performance (NEFD) is in fact similar before and
+the upgrades for these two subarrays (s4a at 450\,micron, and s8b at
+850\,\micron). The main improvements are reduction in correlated and
+line noise features mentioned above, and the larger number of working
+bolometers (approximately a factor of 4).
+
 
 %-------------------------------------------------
 \subsection{Magnetic field pickup}
