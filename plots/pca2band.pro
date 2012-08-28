@@ -15,12 +15,15 @@ datadir='../data/'
 ;obs = '20100311_00065'
 
 ; 2011 data of NGC207IR post-upgrade (s4a,s4c,s4d,s8a,s8b,s8d)
-obs = '20110203_00016'
+;obs = '20110203_00016'
 
-subarr850 = 's8d'
+; 2011 obs recommended by Harriet. 900" pong.
+obs = '20111112_00038'
+
+subarr850 = 's8b'
 subarr450 = 's4a'
 
-ncomp = 16    ; single component plots (up to this value)
+ncomp = 32    ; single component plots (up to this value)
 nrem = 0      ; number of components to remove
 dobigplot = 0 ; do the big plots?
 
@@ -65,7 +68,7 @@ if 0 then begin
   freq = (dindgen(nt))*df
 
   ; use only a subset of the detectors (1/2 say)
-  fact = 1;8
+  fact = 1 ; 8
 
   ind4 = where(mask4)
   ind8 = where(mask8)
@@ -161,6 +164,12 @@ endif else begin
   print, 'Restoring PCA data...'
   restore,pre+'data.sav'
 endelse
+
+; calculate correct frequency
+srate = 1d / (max(t)/double(nt))
+nf = nt / 2
+freq = (srate/2d)*dindgen(nf)/double(nf)
+df = srate / nt
 
 ; flip sign of eigenvectors so that eigenvalues are positive
 for i=0, n-1 do begin
@@ -272,7 +281,7 @@ cs = 1.5
 for thecomp=0, ncomp-1 do begin
 
   device, filename=pre+'eigenmap'+strcompress(thecomp+1,/remove_all)+'.eps', $
-          xsize=20, ysize=20, bits_per_pixel=8, /color, $
+          xsize=20, ysize=27, bits_per_pixel=8, /color, $
           /encapsulated
 
   print, thecomp, ' / ', ncomp
@@ -310,6 +319,8 @@ for thecomp=0, ncomp-1 do begin
   ; map eigenvalues for the given mode
   eigenmap = dblarr(nxb,nyb)
   eigenmap[xg,yg] = pc[*,thecomp];/pc[*,0] ; normalized by main mode
+  eigenmap = eigenmap / 1d6 ; convert to uW from pW
+
   i = where(eigenmap ne 0, complement=j)
 
   m = mean(eigenmap[i])
@@ -319,29 +330,47 @@ for thecomp=0, ncomp-1 do begin
 
   eigenmap[j] = 0 ; 1d30
 
-  ;pos =[0.1,0.1,0.75,0.95]
-
   loadct, 0
 
   lambda = ['450','850']+micron
 
+  cb = 0.595      ; bottom of component line plots
+  ch = 0.145      ; height of component line plots
+  csp = 0.065     ; space between component line plots
   width = 0.355
   xoff = 0.14
+
 
   labels=strarr(30)+' '
 
   loadct, 0
-  pos = [xoff,0.65,xoff+2*width,0.92]
+
+  pos = [xoff,cb+ch+csp,xoff+2*width,cb+csp+2*ch]
+
+  ; time series
   plot, t, eof[thecomp,*], xstyle=1, ystyle=1, pos=pos, $
         ytitle='Eigenvector', charsize=cs, charthick=!p.thick, $
         xtitle='Time (s)', yrange=[-0.025,0.025]
 
-  xyouts, 0.02, 0.95, 'Component'+strcompress(thecomp+1), charsize=cs*2, $
-          charthick=!p.thick, /normal
+  xyouts, (pos[0]+pos[2])/2., 0.965, 'Component'+strcompress(thecomp+1), $
+    charsize=cs*2, charthick=!p.thick, /normal, alignment=0.5
 
+  ; power spectra
+  box = round(0.1/df)        ; width of boxcar in Hz / freq. step size
+  ft = fft(eof[thecomp,*])
+  p = (abs(ft)^2d)/df
+
+  pos = [xoff,cb,xoff+2*width,cb+ch]
+
+  plot, freq[1:nf-1], smooth(p[1:nf-1],box), xstyle=1, ystyle=1, pos=pos, $
+    ytitle="PSD (Hz!u-1!N)", charsize=cs, charthick=!p.thick, $
+    xtitle="Frequency (Hz)", /noerase, /ylog, /xlog, ytickformat='exponent', $
+    xrange=[0.1,max(freq)]
+
+  ; eigenmap
   for i=0, 1 do begin
 
-    pos = [xoff+width*i,0.08,xoff+width*[i+1],0.53]
+    pos = [xoff+width*i,0.06,xoff+width*[i+1],0.53]
 
     plot,[0],[0], xrange=[0,nx], yrange=[0,ny], pos=pos, $
          xstyle=5, ystyle=5, $; title=lambda[i], $
@@ -362,7 +391,7 @@ for thecomp=0, ncomp-1 do begin
     tvscale, themap, /noint, minval=0, maxval=255, pos=pos
 
     cbar, minval, maxval, pos, 0.01, 0.02, $
-          title='!7'+!gr.lambda+'!6'+' (pW)', cs=cs
+          title='!7'+!gr.lambda+'!6'+' (!7'+!gr.mu+'!6W)', cs=cs
 
     loadct, 0
     axis, xaxis=0, xrange=[0,nx], xstyle=1, charthick=3., xtitle = 'Column', $
@@ -386,22 +415,29 @@ for thecomp=0, ncomp-1 do begin
       d = pc[n_elements(xg4):n_elements(xg)-1,thecomp]
     endelse
 
-    m = mean(d)
-    sig = sqrt( mean(d^2d) )
+    m = mean(d) / 1d6                 ; convert to uW
+    sig = sqrt( mean(d^2d) ) / 1d6    ; convert to uW
 
-    xyouts, 1,34, '!7'+!gr.lambda+'!6 = '+string(m,format='(F6.3)')+ ' pW', $
-            charsize=cs, charthick=!p.thick*5., color=255
-    plots, [1,2], [36,36], thick=!p.thick*5, color=255
-    xyouts, 1,31, '!7'+!gr.lambda+'!6!drms!n = '+ $
-            string(sig,format='(F6.3)')+ ' pW', $
-            charsize=cs, charthick=!p.thick*5., color=255
+    xyouts, 1,33, '!7'+!gr.lambda+'!6 = '+string(m,format='(F6.3)')+ ' !7' + $
+      !gr.mu + '!6W', $
+      charsize=cs, charthick=!p.thick*5., color=255
 
-    xyouts, 1,34, '!7'+!gr.lambda+'!6 = '+string(m,format='(F6.3)')+ ' pW', $
-            charsize=cs, charthick=!p.thick, color=0
-    plots, [1,2], [36,36]
+    plots, [1,2], 34.5*[1,1], thick=!p.thick*5, color=255
+
     xyouts, 1,31, '!7'+!gr.lambda+'!6!drms!n = '+ $
-            string(sig,format='(F6.3)')+ ' pW', $
-            charsize=cs, charthick=!p.thick, color=0
+      string(sig,format='(F6.3)')+ ' !7' + $
+      !gr.mu + '!6W', $
+      charsize=cs, charthick=!p.thick*5., color=255
+
+    xyouts, 1,33, '!7'+!gr.lambda+'!6 = '+string(m,format='(F6.3)')+ ' !7' + $
+      !gr.mu + '!6W', $
+      charsize=cs, charthick=!p.thick, color=0
+    plots, [1,2], 34.5*[1,1]
+
+    xyouts, 1,31, '!7'+!gr.lambda+'!6!drms!n = '+ $
+      string(sig,format='(F6.3)')+ ' !7' + $
+      !gr.mu + '!6W', $
+      charsize=cs, charthick=!p.thick, color=0
   endfor
 
   device, /close
