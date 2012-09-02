@@ -792,32 +792,24 @@ is approximately three orders-of-magnitude smaller.
   analysis, ranked by the mean eigenvalues, of combined 450 (s4a
   subarray) and 850\,\micron\ (s8b subarray) time-series bolometer
   data, for the same observation as that used in the right-hand panels
-  of Figs.~\ref{fig:bolos_mix} and \ref{fig:pspec}. For each
-  component, the top plot shows the time series of the eigenvector,
-  normalized by its \rms. The bottom coloured panels show the
-  eigenvalues for the bolometers at each wavelength (the amplitude of
-  the eigenvector in the time series). For reference, both the mean,
+  of Figs.~\ref{fig:bolos_mix} and \ref{fig:pspec}. For each component
+  the top plot shows the time series of the normalized eigenvectors,
+  the middle plot its PSD, and the bottom coloured panels the
+  eigenvalues for the bolometers at each wavelength (the amplitudes of
+  the eigenvectors in the time series). For reference, both the mean,
   $\bar{\lambda}$, and \rms, $\lambda_\mathrm{rms}$, eigenvalues for
-  the bolometers in each subarray are also shown. The first two
-  components have comparable amplitudes, and dominate by at least a
-  factor of 10 any other components of the time series. We suspect
-  that they are caused by atmospheric variations (expected to be
-  brighter at 450\,\micron), and fridge oscillations (expected to be
-  comparable at each wavelength). However, the two eigenvectors do not
-  necessarily map directly to these physical sources under this
-  interpretation; rather they are two \emph{different} linear
-  combinations of the underlying physical signals that give rise to
-  statistically uncorrelated components. The third component
-  accurately reproduces an apparent data-acquisition glitch that
-  appears only at 450\,\micron. The fourth component is a periodic
-  feature only observed in column 15 of the 450\,\micron\
-  subarray. The fifth component shows a series of steps and glitches
-  that appear predominantly along the bottom-left edge of the
-  850\,\micron\ subarray where the bolometers are poorly
-  biased. Finally, the sixth component is degenerating into a less
-  significant, and more randomly scattered signal across the focal
-  plane. Subsequent components follow this trend, and would generally
-  be kept in a PCA-cleaning procedure.}
+  the bolometers in each subarray are also shown. Most of the
+  correlated $1/f$ signal is encapsulated in Components~1 and 2, and
+  appears to be dominated by scan-synchronous noise (compare with the
+  scan pattern in the right-hand panel of Fig.~\ref{fig:bolos_mix}).
+  Components~3, 4, 7 and 11 are transient glitches that only appear in
+  a small subset of the bolometers. Component~5 also appears in only a
+  few bolometers, and is dominated by a narrow line at 57\,Hz which
+  suggests that it is related to the 60\,Hz mains. Components~6 and
+  8--10 contain a mixture of broad lines above $\sim$30\,Hz (which are
+  probably aliased high-frequency noise), with some low-frequency
+  drifts. Finally, the erratic appearance of the eigenvector for
+  Component~12 is typical of a poorly-biased detector.}
 \label{fig:pca}
 \end{figure*}
 
@@ -903,7 +895,7 @@ that it is only significant for several bolometers in the
 850\,\micron\ subarray: at column 22 row 22; several bolometers at the
 bottom of column 28; and more near the top-right of the subarray.
 
-Components~6, and 8--10 in Fig.~\ref{fig:pca} have several generic
+Components~6 and 8--10 in Fig.~\ref{fig:pca} have several generic
 features in common. First, the PSDs exhibit moderate low-frequency
 $1/f$ noise. Second, there are broad-line features at frequencies
 above $\sim$30\,Hz which we believe to be aliased high-frequency
@@ -921,10 +913,28 @@ only a handful of detectors in the 850\,\micron\ subarray (e.g. column
 positive tail of sudden excursions which gradually worsen over
 time. Bolometers that exhibit this signal are probably poorly biased.
 
+This example illustrates some of the types of correlated signals and
+patterns that PCA can identify in \scuba\ data. While there are
+typically one or two strong signal components detected, in general,
+the details can vary significantly from data set to data set, and the
+lengths of the time-series analyzed. The reason for this is probably
+due to the fact that many of the noise sources are not stationary in
+time (e.g. scan-synchronous noise which obviously depends on the scan
+pattern). It should also be clear from this example that while PCA
+offers some helpful insight into the various sources of noise, it does
+not necessarily identify clean patterns that can easily be
+modeled. For example, while there are clearly correlation patterns
+along columns (Components~6 and 8--10, particularly at 450\,\micron),
+as one might expect given the common amplification chain, the
+intensities of these high-frequency signals are random in the
+eigenvalue maps, and a common-mode signal estimated from the data for
+each column would not remove it.
+
 %------------------------------------------------------------------------------
 \section{The SMURF Algorithm}
 \label{sec:algorithm}
 %------------------------------------------------------------------------------
+
 
 Given \scuba's data rate, SMURF was designed with two primary goals in
 mind: (i) reduced maps should be scientifically useful and of ``near
@@ -947,16 +957,21 @@ in fact be tenable for \scuba\ data. A future goal of the software
 team is to investigate meshing SMURF (perhaps as a cleaning step and
 initial condition) for a SANEPIC-like algorithm.
 
-The remainder of this section gives an overview of the model that is
-assumed by SMURF for the \scuba\ data, and the typical steps used to
-estimate a map. Subsequent sections discuss problems with this model
-and additional processing steps and constraints that can be used to
-improve the solution in different cases.
+In practice, the model generally adopted for low-frequency noise
+\scuba\ data is a single common-mode (average signal across all
+working bolometers in a given focal plane), with most remaining noise
+sources being removed by a high-pass filter. Many variations on this
+were attempted throughout the commissioning phase, but as the PCA in
+Secion~\ref{sec:pca} illustrates, less significant noise sources are
+both transient and particularly difficult to model.
+
+This section gives an overview of the SMURF algorithm, including data
+cleaning and other pre-processing steps (Section~\ref{sec:dataprep}),
+the iterative estimation of the map and noise model components
+(Section~\ref{sec:components}), and concludes with a discussion of
+convergence (Section~\ref{sec:converge}).
 
 \begin{itemize}
-
-\item Describe the bolometer signal model, and with the help of a flow-chart
-show the basic procedure that SMURF follows.
 
 \item Discuss SMURF configurability
 
@@ -971,12 +986,12 @@ show the basic procedure that SMURF follows.
 \end{itemize}
 
 We express the signal observed by the $i$th bolometer as a function of
- time, \textbf{Per: $e_i(t)$ is written as a vector ( bold ) but I assume
- we use it as a scalar.}
-
+time,
+%
 \begin{equation}
 \mathbf{b}_i(t) = g_i[\mathbf{e}_i(t) \mathbf{a}_i(t) + \mathbf{n}_i(t)],
 \end{equation}
+%
 where $\mathbf{a}(t)$ is the time-varying signal produced by scanning
 the telescope across astronomical sources, $\mathbf{e}(t)$ is the
 time-varying extinction, which is a function of the telescope
@@ -1511,6 +1526,7 @@ even at low-frequencies, do not leak into \model{FLT}.
 
 %-------------------------------------------------
 \subsection{Data preparation}
+\label{sec:dataprep}
 %-------------------------------------------------
 
 In this section we describe a number of data preparation steps that
