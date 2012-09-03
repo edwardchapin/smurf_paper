@@ -1155,22 +1155,22 @@ features. Empty squares indicate the locations of dead bolometers.}
 The \model{COM} model is the common-mode signal itself. It is a single
 time series that is estimated by finding the mean of all bolometers at
 each time step. Bolometer values that have been flagged as unusable
-for any reason are excluded from the mean. {\bf Per: has a comment in
+are excluded from the mean. {\bf Per: has a comment in
 here about stability of the gain pattern... it should be constant
 right?}.
 
-Since bolometers have varying sensitivities, the amplitude of the
-common-mode variations will also vary from bolometer to bolometer. So
-comparing each bolometer time stream with the common-mode signal
-allows an estimate of the bolometer sensitivity to be obtained. In
-practice, a least squares linear fit is performed between the
-bolometer time series and the common-mode to determine a gain and
-offset for each bolometer.  The gain and offset for each bolometer is
-known as the \model{GAI} model. Each bolometer value can then
-optionally be scaled and shifted using these values so that all
-bolometers share a common (but as yet unknown) calibration. This
-provides an alternative (or additional) flat-fielding strategy to that
-described in section~\ref{sec:bolos}.
+Even after flat-fielding, bolometers may have slightly varying
+sensitivities and so the amplitude of the common-mode variations will
+also vary from bolometer to bolometer. Comparing each bolometer time
+stream with the common-mode signal allows an estimate of the relative
+bolometer sensitivity to be obtained. In practice, a least squares linear
+fit is performed between the bolometer time series and the common-mode to
+determine a gain and offset for each bolometer.  The gain and offset for
+each bolometer is known as the \model{GAI} model. Each bolometer value
+can then optionally be scaled and shifted using these values so that all
+bolometers share a common (but as yet unknown) calibration. This provides
+an alternative (or additional) flat-fielding strategy to that described
+in section~\ref{sec:bolos}.
 
 An option exists to cater for time-varying sensitivities. If used, the
 least squares fits described above are performed on short blocks of
@@ -1184,8 +1184,9 @@ radically from the common-mode, indicating some problem within the
 bolometer. Such bolometers are identified by calculating the Pearson
 coefficient of correlation between each bolometer time-stream and the
 common mode. Bolometers for which the correlation coefficient is below
-a specified limit, or which have a negative gain, are flagged as bad
-in order to omit them from the final map. If the option described
+a specified limit, or which have unusually high or low gain compared to
+the other bolometers, are flagged as bad in order to omit them from the
+final map. If the option described
 above for handling time-varying sensitivities is used, then a
 correlation coefficient can be determined for each individual block of
 time slices.  This allows individual bad blocks to be rejected from a
@@ -1196,16 +1197,25 @@ Per: If magnetic pickup dominates the common mode a negative gain is
 normal and should not be removed. This might be a risk at high
 elevation in very good stable weather!}
 
-The common-mode is calculated from all bolometers that have not
-previously been flagged as bad. Thus, aberrant bolometers with low
-correlation coefficients will be included, polluting the common-mode. For
-this reason, an iterative approach is taken to estimating the common-mode.
-The initial common-mode estimate is formed from all remaining bolometers.
-Aberrant bolometers with low correlation coefficients are then identified
-by comparing each bolometer time stream with the common-mode. Such
-aberrant bolometers are flagged as bad, and a new estimate of the
-common-mode is produced omitting the newly flagged bolometers. This
-process is repeated until no further bolometers are rejected.
+The common-mode value at each time slice is calculated as the unweighted
+mean of the values of all bolometers that have not previously been
+flagged as bad. Thus, aberrant bolometers with low correlation
+coefficients will be included, polluting the common-mode. By default, no
+attempt is made to exclude these aberrant bolometers\footnote{An option
+exists to reject unusually high or low bolometer values when calculating
+the common mode value at each time slice, but this seems to introduce
+instability into the convergence process and makes little difference to
+the final maps.}.
+
+Bolometer values that were flagged as poorly correlated with the common
+mode on the previous iteration are nevertheless included in the
+calculation of the common mode on the next iteration. If sensitivities
+are allowed to vary with time as described above, then poorly correlated
+values will be flagged in blocks of - typically of 30 seconds duration.
+Excluding such flagged blocks from subsequent estimates of the common
+mode can result in discontinuities in the common mode signal at the
+edges of these blocks. This in turn can lead to ringing in the low pass
+filter, and instabilities in the convergence process.
 
 Any astronomical sources that are smaller than the array size will
 contribute signal to some bolometers but not other bolometers, thus
