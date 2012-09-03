@@ -935,27 +935,37 @@ each column would not remove it.
 \label{sec:algorithm}
 %------------------------------------------------------------------------------
 
+As described in the introduction, the approach taken by SMURF to
+reducing \scuba\ data is to model (and remove) noise sources, and to
+iterate this process along with estimates of the map. This sort of
+algorithm has been used successfully in the past with instruments
+including SCUBA \citep{1999ASPC..172..171J}, SHARC-2
+\citep{kovacs2008}, and BOLOCAM \citep{aguirre2010}, and is capable of
+recovering modest angular scales up to of order the footprint of the
+array (depending, of course, on the noise in the data). The main
+benefit of this approach over CMB-style maximum-likelihood methods
+(which are generally superior at recovering structure on all scales
+available in the data) is that the computing resources are
+significantly smaller, both in terms of memory usage and execution
+time. Given the massive volume of \scuba\ data produced in a single
+observation (a rate of approximately 10 GB\,hr$^{-1}$ in each focal
+plane), iterative techniques were the only viable option for providing
+real-time feedback at the telescope, and for automatically reducing
+near-science grade maps on a timescale comensurate with the
+observation times using standard high-end desktop computers.  We do
+note, however, that recent advances in direct inversion methods such
+as SANEPIC \citep{patanchon2008} may in fact be tenable for \scuba\
+data. A future goal of the software team is to investigate meshing
+SMURF (perhaps as a cleaning step and initial condition) with a
+SANEPIC-like algorithm.
 
-Given \scuba's data rate, SMURF was designed with two primary goals in
-mind: (i) reduced maps should be scientifically useful and of ``near
-publication quality'' with minimal user interaction; and (ii) the
-execution time should not appreciably exceed the amount of time
-required to conduct observations on a high-end multi-tcore desktop
-computer. By attaining these goals it would be possible to conduct
-real-time reductions at the telescope to offer feedback to observers,
-and it would also be possible to maintain a central repository of
-(nearly) publishable data products.
+Significant experimentation with different models for noise sources
+during \scuba\ commissioning required a highly flexible software
+framework with a simple (though extensive) interface for user
+configurability. Though written in C, \smurf\ uses an object-oriented
+style of handling the
 
-As described in the introduction, rather than pursue a slow but
-potentially more accurate \emph{maximum likelihood} method that would
-require the inversion of a complex linear problem, we instead use an
-iterative approach that estimates and removes most of the correlated
-(and in particular low-frequency) noise sources in parallel with a
-simplified map estimation. We do note, however, that recent advances
-in direct inversion methods such as SANEPIC \citep{patanchon2008} may
-in fact be tenable for \scuba\ data. A future goal of the software
-team is to investigate meshing SMURF (perhaps as a cleaning step and
-initial condition) for a SANEPIC-like algorithm.
+As we have seen in Sections~\ref{sec:bolosignal}--\ref{sec:pca}
 
 In practice, the model generally adopted for low-frequency noise
 \scuba\ data is a single common-mode (average signal across all
