@@ -1199,23 +1199,13 @@ elevation in very good stable weather!}
 
 The common-mode value at each time slice is calculated as the unweighted
 mean of the values of all bolometers that have not previously been
-flagged as bad. Thus, aberrant bolometers with low correlation
-coefficients will be included, polluting the common-mode. By default, no
-attempt is made to exclude these aberrant bolometers\footnote{An option
-exists to reject unusually high or low bolometer values when calculating
-the common mode value at each time slice, but this seems to introduce
-instability into the convergence process and makes little difference to
-the final maps.}.
-
-Bolometer values that were flagged as poorly correlated with the common
-mode on the previous iteration are nevertheless included in the
-calculation of the common mode on the next iteration. If sensitivities
-are allowed to vary with time as described above, then poorly correlated
-values will be flagged in blocks of - typically of 30 seconds duration.
-Excluding such flagged blocks from subsequent estimates of the common
-mode can result in discontinuities in the common mode signal at the
-edges of these blocks. This in turn can lead to ringing in the low pass
-filter, and instabilities in the convergence process.
+flagged as bad for some other reason. Bolometer values that were flagged
+as bad simply because they were poorly correlated with the common-mode on
+the previous iteration are included in the new common-mode estimate. If
+such samples are excluded, there is a strong possibility of
+discontinuities appearing in the COM model at block boundaries.
+These in turn can lead to ringing in the low pass filter, and
+instabilities in the convergence process.
 
 Any astronomical sources that are smaller than the array size will
 contribute signal to some bolometers but not other bolometers, thus
