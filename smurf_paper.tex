@@ -1779,29 +1779,19 @@ the step correction algorithm is working satisfactorily.
 \subsubsection{Gap filling / apodization}
 \label{sec:gaps}
 
-The evaluation of the \model{FLT} model (Section~\ref{sec:flt})
-involves taking the Fast Fourier Transform (FFT) of each bolometer
-time series. Data that have been flagged as bad for any reason (for
-instance, due to the presence of spikes, steps, or unusual common-mode
-signal) need to be excluded from this FFT. Two methods are available:
-
-\begin{itemize}
-\item Gap-filling: each contiguous block of bad data samples is filled
-with artificial data before taking the FFT. A least squares linear fit is
-performed to the 50 samples preceding the block, and a similar fit is
-performed to the 50 samples following the block. These are used to
-estimate the expected values at the start and end of the block of bad
-values. The bad values are then replaced by linear interpolation between
-the expected start and end values. Gaussian noise is added with a
-standard deviation equal to the mean of the RMS residuals in the two
-fits.
-
-\item Masking: each bad data value is replaced by zero, and an
-associated mask is created that holds 1.0 for each good sample in the
-time stream and 0.0 for each bad sample. The masked data and the mask
-are then each filtered in the same way using FFTs, and the filtered
-data are finally normalised by dividing them by the filtered mask.
-\end{itemize}
+The evaluation of the \model{FLT} model (Section~\ref{sec:flt}) involves
+taking the Fast Fourier Transform (FFT) of each bolometer time series.
+Data that have been flagged as bad for any reason (for instance, due to
+the presence of spikes, steps, or unusual common-mode signal) need to be
+excluded from this FFT. For this reason, each contiguous block of bad
+data samples is filled with artificial data before taking the FFT. A
+least squares linear fit is performed to the 50 samples preceding the
+block, and a similar fit is performed to the 50 samples following the
+block. These are used to estimate the expected values at the start and
+end of the block of bad values. The bad values are then replaced by
+linear interpolation between the expected start and end values. Gaussian
+noise is added with a standard deviation equal to the mean of the RMS
+residuals in the two fits.
 
 In addition to replacing bad samples before the FFT, it is also
 necessary to ensure that the data values at the start and end of the
