@@ -936,8 +936,9 @@ each column would not remove it.
 %------------------------------------------------------------------------------
 
 As described in the introduction, the approach taken by SMURF to
-reducing \scuba\ data is to model (and remove) noise sources, and to
-iterate this process along with estimates of the map. This sort of
+reducing \scuba\ data is to model (and remove) predominantly
+low-frequency noise sources that are correlated amongst detectors, and
+to iterate this process along with estimates of the map. This sort of
 algorithm has been used successfully in the past with instruments
 including SCUBA \citep{1999ASPC..172..171J}, SHARC-2
 \citep{kovacs2008}, and BOLOCAM \citep{aguirre2010}, and is capable of
@@ -961,9 +962,27 @@ SANEPIC-like algorithm.
 
 Significant experimentation with different models for noise sources
 during \scuba\ commissioning required a highly flexible software
-framework with a simple (though extensive) interface for user
-configurability. Though written in C, \smurf\ uses an object-oriented
-style of handling the
+framework with a simple interface for user configurability. To achieve
+this goal, while minimizing development time, it was decided to create
+SMURF as a Starlink package \citep{2009ASPC..411..418J}, which
+provides access to a large suite of libraries (including a commanding
+and messaging interface, astrometric conversions and generation of
+standard WCS information, file formats etc.). Furthermore, Starlink is
+already used extensively at the Joint Astronomy Centre (host of the
+JCMT) for many other systems, which helps with
+interoperability. Though originally written primarily in FORTRAN, many
+of the core Starlink libraries are now ported into native C, or else
+have, at least, a C interface. It was therefore decided to develop
+SMURF in C (rather than C++ which would have required adding further
+dependencies to Starlink), although the noise models are implemented
+with an object-oriented approach (all data associated with models are
+stored in structures, and there is a standard interface for method
+functions). In this way it is fairly easy to add new
+models. Parallelisation is incorporated in the most time-consuming
+low-level routines (e.g. performing Fast Fourier Transforms,
+re-gridding the data), usually handling either independent blocks of
+bolometers, or blocks of time, in each thread, depending on the nature
+of the calculation. ... something about scalability ...
 
 As we have seen in Sections~\ref{sec:bolosignal}--\ref{sec:pca}
 
