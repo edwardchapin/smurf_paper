@@ -931,9 +931,37 @@ eigenvalue maps, and a common-mode signal estimated from the data for
 each column would not remove it.
 
 %------------------------------------------------------------------------------
-\section{The SMURF Algorithm}
+\section{Production of maps}
 \label{sec:algorithm}
 %------------------------------------------------------------------------------
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\linewidth]{dimm.pdf}
+\caption{Typical map-making algorithm. Raw data (stored in multiple
+  files) are read and concatenated into continuous time series. A
+  pre-processing stage repairs DC steps, applies a flatfield
+  correction, and identifies and removes the noisiest bolometers. The
+  iterative portion then begins: estimating and removing the
+  common-mode signal; applying the extinction correction; high-pass
+  filtering to remove residual independent low-frequency noise;
+  estimating the map by re-gridding the data; and finally measuring
+  the noise in the residual time series. If the \rms\ has converged,
+  the final map is written to disk. Otherwise any multiplicative
+  factors that may have been applied to the data are inverted (e.g.,
+  extinction correction and relative gains measured during the
+  common-mode calculation), and each additive component is added back
+  into the time series and re-estimated in turn.  {\bf Per: The data
+  flow is not clear to me. One way would be to take the ast map and
+  remove extinction and gain correction and subtract it from the raw
+  data and then simply start the iteration again. That would refine
+  the com model from ast model pollution. But the text suggest that
+  the other models also are removed from the data. Indeed this would
+  be way different models can interact diverge. This process how and
+  when this is done is not clear and there must be a number of
+  subtleties affecting the subtraction of the models.}}
+\label{fig:dimm}
+\end{figure}
 
 As described in the introduction, the approach taken by SMURF to
 reducing \scuba\ data is to model (and remove) predominantly
@@ -948,57 +976,43 @@ benefit of this approach over CMB-style maximum-likelihood methods
 (which are generally superior at recovering structure on all scales
 available in the data) is that the computing resources are
 significantly smaller, both in terms of memory usage and execution
-time. Given the massive volume of \scuba\ data produced in a single
-observation (a rate of approximately 10 GB\,hr$^{-1}$ in each focal
-plane), iterative techniques were the only viable option for providing
-real-time feedback at the telescope, and for automatically reducing
-near-science grade maps on a timescale comensurate with the
-observation times using standard high-end desktop computers.  We do
-note, however, that recent advances in direct inversion methods such
-as SANEPIC \citep{patanchon2008} may in fact be tenable for \scuba\
-data. A future goal of the software team is to investigate meshing
-SMURF (perhaps as a cleaning step and initial condition) with a
-SANEPIC-like algorithm.
+time. Given the massive volume of \scuba\ data (produced at a rate of
+approximately 10 GB\,hr$^{-1}$ in each focal plane), iterative
+techniques were the only viable option for providing real-time
+feedback at the telescope, and for automatically reducing near-science
+grade maps on a timescale comensurate with the observation times,
+using single high-end desktop computers.  We do note, however, that
+recent advances in direct inversion methods such as SANEPIC
+\citep{patanchon2008} may in fact be tenable for \scuba\ data. A
+future goal of the software team is to investigate meshing SMURF
+(perhaps as a cleaning step and initial condition) with a SANEPIC-like
+algorithm.
 
 Significant experimentation with different models for noise sources
 during \scuba\ commissioning required a highly flexible software
-framework with a simple interface for user configurability. To achieve
-this goal, while minimizing development time, it was decided to create
-SMURF as a Starlink package \citep{2009ASPC..411..418J}, which
-provides access to a large suite of libraries (including a commanding
-and messaging interface, astrometric conversions and generation of
+framework, and a configurable user interface. To achieve this goal,
+while minimizing development time, it was decided to build SMURF as a
+Starlink package \citep{2009ASPC..411..418J}, which provides access to
+a large suite of libraries (including a commanding and messaging
+interface, astrometric coordinate conversions and generation of
 standard WCS information, file formats etc.). Furthermore, Starlink is
 already used extensively at the Joint Astronomy Centre (host of the
 JCMT) for many other systems, which helps with
 interoperability. Though originally written primarily in FORTRAN, many
 of the core Starlink libraries are now ported into native C, or else
-have, at least, a C interface. It was therefore decided to develop
-SMURF in C (rather than C++ which would have required adding further
-dependencies to Starlink), although the noise models are implemented
-with an object-oriented approach (all data associated with models are
-stored in structures, and there is a standard interface for method
-functions). In this way it is fairly easy to add new
+have a C interface. It was therefore decided to develop SMURF in C
+(rather than C++ which would have required adding further dependencies
+to Starlink), although we have taken an object-oriented approach. For
+example, all of the data for a given noise model is stored in a C
+structure, and there is a standard interface for all functions that
+handle models (member data and functions for the class,
+respectively). In this way it is easy to extend SMURF with new
 models. Parallelisation is incorporated in the most time-consuming
-low-level routines (e.g. performing Fast Fourier Transforms,
-re-gridding the data), usually handling either independent blocks of
-bolometers, or blocks of time, in each thread, depending on the nature
-of the calculation. ... something about scalability ...
-
-As we have seen in Sections~\ref{sec:bolosignal}--\ref{sec:pca}
-
-In practice, the model generally adopted for low-frequency noise
-\scuba\ data is a single common-mode (average signal across all
-working bolometers in a given focal plane), with most remaining noise
-sources being removed by a high-pass filter. Many variations on this
-were attempted throughout the commissioning phase, but as the PCA in
-Secion~\ref{sec:pca} illustrates, less significant noise sources are
-both transient and particularly difficult to model.
-
-This section gives an overview of the SMURF algorithm, including data
-cleaning and other pre-processing steps (Section~\ref{sec:dataprep}),
-the iterative estimation of the map and noise model components
-(Section~\ref{sec:components}), and concludes with a discussion of
-convergence (Section~\ref{sec:converge}).
+low-level routines using threads (e.g. performing Fast Fourier
+Transforms, re-gridding the data), usually handling either independent
+blocks of bolometers, or blocks of time, in each thread, depending on
+the nature of the calculation. \textbf{... something about scalability
+...}
 
 \begin{itemize}
 
@@ -1013,6 +1027,52 @@ convergence (Section~\ref{sec:converge}).
 \item Talk about pipeline?
 
 \end{itemize}
+
+As we have seen in Sections~\ref{sec:bolosignal}--\ref{sec:pca},
+\scuba\ data are dominated at low frequencies ($\lsim$2\,Hz) by highly
+correlated signals. In addition to this $1/f$ noise, there is also
+uncorrelated white noise, and finally residual correlated (but
+non-astronomical) signals that appear at all frequencies with more
+complicated relationships amongst groups of bolometers
+(e.g. Fig.~\ref{fig:pca}). While the low-frequency noise can be
+significantly reduced using simple common-mode removal (subtracting
+the average signal from all bolometers at each time step), these
+remaining correlated noise patterns are much more difficult to
+model. Ultimately, a very simple approach has been taken to handling
+these two contaminating sources, for which the main steps in a typical
+reduction are shown in Fig.~\ref{fig:dimm}.
+
+First, the raw data are passed through a pre-processing stage which
+corrects some of the more significant glitches, applies flat-field
+corrections etc. Next, the iterative process begins (dashed box). Most
+of the low-frequency noise is removed using common-mode
+subtraction. Next, the extinction correction is applied (it is done at
+this stage rather than during pre-processing to avoid multiplying
+large atmospheric signals by any small errors in the flatfield
+correction). At this stage the data resemble the grey bolometer traces
+in Fig.~\ref{fig:bolos_mix}, with some residual baseline drifts still
+visible. These drifts are removed using a high-pass filter implemented
+with Fast Fourier Transforms (FFTs). The residual signal is then
+re-gridded to estimate the map. Finally, the map is used to estimate
+and remove the astronomical signal contamination in the bolometer
+data, leaving a relatively clean data set in which to measure the
+white noise level of each bolometer. Since the common-mode and
+filtering stages will have introduced ringing in the map in the
+vicinity of bright sources, the entire process is iterated. Each
+component in the dashed box of Fig.~\ref{fig:dimm} is re-calculated in
+sequence. In this way, the second time the common-mode is calculated,
+for example, most of the bright astronomical sources in the data have
+already been removed in the previous iteration when the map was
+estimated and subtracted, reducing the amount of ringing in the map.
+
+In Sections~\ref{sec:dataprep} and \ref{sec:components} we describe
+the data pre-processing steps and iterative algorithm in
+detail. Section~\ref{sec:converge} explores convergence tests and
+degeneracies between model components.
+
+
+
+
 
 We express the signal observed by the $i$th bolometer as a function of
 time,
@@ -1049,34 +1109,6 @@ map-making is to model and remove $\mathbf{n}^\mathrm{f}_i$ and
 $\mathbf{n}^\mathrm{c}$ from the time-series, and then by re-gridding
 the remaining data we can hope to approach the theoretical noise limit
 in the map. This procedure is summarized in Fig.~\ref{fig:dimm}.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.75\linewidth]{dimm.pdf}
-\caption{Typical map-making algorithm. Raw data (stored in multiple
-  files) are read and concatenated into continuous time series. A
-  pre-processing stage repairs DC steps, applies a flatfield
-  correction, and identifies and removes the noisiest bolometers. The
-  iterative portion then begins: estimating and removing the
-  common-mode signal; applying the extinction correction; high-pass
-  filtering to remove residual independent low-frequency noise;
-  estimating the map by re-gridding the data; and finally measuring
-  the noise in the residual time series. If the \rms\ has converged,
-  the final map is written to disk. Otherwise any multiplicative
-  factors that may have been applied to the data are inverted (e.g.,
-  extinction correction and relative gains measured during the
-  common-mode calculation), and each additive component is added back
-  into the time series and re-estimated in turn.  {\bf Per: The data
-  flow is not clear to me. One way would be to take the ast map and
-  remove extinction and gain correction and subtract it from the raw
-  data and then simply start the iteration again. That would refine
-  the com model from ast model pollution. But the text suggest that
-  the other models also are removed from the data. Indeed this would
-  be way different models can interact diverge. This process how and
-  when this is done is not clear and there must be a number of
-  subtleties affecting the subtraction of the models.}}
-\label{fig:dimm}
-\end{figure}
 
 First, the data files are read from disk, concatenated into contiguous
 arrays in memory, and run through a pre-processing stage that performs
@@ -1118,7 +1150,7 @@ at all), and the details of \emph{how} they are fit. A summary of the
 model components is given in the next section.
 
 %-------------------------------------------------
-\subsection{Model components}
+\subsection{Iterative model calculation}
 \label{sec:components}
 %-------------------------------------------------
 
@@ -1554,7 +1586,7 @@ re-calculating \model{COM}. In this way, truly common-mode signals,
 even at low-frequencies, do not leak into \model{FLT}.
 
 %-------------------------------------------------
-\subsection{Data preparation}
+\subsection{Data pre-processing}
 \label{sec:dataprep}
 %-------------------------------------------------
 
@@ -1583,7 +1615,6 @@ information, the size of the output map pixels need not be any smaller
 than the FWHM/3 rule. Larger pixels may be selected, but at the
 expense of retaining information at the diffraction limit of the
 telescope.  \textbf{ Per: loss of information?}.
-
 
 The default behaviour of SMURF is to select output map pixel sizes of
 2 and 4\,arcsec at 450 and 850\,\micron, respectively (slightly
