@@ -998,21 +998,21 @@ interface, astrometric coordinate conversions and generation of
 standard WCS information, file formats etc.). Furthermore, Starlink is
 already used extensively at the Joint Astronomy Centre (host of the
 JCMT) for many other systems, which helps with
-interoperability. Though originally written primarily in FORTRAN, many
-of the core Starlink libraries are now ported into native C, or else
-have a C interface. It was therefore decided to develop SMURF in C
-(rather than C++ which would have required adding further dependencies
-to Starlink), although we have taken an object-oriented approach. For
-example, all of the data for a given noise model is stored in a C
-structure, and there is a standard interface for all functions that
-handle models (member data and functions for the class,
-respectively). In this way it is easy to extend SMURF with new
-models. Parallelisation is incorporated in the most time-consuming
-low-level routines using threads (e.g. performing Fast Fourier
-Transforms, re-gridding the data), usually handling either independent
-blocks of bolometers, or blocks of time, in each thread, depending on
-the nature of the calculation. \textbf{... something about scalability
-...}
+interoperability. Though originally written in FORTRAN, many of the
+core Starlink libraries are now ported to native C, or at least have a
+C interface. It was therefore decided to develop SMURF in C as well
+(rather than C++, for example, which would have required adding
+further dependencies to Starlink), although we have taken an
+object-oriented approach. For example, all of the data for a given
+noise model is encapsulated in a C structure, and there is a standard
+interface for all functions that handle models (member data and
+functions for the class, respectively). In this way it is easy to
+extend SMURF with new models. Parallelisation is incorporated in the
+most time-consuming low-level routines using threads (e.g. performing
+Fast Fourier Transforms, re-gridding the data), usually handling
+either independent blocks of bolometers, or blocks of time, in each
+thread, depending on the nature of the
+calculation. \textbf{... something about scalability ...}
 
 \begin{itemize}
 
@@ -1076,41 +1076,35 @@ degeneracies between model components.
 \label{sec:dataprep}
 %-------------------------------------------------
 
-In this section we describe a number of data preparation steps that
-preceed the calculation of model components as described in the
-previous section.
+Prior to executing the iterative part of the SMURF algorithm, the data
+must undergo several pre-processing steps. First, the data files are
+read into memory and concatenated into continuous arrays (\scuba\ data
+are broken up and written to disk every $\sim$30\,s). As the data are
+loaded, the flatfield correction is also applied \citep[see
+Section~2.1 in][]{dempsey2012}. Next, a series of data cleaning and
+filtering procedures are applied; these include the removal of large
+glitches that may hinder the iterative solution from converging, or
+simply tasks that do not need to be iterated.
 
 \subsubsection{Time-series down-sampling and map pixel size}
 \label{sec:downsamp}
 
-The highest useful frequency in the nominally 200\,Hz-sampled
-\scuba\ data is that which corresponds to the smallest angular scale
-that the instrument is sensitive to. As mentioned earlier, the usual
+The highest useful frequency in the nominally 200\,Hz-sampled \scuba\
+data is that which corresponds to the smallest angular scale that the
+instrument is sensitive to. As mentioned earlier, the usual
 rule-of-thumb for a Gaussian beam is to provide at least 3 samples for
-each FWHM, or roughly 2.5\,arcsec for the 7.5\,arcsec
-450\,\micron\ channel, and 5\,arcsec for the 14.5\,arcsec
-850\,\micron\ channel. For a typical scan speed of
-300\,arcsec\,s$^{-1}$, the maximum useful sample rate is therefore
-about 120\,Hz at 450\,\micron, and 40\,Hz at 850\,\micron. In order to
-save execution time and memory usage (both of which scale linearly
-with data volume), it is clearly advantageous to re-sample the data to
-these lower rates.
+each FWHM, or roughly 2.5\,arcsec for the 7.5\,arcsec 450\,\micron\
+channel, and 5\,arcsec for the 14.5\,arcsec 850\,\micron\ channel. For
+a typical scan speed of 300\,arcsec\,s$^{-1}$, the maximum useful
+sample rate is therefore about 120\,Hz at 450\,\micron, and 40\,Hz at
+850\,\micron. In order to save execution time and memory usage (both
+of which scale linearly with data volume), it is clearly advantageous
+to re-sample the data to these lower rates. In practice, the default
+map pixel sizes are set to 2 and 4\,arcsec at 450 and 850\,\micron,
+respectively (slightly over-sampled), and down-sampling occurs as the
+data are loaded to match this spatial sampling given the slew speed.
 
-Similarly, from the point of view of retaining all of the useful
-information, the size of the output map pixels need not be any smaller
-than the FWHM/3 rule. Larger pixels may be selected, but at the
-expense of retaining information at the diffraction limit of the
-telescope.  \textbf{ Per: loss of information?}.
-
-The default behaviour of SMURF is to select output map pixel sizes of
-2 and 4\,arcsec at 450 and 850\,\micron, respectively (slightly
-over-sampled). The slew speed of the telescope (approximately constant
-for all standard scan modes) is then used to calculate the highest
-useful frequency for the time-series given the map pixel size,
-$f_\mathrm{max}$. The data are then re-sampled to this new rate prior
-to map-making (as well as the data cleaning steps).
-
-The method used by SMURF to down-sample simply averages together
+The method used by SMURF to down-sample is to average together
 multiple samples from the original time-series, $x_i$ to estimate the
 lower-frequency output time-series, $y_j$. In general there will not
 be an integer number of samples from $x_i$ in each of the $y_j$, so
@@ -1118,8 +1112,8 @@ fractional samples from $x_i$ are used at the $y_j$ time
 boundaries. The algorithm is fast, since each sample in $x_i$ need
 only be visited once. From a spectral point of view, this boxcar
 average is equivalent to applying a sinc-function low-pass filter in
-frequency space. Such behaviour is desirable, since it serves as an
-anti-aliasing filter; most non-white features above the Nyquist
+the frequency domain. Such behaviour is desirable since it serves as
+an anti-aliasing filter; most non-white features above the Nyquist
 frequency in $y_j$ that could contaminate the output data are largely
 removed.
 
@@ -1127,9 +1121,8 @@ As an alternative, we also investigated an algorithm in which the FFT
 of $x_i$ is simply truncated to the target sample rate before
 transforming back to the time domain (i.e., applying a hard-edged
 low-pass filter). In practice the noise performance was
-indistinguishable, and required slightly more execution time, using
-this method compared to the boxcar method described above. It is
-therefore not currently available to users.
+indistinguishable, and required slightly more execution time using
+this method. It is therefore not currently available to users.
 
 \subsubsection{Bolometer filtering}
 
@@ -1150,7 +1143,7 @@ described in this paper.
 Transform Filter (Section~\ref{sec:flt}) can also be applied once
 during pre-processing.
 
-\item As a complete alternative to the iterative map-making procedure,
+\item As an alternative to the iterative map-making procedure,
 cleaning by principal component analysis (PCA) is available as an
 experimental pre-processing option. As described in
 Section~\ref{sec:pca}, a new set of basic vectors for the bolometer
@@ -1173,14 +1166,13 @@ data sets.
 \label{sec:timedespike}
 
 Spikes of short duration and high amplitude are often seen in the time
-series data. If not removed, they can cause ringing in the FLT model
-(Section~\ref{sec:flt}). Two alternative approaches may be used to
-remove these spikes. This section describes the detection and removal
-of spikes within the time series of each bolometer, and
-section~\ref{sec:mapdespike} describes the detection and removal of
-spikes within the final map. In practice, map-based despiking
-(Section~\ref{sec:mapdespike}) usually gives superior results, and so
-time-domain despiking is usually switched off.
+series data. If not removed, they can cause ringing when filtering the
+data. Two alternative approaches may be used to remove these
+spikes. This section describes the detection and removal of spikes
+within the time series of each bolometer, and Section~\ref{sec:ast}
+describes the iterative detection and removal of spikes as part of map
+estimation. In practice, map-based despiking usually gives superior
+results, and so time-domain despiking is switched off by default.
 
 Each one-dimensional bolometer time series is processed
 independently. At each time slice, the median value of the current
@@ -1225,16 +1217,13 @@ that the step correction is performing well.
 \end{figure*}
 
 Sudden steps can occur in the time stream data from each bolometer,
-with the most likely cause being wraparound in the first stage squid
-amplification, the details of which are given in \citet{holland2012}
-\textbf{Per gave a technical explanation, but this is probably best in
-another paper?}.
-
-The black curves in Fig.~\ref{fig:steps1} show examples of such steps in
-the time streams for two bolometers. If not removed, these steps can
-cause severe ringing in the FLT model (Section~\ref{sec:flt}) and visible
-streaks in the final map, corresponding to the paths of individual
-bolometers over the sky.
+with the most likely cause being cosmic ray events \citep[see
+Section~3.5.3 in][]{holland2012}. The black curves in
+Fig.~\ref{fig:steps1} show examples of such steps in the time streams
+for two bolometers. If not removed, these steps can cause severe
+ringing in the FLT model (Section~\ref{sec:flt}) and visible streaks
+in the final map, corresponding to the paths of individual bolometers
+over the sky.
 
 Steps occur with a wide range of heights and shapes. The ratio of step
 height to noise can vary from less than 10 to several hundred. Some
@@ -1325,19 +1314,18 @@ the step correction algorithm is working satisfactorily.
 \subsubsection{Gap filling / apodization}
 \label{sec:gaps}
 
-The evaluation of the \model{FLT} model (Section~\ref{sec:flt}) involves
-taking the Fast Fourier Transform (FFT) of each bolometer time series.
-Data that have been flagged as bad for any reason (for instance, due to
-the presence of spikes, steps, or unusual common-mode signal) need to be
+SMURF uses FFTs of the bolometer data extensively for filtering.  Data
+that have been flagged as bad for any reason (for instance, due to the
+presence of spikes, steps, or unusual common-mode signal) need to be
 excluded from this FFT. For this reason, each contiguous block of bad
 data samples is filled with artificial data before taking the FFT. A
 least squares linear fit is performed to the 50 samples preceding the
 block, and a similar fit is performed to the 50 samples following the
 block. These are used to estimate the expected values at the start and
 end of the block of bad values. The bad values are then replaced by
-linear interpolation between the expected start and end values. Gaussian
-noise is added with a standard deviation equal to the mean of the RMS
-residuals in the two fits.
+linear interpolation between the expected start and end
+values. Gaussian noise is added with a standard deviation equal to the
+mean of the RMS residuals in the two fits.
 
 In addition to replacing bad samples before the FFT, it is also
 necessary to ensure that the data values at the start and end of the
@@ -1353,11 +1341,15 @@ series. Two methods are available to avoid these two problems:
 \begin{itemize}
 \item Apodisation: a number of samples at the start and end of each
 bolometer time series are multiplied by a cosine function in order to
-roll the data values off smoothly to zero. The default number of samples
-modified at each end of the time series is given by half the ratio of the
-sampling frequency to the lowest retained frequency. In addition, each
-end of the time stream is padded with double this number of zeros. This
-method is illustrated in Fig.~\ref{fig:pad2}.
+roll the data values off smoothly to zero. The default number of
+samples modified at each end of the time series is given by half the
+ratio of the sampling frequency to the lowest retained frequency. In
+addition, each end of the time stream is padded with double this
+number of zeros. This method is illustrated in
+Fig.~\ref{fig:pad2}. This method is not used by default as it reduces
+the amount of data available for the map, and can significantly hinder
+very short observations (e.g. of calibrators when focussing the
+telescope).
 
 \begin{figure}
 \centering
@@ -1374,7 +1366,7 @@ apodisation is performed. The number of samples of padding at each end
 is again equal to the ratio of the sampling frequency to the lowest
 retained frequency.  This is illustrated in Fig.~\ref{fig:pad1}. See
 \citet{stompor2002} for a thorough discussion of this procedure within
-the context of CMB map-making.
+the context of CMB map-making. This method is used by default.
 
 \begin{figure}
 \centering
@@ -1387,76 +1379,33 @@ time stream after padding with artificial data.}
 
 \end{itemize}
 
-\subsubsection{Flatfields}
-\label{sec:flatfields}
-
-TJ
-
-Discuss heater ramps, normalizing off the common-mode signal
-amplitude, astronomical sources, and the internal flatfield source.
-
-\textit{Surely flatfields are discussed in the main \scuba\ paper so
-don't really have any useful purpose here since they aren't
-technically part of the map-maker.}
-
 \subsubsection{Additional bad bolometer rejection}
 
-TJ
-
-Measuring the noise power spectra and throwing away outliers. Data
-flagged bad by the DA system.
-
-\subsubsection{Map-based despiking}
-\label{sec:mapdespike}
-
-It is possible to use the map estimate (Section~\ref{sec:ast}) to
-provide additional despiking of the time-series. Unlike the
-time-domain despiker (Section~\ref{sec:timedespike}), this calculation
-uses the scatter in the population of samples used to estimate the map
-pixel values (from different times and bolometers) to reject
-outliers. This method is more robust against false-positive detections
-of bright/compact astronomical sources, since transient features in the
-time-series are unlikely to occur by chance whenever a bolometer
-crosses a specific location on the sky, whereas real astronomical
-sources are at fixed spatial locations.
-
-The estimated variance, $\mathbf{v_p}(x_i,y_i)$, of the normalized
-weighted samples that land in the $i$th map pixel is simply the biased
-weighted sample variance (i.e., the variance map value multiplied by
-the number of samples)
-%
-\begin{equation}
-  \mathbf{v_p}(x_i,y_i) = N_i \mathbf{v}(x_i,y_i).
-\end{equation}
-
-In order to compare the weighted \emph{differences} between the
-samples and the map values, [$\mathbf{b}_j - \mathbf{m}(x_i,y_i)$] to
-$\mathbf{v_p}$, they must be scaled appropriately. We define a
-normalized difference, $\mathbf{d}_j$, in such a way that the variance
-of this new variable gives the weighted sample variance of the
-underlying data points:
-%
-\begin{eqnarray}
-  \frac{\sum_j \mathbf{d}_j^2}{N} &=&
-  \frac{\sum_j \mathbf{w}_j [\mathbf{b}_j - \mathbf{m}(x_i,y_i)]^2}
-       {\sum_k \mathbf{w}_k} \\
-   \Rightarrow \mathbf{d}_j^2 &=& \frac{N \mathbf{w}_j [\mathbf{b}_j -
-       \mathbf{m}(x_i,y_i)]^2}{ \sum_k \mathbf{w}_k} .
-\end{eqnarray}
-%
-The map-based despiker flags those $\mathbf{d}_j$ that are further
-than some threshold number of standard deviations,
-$\sqrt{\mathbf{v_p}}$, away from zero so that they are not used in
-subsequent iterations.
+Despite all of the cleaning operations described in the previous
+sections, the data from a given bolometer may be unusable do to it
+being poorly biased, having an incorrect flatfield correction applied,
+or having some other particularly pathological noise
+contamination. Most of these bolometers can be flagged simply by
+identifying outliers in the bolometer noise distribution. By default,
+SMURF measures the PSD of all bolometers between 2 and 10\,Hz, after
+all other pre-processing steps have been run (identical to the
+measurement in Section~\ref{sec:noi}). Despite having significant
+low-frequency noise (and possibly bright astronomical source)
+contamination, this higher-frequency portion of the PSD is generally
+quite clean. Furthermore, even if there is contamination, the purpose
+of this measurement is to identify outliers, rather than provide a
+meaningful absolute measurement of a given bolometer's white noise
+level. Both high and low (e.g., due to an incorrect and very small
+flatfield correction being applied) outliers from the centre of the
+distribution are flagged. The measurement is based on the logarithm of
+the noise values, and iterative clipping of the mean and standard
+deviation are used, to reduce the impact of large outliers.
 
 
 %-------------------------------------------------
 \subsection{Iterative model calculation}
 \label{sec:components}
 %-------------------------------------------------
-
-
-
 
 We express the signal observed by the $i$th bolometer as a function of
 time,
@@ -1494,8 +1443,8 @@ $\mathbf{n}^\mathrm{c}$ from the time-series, and then by re-gridding
 the remaining data we can hope to approach the theoretical noise limit
 in the map. This procedure is summarized in Fig.~\ref{fig:dimm}.
 
-First, the data files are read from disk, concatenated into contiguous
-arrays in memory, and run through a pre-processing stage that performs
+
+ and run through a pre-processing stage that performs
 several operations including spike and sudden level step removal to
 enforce continuity in the time-series. Then, the iterative process
 within the dashed box begins. It is generally assumed that the
@@ -1726,7 +1675,7 @@ to be taken that astronomical sources are not suppressed).
 \label{sec:ast}
 
 Map estimation is accomplished using a nearest-neighbour resampling of
-the data onto a pre-defined map grid. For the $i$th map pixel
+the data onto a pre-defined map grid with. For the $i$th map pixel
 $\mathbf{m}(x_i,y_i)$, the brightness is estimated as the weighted
 average of the bolometer data samples $\mathbf{b}_j$ that land within
 that pixel (from any bolometer or point in time),
@@ -1779,9 +1728,48 @@ into the time domain (the signal that would be produced in each
 bolometer by the signal represented by the map) and removed.
 
 In addition to map estimation, the \model{AST} model can also be used
-to perform map-based despiking of the time-series
-(Section~\ref{sec:mapdespike}), and to apply constraints to the map to
-improve convergence (Section~\ref{sec:converge}).
+to perform map-based despiking of the time-series. Unlike the
+time-domain despiker (Section~\ref{sec:timedespike}), this calculation
+uses the scatter in the population of samples used to estimate the map
+pixel values (from different times and bolometers) to reject
+outliers. This method is more robust against false-positive detections
+of bright/compact astronomical sources, since transient features in
+the time-series are unlikely to occur by chance whenever a bolometer
+crosses a specific location on the sky, whereas real astronomical
+sources are at fixed spatial locations.
+
+The estimated variance, $\mathbf{v_p}(x_i,y_i)$, of the normalized
+weighted samples that land in the $i$th map pixel is simply the biased
+weighted sample variance (i.e., the variance map value multiplied by
+the number of samples)
+%
+\begin{equation}
+  \mathbf{v_p}(x_i,y_i) = N_i \mathbf{v}(x_i,y_i).
+\end{equation}
+%
+In order to compare the weighted \emph{differences} between the
+samples and the map values, [$\mathbf{b}_j - \mathbf{m}(x_i,y_i)$] to
+$\mathbf{v_p}$, they must be scaled appropriately. We define a
+normalized difference, $\mathbf{d}_j$, in such a way that the variance
+of this new variable gives the weighted sample variance of the
+underlying data points:
+%
+\begin{eqnarray}
+  \frac{\sum_j \mathbf{d}_j^2}{N} &=&
+  \frac{\sum_j \mathbf{w}_j [\mathbf{b}_j - \mathbf{m}(x_i,y_i)]^2}
+       {\sum_k \mathbf{w}_k} \\
+   \Rightarrow \mathbf{d}_j^2 &=& \frac{N \mathbf{w}_j [\mathbf{b}_j -
+       \mathbf{m}(x_i,y_i)]^2}{ \sum_k \mathbf{w}_k} .
+\end{eqnarray}
+%
+The map-based despiker flags those $\mathbf{d}_j$ that are further
+than some threshold number of standard deviations,
+$\sqrt{\mathbf{v_p}}$, away from zero so that they are not used in
+subsequent iterations.
+
+A final option available as part of the \model{AST} model is to apply
+constraints to the map to improve convergence. See the discussion in
+Section~\ref{sec:converge}.
 
 \subsubsection{\model{NOI}: noise estimation}
 \label{sec:noi}
