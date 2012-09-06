@@ -68,15 +68,17 @@ with the Sub-Millimetre User Reduction Facility}
     Tim~Jenness$^{2}$,
     Douglas~Scott$^{1}$,
     Frossie~Economou$^2$\thanks{Present address: National Optical
-      Astronomy Observatory, 950 N.\ Cherry Avenue, Tucson, AZ 85719, USA}
+      Astronomy Observatory, 950 N.\ Cherry Avenue, Tucson, AZ 85719, USA},
+    Remo~P.~J.~Tilanus$^{2,3}$
   }
   \\
   \\
   $^{1}$Dept. of Physics \& Astronomy, University of British Columbia,
   6224 Agricultural Road, Vancouver, B.C. V6T 1Z1, Canada\\
   $^{2}$JointAstronomy Centre, 660 N. A`oh\={o}k\={u} Place, University
-  Park, Hilo, Hawaii 96720, USA}
-
+  Park, Hilo, Hawaii 96720, USA\\
+  $^{3}$Netherlands Organisation for Scientific Research,
+  Laan van Nieuw Oost-Indie 300, NL-2509 AC The Hague, The Netherlands}
 \begin{document}
 
 \label{firstpage}
@@ -88,10 +90,10 @@ with the Sub-Millimetre User Reduction Facility}
   instrument operating on the 15-m James Clerk Maxwell Telescope,
   consisting of about 5000 bolometers in each of two simultaneous
   imaging bands centered over 450 and 850\,\micron. The camera is
-  scanned across the sky and records data at a rate of 200\,Hz. This
-  data volume is much greater than that of previously existing
+  scanned across the sky and records data at a rate of 200\,Hz. The
+  data rate is much greater than that of previously existing
   submillimetre cameras, and represents a significant data anlaysis
-  challenge. We describe the production of SCUBA-2 maps using the
+  challenge. We describe the production of \scuba\ maps using the
   Sub-Millimetre User Reduction Facility (SMURF) in which we have
   adopted a fast, iterative approach to map-making that enables data
   reduction on single, modern, high-end desktop computers with
@@ -261,7 +263,7 @@ problem involving many detectors, the problem is significantly
 complicated both by the need to measure the cross power-spectra for
 all unique pairs of bolometers, and then to perform the inversion
 itself. The most promising maximum-likelihood method that may one day
-be applied to SCUBA-2 data is ``SANEPIC'', which successfully reduced
+be applied to \scuba\ data is ``SANEPIC'', which successfully reduced
 maps from the Balloon-borne Large-Aperture Submillimeter Telescope,
 involving hundreds of bolometers, and correctly incorporating
 inter-bolometer noise correlations \citep[][]{patanchon2008}.
@@ -334,7 +336,7 @@ Hole, a blind survey of faint point-like source
 (Section~\ref{sec:cosmo}); and (iii) the star-forming region M17,
 including bright, extended emission (Section~\ref{sec:extended}). All
 of the data analyzed in this paper are publicly available through the
-CADC SCUBA-2 raw-data queries page for the dates and observation
+CADC \scuba\ raw-data queries page for the dates and observation
 numbers given in the
 text\footnote{\texttt{http://www3.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/
 jcmt/search/scuba2}}. All of the analysis was performed using
@@ -740,9 +742,8 @@ with the bolometers). Due to the fact that the sign of the gain in
 each stage of SQUID amplification is random (although the combined
 gain is constrained to be negative), and since magnetic field pickup
 is only seen at the input to the second stage, the pickup can appear
-with random signs for bolometers along a a column, giving it a
-distinct signature from other common signals that appear with the same
-sign.
+with random signs for bolometers along a column, giving it a distinct
+signature from other common signals that appear with the same sign.
 
 \begin{figure}
 \centering
@@ -996,8 +997,8 @@ Starlink package \citep{2009ASPC..411..418J}, which provides access to
 a large suite of libraries (including a commanding and messaging
 interface, astrometric coordinate conversions and generation of
 standard WCS information, file formats etc.). Furthermore, Starlink is
-already used extensively at the Joint Astronomy Centre (host of the
-JCMT) for many other systems, which helps with
+open source, and already used extensively at the Joint Astronomy
+Centre (host of the JCMT) for many other systems, which helps with
 interoperability. Though originally written in FORTRAN, many of the
 core Starlink libraries are now ported to native C, or at least have a
 C interface. It was therefore decided to develop SMURF in C as well
@@ -1063,12 +1064,20 @@ component in the dashed box of Fig.~\ref{fig:dimm} is re-calculated in
 sequence. In this way, the second time the common-mode is calculated,
 for example, most of the bright astronomical sources in the data have
 already been removed in the previous iteration when the map was
-estimated and subtracted, reducing the amount of ringing in the map.
+estimated and subtracted, reducing the amount of ringing in the map
+once it is re-estimated. Note that the extinction and gain denoted in
+a second dashed box are \emph{multiplicative} rather than additive
+models, and so they must be inverted prior to the start of each
+iteration to preserve the units (see Sections~\ref{sec:comgai} and
+\ref{sec:ext}).
 
-In Sections~\ref{sec:dataprep} and \ref{sec:components} we describe
-the data pre-processing steps and iterative algorithm in
-detail. Section~\ref{sec:converge} explores convergence tests and
-degeneracies between model components.
+In general, SMURF is highly configurable, including many options for
+both the pre-processing stage and the iterative model components
+(which models are used, what order they are calculated in, how they
+are calculated).  In Sections~\ref{sec:dataprep} and
+\ref{sec:components} we describe the data pre-processing steps and
+iterative algorithm in detail. Section~\ref{sec:converge} explores
+convergence tests and degeneracies between model components.
 
 
 %-------------------------------------------------
@@ -1076,15 +1085,16 @@ degeneracies between model components.
 \label{sec:dataprep}
 %-------------------------------------------------
 
-Prior to executing the iterative part of the SMURF algorithm, the data
-must undergo several pre-processing steps. First, the data files are
-read into memory and concatenated into continuous arrays (\scuba\ data
-are broken up and written to disk every $\sim$30\,s). As the data are
-loaded, the flatfield correction is also applied \citep[see
-Section~2.1 in][]{dempsey2012}. Next, a series of data cleaning and
-filtering procedures are applied; these include the removal of large
-glitches that may hinder the iterative solution from converging, or
-simply tasks that do not need to be iterated.
+Prior to executing the iterative part of the algorithm, the data must
+undergo several pre-processing steps. First, the data files are read
+into memory and concatenated into continuous arrays (\scuba\ data are
+broken up and written to disk every $\sim$30\,s during data
+acquisition). As the data are loaded, they are multiplied by the
+flatfield correction \citep[see Section~2.1 in][]{dempsey2012}. Next,
+a series of data cleaning and filtering procedures are applied; these
+include the removal of large glitches that may hinder the iterative
+solution from converging, or simply tasks that do not need to be
+iterated.
 
 \subsubsection{Time-series down-sampling and map pixel size}
 \label{sec:downsamp}
@@ -1111,9 +1121,9 @@ be an integer number of samples from $x_i$ in each of the $y_j$, so
 fractional samples from $x_i$ are used at the $y_j$ time
 boundaries. The algorithm is fast, since each sample in $x_i$ need
 only be visited once. From a spectral point of view, this boxcar
-average is equivalent to applying a sinc-function low-pass filter in
-the frequency domain. Such behaviour is desirable since it serves as
-an anti-aliasing filter; most non-white features above the Nyquist
+average is equivalent to applying a sinc-function low-pass
+filter. Such behaviour is desirable since it serves as an
+anti-aliasing filter; most non-white features above the Nyquist
 frequency in $y_j$ that could contaminate the output data are largely
 removed.
 
@@ -1145,19 +1155,18 @@ during pre-processing.
 
 \item As an alternative to the iterative map-making procedure,
 cleaning by principal component analysis (PCA) is available as an
-experimental pre-processing option. As described in
-Section~\ref{sec:pca}, a new set of basic vectors for the bolometer
-data are found which diagonalize their covariance matrix. The
-brightest components can then be subtracted from the data. A single
-parameter specifies the threshold on the amplitude of the eigenvalues
-to be removed, as a number of standard deviations away from the mean
-value. Subarrays are cleaned independently once for the full length of
-each continuousy chunk of data. Given the computational expense of
-this method, and initial tests which showed little improvement over
-simple high-pass filtering, this method has not yet been explored in
-detail with \scuba\ data. However, since systematic effects seem to
-come and go, it is possible that PCA could be useful for particular
-data sets.
+experimental pre-processing option (Section~\ref{sec:pca}). The most
+significant components in the analysis are identified, and the
+projection of each bolometer time series along their eigenvectors are
+removed. A single parameter specifies the threshold on the amplitude
+of the eigenvalues to be removed, as a number of standard deviations
+away from the mean value. Subarrays are cleaned independently, once,
+for the full length of each continuousy chunk of data. Given the
+computational expense of this method, and initial tests which showed
+little improvement over simple high-pass filtering, this method has
+not yet been explored in detail with \scuba\ data. However, since
+systematic effects seem to come and go, it is possible that PCA could
+be useful for particular data sets.
 
 \end{itemize}
 
@@ -1221,9 +1230,8 @@ with the most likely cause being cosmic ray events \citep[see
 Section~3.5.3 in][]{holland2012}. The black curves in
 Fig.~\ref{fig:steps1} show examples of such steps in the time streams
 for two bolometers. If not removed, these steps can cause severe
-ringing in the FLT model (Section~\ref{sec:flt}) and visible streaks
-in the final map, corresponding to the paths of individual bolometers
-over the sky.
+ringing when filtering, and visible streaks in the final map,
+corresponding to the paths of individual bolometers over the sky.
 
 Steps occur with a wide range of heights and shapes. The ratio of step
 height to noise can vary from less than 10 to several hundred. Some
@@ -1232,10 +1240,12 @@ steps occur over a single sample, such as the step close to sample
 happen more gradually, such as the step close to sample 5300. In
 addition, a step can be preceded or followed by a short period of
 instability, as is visible at the bottom of the step in the left hand
-plot of Fig.~\ref{fig:steps1}. Further problems are caused by steps
-that occur close together in time, such as the large downward step
-followed by a smaller upward step close to sample 5000 in the right
-hand plot of Fig.~\ref{fig:steps1}.
+plot of Fig.~\ref{fig:steps1} (this is probably due to the response of
+the \scuba\ anti-aliasing filter; the sudden large step occurs prior
+to the 200\,Hz re-sampling). Further problems are caused by steps that
+occur close together in time, such as the large downward step followed
+by a smaller upward step close to sample 5000 in the right hand plot
+of Fig.~\ref{fig:steps1}.
 
 Detecting and correcting such a wide variety of steps reliably has proved
 to be a challenge. In outline, the following stages
@@ -1407,11 +1417,16 @@ deviation are used, to reduce the impact of large outliers.
 \label{sec:components}
 %-------------------------------------------------
 
-We express the signal observed by the $i$th bolometer as a function of
-time,
+Once the data have been cleaned, and the worst data flagged to be
+ignored, the iterative solution for the map and contaminating noise
+signals begins.
+
+First, we describe the generic model for \scuba\ data. We express the
+signal observed by the $i$th bolometer as a function of time,
 %
 \begin{equation}
-\mathbf{b}_i(t) = g_i[\mathbf{e}_i(t) \mathbf{a}_i(t) + \mathbf{n}_i(t)],
+\mathbf{b}_i(t) = f_i[\mathbf{e}_i(t) \mathbf{a}_i(t) + \mathbf{n}_i(t)],
+\label{eq:model}
 \end{equation}
 %
 where $\mathbf{a}(t)$ is the time-varying signal produced by scanning
@@ -1419,76 +1434,82 @@ the telescope across astronomical sources, $\mathbf{e}(t)$ is the
 time-varying extinction, which is a function of the telescope
 elevation and atmospheric conditions, and $\mathbf{n}_i(t)$ represents
 sources of noise. The two terms in square brackets, as written, have
-units of power delivered to the detectors (pW). The scale factor $g_i$
+units of power delivered to the detectors (pW). The scale factor $f_i$
 converts this effective power to the digitized units recorded on disk
-(DAC) -- the \emph{flatfield} multiplied by a digitization constant --
-and in this formulation it is assumed to be constant in time.
+(DAC) -- the flatfield multiplied by a digitization constant (applied
+once during pre-processing) -- which in this formulation is assumed to
+be constant in time.
 
 We then express the noise, $\mathbf{n}_i(t)$, as the sum of several
 components,
 %
 \begin{equation}
-  \mathbf{n}_i(t) = \mathbf{n}^\mathrm{w}_i(t) + \mathbf{n}^\mathrm{f}_i(t) +
-  \mathbf{n}^\mathrm{c}(t),
+  \mathbf{n}_i(t) = \mathbf{n}^\mathrm{w}_i(t) +
+  g_i\mathbf{n}^\mathrm{c}(t) + \mathbf{n}^\mathrm{f}_i(t),
 \label{eq:noise}
 \end{equation}
 %
-where $\mathbf{n}^\mathrm{w}_i(t)$ is uncorrelated white (thermal)
-noise, $\mathbf{n}^\mathrm{f}_i(t)$ is low-frequency noise that is
-\emph{not} correlated from bolometer-to-bolometer, and
-$\mathbf{n}^\mathrm{c}(t)$ is a (predominantly low-frequency)
-correlated or \emph{common-mode} component. The primary goal of
-map-making is to model and remove $\mathbf{n}^\mathrm{f}_i$ and
-$\mathbf{n}^\mathrm{c}$ from the time-series, and then by re-gridding
-the remaining data we can hope to approach the theoretical noise limit
-in the map. This procedure is summarized in Fig.~\ref{fig:dimm}.
+where $\mathbf{n}^\mathrm{w}_i(t)$ is uncorrelated white noise,
+$\mathbf{n}^\mathrm{c}(t)$ is a correlated or \emph{common-mode}
+signal (with an optional scale factor $g_i$ for each bolometer), and
+$\mathbf{n}^\mathrm{f}_i(t)$ is (predominantly low-frequency) noise in
+excess of the white noise level that is either uncorrelated from
+bolometer-to-bolometer, or at least does not have a simple correlation
+relationship that would lead to it being included in
+$\mathbf{n}^\mathrm{c}(t)$. The primary goal of map-making is to model
+and remove $\mathbf{n}^\mathrm{c}(t)$ and $\mathbf{n}^\mathrm{f}_i(t)$
+from the time-series, and producing a map from what is left.  This
+procedure is summarized in Fig.~\ref{fig:dimm}.
 
+Each model component is estimated from the data in a user-defined
+sequence, where the typically strongest components are estimated
+first, and then subtracted, leaving a cleaner signal for subsequent
+model estimates. One exception to this rule is the extinction
+correction, $\mathbf{e}_i(t)$ in Eq.~\ref{eq:model}, which is simply a
+multiplicative factor that is known prior to map-making. Note that the
+order in which this correction occurs will modify the units of
+subsequently calculated additive model components (e.g. additional
+brackets may be needed in Eq.~\ref{eq:model} after
+$\mathbf{e}_i(t)$). Another exception is the calculation of
+$\mathbf{n}^\mathrm{c}(t)$ and $\mathbf{n}^\mathrm{f}_i(t)$ in which
+the previous iterations are usually added back into the time-series
+simultaneously to avoid degeneracies (see Section~\ref{sec:converge}).
 
- and run through a pre-processing stage that performs
-several operations including spike and sudden level step removal to
-enforce continuity in the time-series. Then, the iterative process
-within the dashed box begins. It is generally assumed that the
-dominant noise component is the common-mode, which is presumably
-dominated by large variations in the fridge temperature and sky noise
-(as argued in Section~\ref{sec:pca}). This signal is estimated as the
-average signal observed by all of the bolometers at each time step,
-and then removed from all of the bolometers. Once this large signal
-has been removed, we apply the extinction correction, which is
-determined completely from external measurements
-\citep[see][]{dempsey2012}. Next, residual noise that differs from
-bolometer-to-bolometer (primarily low-frequency) is removed, usually
-using a high-pass filter. The resulting ``clean'' time-series are then
-re-gridded to produce a map estimate using nearest-neighbour
-sampling. Since each map pixel is calculated as the average of many
-bolometer samples, it is fundamentally much less noisy than the raw
-bolometer time-series. We can therefore project the map back into the
-time domain (i.e. scanning the array across the current estimate of
-the map), and create approximately noiseless estimates of what each
-bolometer would have seen in the absence of noise sources, and remove
-that from the time-series. This final step in the iteration gives a
-residual signal (with low-frequency and astronomical noise components
-removed) that may be used to measured the white noise level in each
-detector, and also to estimate an approximate $\chi^2$ for the model
-to track convergence. As we will discuss in the next sections, each
-signal component estimate is biased slightly due to the presence of
-signal from other components, so the entire process is
-iterated. However, before the next iteration begins, we first undo the
-multiplicative factors introduced by the extinction correction, and
-also relative gains that may optionally be determined in the
-common-mode estimation phase.
+Usually the last two components estimated are $\mathbf{a}_i(t)$ and
+$\mathbf{w}_i(t)$ once the other contaminating noise sources, and
+extinction, have been corrected for. Provided that these two signals
+are the only components of the residual bolometer signal, regridding
+into a map provides the highest \snr\ estimate of the astronomical
+sky. The signal produced by this map is then projected back into the
+time-domain to estimate and remove $\mathbf{a}_i(t)$, leaving a
+residual signal that should be dominated by white noise,
+$\mathbf{n}_i^\mathrm{w}(t)$.
 
-In practice, the map-maker is highly configurable, both in terms of
-the order in which model components are fit (and whether they are fit
-at all), and the details of \emph{how} they are fit. A summary of the
-model components is given in the next section.
+After the first iteration, there will almost certainly be correlated
+errors between the model estimates. For example, the presence of a
+bright astronomical source will contaminate $\mathbf{n}^\mathrm{c}(t)$
+(which is a simple average of all of the bolometer time-series at each
+instant in time), leading to an \emph{over-subtraction}, and in turn,
+negative bowls in the map.
 
+Subsequent iterations, however, diminish such problems. Each additive
+model component is re-estimated in the same sequence, after first
+adding the previous estimate back into the time-series (but
+importantly, not the other components). In this case, much of the
+astronomical signal will have been identified and removed in the
+previous calculation of $\mathbf{a}_i(t)$, and therefore there will be
+less contamination in $\mathbf{n}^\mathrm{c}(t)$, and less negative
+bowling in the map. Any multiplicative models (e.g.,
+$\mathbf{e}_i(t)$) are inverted immediately prior to the start of a
+new iteration to preserve the units of the data. The iterative
+solution will thus converge, barring degeneracies between model
+components.
 
-In addition to specifying when each model component is computed
-(normally an attempt is made to order them by decreasing amplitude in
-the time-series), there are a number of parameters that control their
-operation. Table~\ref{tab:components} lists the model components and
-the typical order in which they are calculated. The following sections
-describe their implementation in detail.
+The full set of model components available, and the parameters that
+control them, are described in the following
+sections. Table~\ref{tab:components} shows the typical order in which
+they are calculated. For a discussion on convergence tests and
+degenerices, see Section~\ref{sec:converge}.
 
 \begin{table}
   \caption{Summary of the model components that can be fit to
@@ -1542,60 +1563,66 @@ features. Empty squares indicate the locations of dead bolometers.}
 \label{fig:com}
 \end{figure}
 
-The \model{COM} model is the common-mode signal itself. It is a single
-time series that is estimated by finding the mean of all bolometers at
-each time step. Bolometer values that have been flagged as unusable
-are excluded from the mean. {\bf Per: has a comment in
-here about stability of the gain pattern... it should be constant
-right?}.
+The \model{COM} model is the common-mode signal itself
+($\mathbf{n}^{c}(t)$ in Eq.~\ref{eq:noise}). It is a single time
+series that is estimated by finding the mean of all bolometers at each
+time step. Bolometer values that have been flagged as unusable are
+excluded from the mean.
 
 Even after flat-fielding, bolometers may have slightly varying
 sensitivities and so the amplitude of the common-mode variations will
 also vary from bolometer to bolometer. Comparing each bolometer time
 stream with the common-mode signal allows an estimate of the relative
-bolometer sensitivity to be obtained. In practice, a least squares linear
-fit is performed between the bolometer time series and the common-mode to
-determine a gain and offset for each bolometer.  The gain and offset for
-each bolometer is known as the \model{GAI} model. Each bolometer value
-can then optionally be scaled and shifted using these values so that all
-bolometers share a common (but as yet unknown) calibration. This provides
-an alternative (or additional) flat-fielding strategy to that described
-in section~\ref{sec:bolos}.
+bolometer sensitivity to be obtained. In practice, a least squares
+linear fit is performed between the bolometer time series and the
+common-mode to determine a gain ($g_i$ in Eq.~\ref{eq:noise}) and
+offset for each bolometer.  The gain and offset for each bolometer is
+known as the \model{GAI} model. Each bolometer value can then
+optionally be scaled and shifted using these values so that all
+bolometers share a common (but as yet unknown) calibration. This
+provides an alternative (or additional) flat-fielding strategy to that
+described in section~\ref{sec:bolos}.
 
-An option exists to cater for time-varying sensitivities. If used, the
-least squares fits described above are performed on short blocks of
-contiguous time slices, providing multiple gain and offset values for
-each bolometer (one pair for each block of time slices). The gain and
-offset at any required time slice can then be found by interpolation
-between these values.
+An option exists to cater for time-varying sensitivities. In
+principle, the gain of the bolometers should be constant in
+time. However, there is evidence that there are slight variations, and
+this option does tend to slightly improve the noise in maps.  If used,
+the least squares fits described above are performed on short blocks
+of contiguous time slices, providing multiple gain and offset values
+for each bolometer (one pair for each block of time slices). The gain
+and offset at any required time slice can then be found by
+interpolation between these values.
 
 It can be seen from Fig.~\ref{fig:com} that some bolometers depart
 radically from the common-mode, indicating some problem within the
 bolometer. Such bolometers are identified by calculating the Pearson
 coefficient of correlation between each bolometer time-stream and the
 common mode. Bolometers for which the correlation coefficient is below
-a specified limit, or which have unusually high or low gain compared to
-the other bolometers, are flagged as bad in order to omit them from the
-final map. If the option described
-above for handling time-varying sensitivities is used, then a
-correlation coefficient can be determined for each individual block of
-time slices.  This allows individual bad blocks to be rejected from a
-bolometer time stream, rather than rejecting the whole bolometer. This
-is beneficial for bolometers that follow the common-mode for most of
-the time but suffer from transient problems at specific times. {\bf
-Per: If magnetic pickup dominates the common mode a negative gain is
-normal and should not be removed. This might be a risk at high
-elevation in very good stable weather!}
+a specified limit, or which have unusually high or low gain compared
+to the other bolometers, are flagged as bad in order to omit them from
+the final map. If the option described above for handling time-varying
+sensitivities is used, then a correlation coefficient can be
+determined for each individual block of time slices.  This allows
+individual bad blocks to be rejected from a bolometer time stream,
+rather than rejecting the whole bolometer. This is beneficial for
+bolometers that follow the common-mode for most of the time but suffer
+from transient problems at specific times. As a warning, rejecting
+data based on outlier gain values can be misleading in cases where the
+data are dominated by magnetic field pickup. For example, the
+common-mode signal for the data in Fig.~\ref{fig:magpickup} would
+resemble the azimuthal scan pattern, but clearly the gains will have
+opposite signs (such that one or the other bolometer would be
+erroneously flagged).
 
-The common-mode value at each time slice is calculated as the unweighted
-mean of the values of all bolometers that have not previously been
-flagged as bad for some other reason. Bolometer values that were flagged
-as bad simply because they were poorly correlated with the common-mode on
-the previous iteration are included in the new common-mode estimate. If
-such samples are excluded, there is a strong possibility of
-discontinuities appearing in the COM model at block boundaries.
-These in turn can lead to ringing in the low pass filter, and
-instabilities in the convergence process.
+The common-mode value at each time slice is calculated as the
+unweighted mean of the values of all bolometers that have not
+previously been flagged as bad for some other reason. Bolometer values
+that were flagged as bad simply because they were poorly correlated
+with the common-mode on the previous iteration are included in the new
+common-mode estimate. If such samples are excluded, there is a strong
+possibility of discontinuities appearing in the \model{COM} model at
+block boundaries.  These in turn can lead to ringing when filtering,
+and instabilities in the convergence process.
 
 Any astronomical sources that are smaller than the array size will
 contribute signal to some bolometers but not other bolometers, thus
@@ -1607,11 +1634,11 @@ output map, resulting in subsequent estimates of the common-mode being
 more accurate.
 
 Any extended astronomical emission on a scale comparable to or larger
-than the spatial extent of the area used to estimate the common-mode will
-contribute a similar signal to all bolometers. Therefore such extended
-emission is indistinguishable from the other sources of common-mode
-signal (fridge and atmosphere variations) and will be removed by the
-model. This places a limit on the spatial extent of astronomical
+than the spatial extent of the area used to estimate the common-mode
+will contribute a similar signal to all bolometers. Therefore such
+extended emission is indistinguishable from the other sources of
+common-mode signal (e.g. atmosphere variations) and will be removed by
+the model. This places a limit on the spatial extent of astronomical
 structure that can be recovered.
 
 For this reason, the usual practice is to estimate a single
@@ -1628,19 +1655,22 @@ spatial structure that can be recovered.
 
 The extinction correction is a multiplicative factor that is normally
 derived using the JCMT water vapour radiometer (WVM), and is not
-considered to be a free parameter in the solution. However, it is
-applied as part of the iterative solution, rather than a
-pre-processing step, since any small errors will be amplified by the
-large low-frequency drifts in the raw bolometer time-series. For
-example, if the bolometer drift is 1000 times greater than an
-astronomical source of interest, a 1 per cent error in the flatfield
-will produce stripes of order 10 times the astronomical signal
-amplitude in the final map! If \model{EXT} is applied after the bulk
-of the low-frequency noise has been removed (e.g., \model{COM,GAI}),
-then there is little potential for such small errors to affect the
-final map.  For details on how it is calculated see
-\citet{dempsey2012}. Note that its numerical value is calculated only
-once, and simply applied as a scale factor in the iterative solution.
+considered to be a free parameter in the solution ($\mathbf{e}_i(t)$
+in Eq.~\ref{eq:model}). However, it is applied as part of the
+iterative solution, rather than a pre-processing step, since any small
+errors will be amplified by the large low-frequency drifts in the raw
+bolometer time-series. For example, if the bolometer drift is 1000
+times greater than an astronomical source of interest, a 1 per cent
+error in the flatfield will produce stripes of order 10 times the
+astronomical signal amplitude in the final map! If \model{EXT} is
+applied after the bulk of the low-frequency noise has been removed
+(e.g., \model{COM,GAI}), then there is little potential for such small
+errors to affect the final map.  For details on how it is calculated
+see \citet{dempsey2012}. Note that its numerical value is calculated
+only once, and simply applied as a scale factor in the iterative
+solution. Unlike the additive model components, it is inverted at the
+start of each iteration to preserve the amplitude of the data before
+the re-calculation of other model components.
 
 \subsubsection{\model{FLT}: fourier transform filter}
 \label{sec:flt}
@@ -1659,17 +1689,19 @@ of each bolometer, and then the bolometer FFT is multiplied by its
 inverse (though normalized to preserve the white noise level).  The
 signals that are \emph{removed} from the time-series by this process
 are stored in the \model{FLT} container array. Typically this model is
-used purely as a high-pass filter to remove most of the residual $1/f$
-noise following common-mode removal. Low-pass filtering is redundant
-for two reasons: (i) SMURF already low-pass filters and re-samples to
-a lower sample rate, as described in Section~\ref{sec:downsamp}; and
-(ii) the act of re-gridding the data to produce map estimates
-effectively low-pass filters the data at a frequency that corresponds
-to the inverse of the crossing time of a single map pixel. Notch
-filters have not been proven to be useful with \scuba\ data,
-particularly since line features tend to move around (i.e. a dynamic
-line-detection system would have to be developed, and care would have
-to be taken that astronomical sources are not suppressed).
+used purely as a high-pass filter to remove most of the residual
+uncorrelated $1/f$ noise following common-mode removal
+($\mathbf{n}^\mathrm{f}_i(t)$ in Eq.~\ref{eq:noise}). Low-pass
+filtering is redundant for two reasons: (i) SMURF already low-pass
+filters and re-samples to a lower sample rate, as described in
+Section~\ref{sec:downsamp}; and (ii) the act of re-gridding the data
+to produce map estimates effectively low-pass filters the data at a
+frequency that corresponds to the inverse of the crossing time of a
+single map pixel. Notch filters have not been proven to be useful with
+\scuba\ data, particularly since line features tend to move around
+(i.e. a dynamic line-detection system would have to be developed, and
+care would have to be taken that astronomical sources are not
+suppressed).
 
 \subsubsection{\model{AST}: map estimation}
 \label{sec:ast}
@@ -1725,7 +1757,8 @@ encountered in a \scuba\ map except in the edge pixels).
 
 Finally, once the map estimation is complete, the map is projected
 into the time domain (the signal that would be produced in each
-bolometer by the signal represented by the map) and removed.
+bolometer by the signal represented by the map, $\mathbf{a}_i(t)$ in
+Eq.~\ref{eq:model}) and removed.
 
 In addition to map estimation, the \model{AST} model can also be used
 to perform map-based despiking of the time-series. Unlike the
@@ -2815,7 +2848,7 @@ The James Clerk Maxwell Telescope is operated by the Joint Astronomy
 Centre on behalf of the Science and Technology Facilities Council of
 the United Kingdom, the Netherlands Organisation for Scientific
 Research, and the National Research Council of Canada. Additional
-funds for the contruction of SCUBA-2 were provided by the Canada
+funds for the contruction of \scuba\ were provided by the Canada
 Foundation for Innovation. EC thanks CANARIE/CANFAR for additional
 funding. Also mention NSERC.
 
