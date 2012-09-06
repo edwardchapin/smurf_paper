@@ -4,6 +4,9 @@
 
 \documentclass[useAMS,usenatbib,nofootinbib]{mn2e}
 
+%% Recommended by MN for handling hyperlinks
+\usepackage[pdftex,pdfpagemode={UseOutlines},bookmarks,bookmarksopen,colorlinks,linkcolor={blue},citecolor={green},urlcolor={red}]{hyperref}
+
 % this is needed to get pdftex to work properly!
 \usepackage[pdftex]{graphicx}
 
@@ -311,8 +314,8 @@ blind survey of faint point-like source (Section~\ref{sec:cosmo}); and
 (Section~\ref{sec:extended}). All of the data analysed in this paper
 are publicly available through the CADC \scuba\ raw-data queries page
 for the dates and observation numbers given in the
-text\footnote{\texttt{http://www3.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/
-jcmt/search/scuba2}}. All of the analysis was performed using the Starlink \textsc{kapuahi}
+text\footnote{\url{http://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/jcmt/search/scuba2}}.
+All of the analysis was performed using the Starlink \textsc{kapuahi}
 release from 2012.
 
 
@@ -928,9 +931,10 @@ development time, it was decided to build SMURF as a Starlink package
 \citep{2009ASPC..411..418J}, which provides access to a large suite of
 libraries (including a commanding and messaging interface, astrometric
 coordinate conversions and generation of standard WCS information,
-file formats etc.). Furthermore, Starlink is open source, and already
-used extensively at the Joint Astronomy Centre (host of the JCMT) for
-many other systems, which helps with interoperability. Though
+file formats etc.). Furthermore, Starlink\footnote{\url{http://www.starlink.ac.uk}} is
+open-source\footnote{\url{https://github.com/Starlink}},
+and already used extensively at the Joint Astronomy Centre (host of the JCMT) for
+many other systems \citep{jenness2011}, which helps with interoperability. Though
 originally written in FORTRAN, many of the core Starlink libraries are
 now ported to native C, or at least have a C interface. It was
 therefore decided to develop SMURF in C as well (rather than C++, for
