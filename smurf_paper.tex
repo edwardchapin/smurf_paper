@@ -171,28 +171,26 @@ $\sim10000$ total detectors, \scuba\ is presently the largest
 submillimetre camera in the world, and the fastest wide-area
 ground-based submillimetre imager.
 
-Submillimetre imaging cameras generally use bolometers to maximise
-sensitivity, in which an absorber collects photons that pass through
-broad-band filters, and the signal is read out using a thermometer
-\citep[e.g.][]{griffin2002}. The sensitivity of bolometers in a camera
-like \scuba\ are limited by white photon and phonon noise from the
+Submillimetre imaging cameras generally use bolometers, rather than
+coherent detectors, to maximise sensitivity. The sensitivity of
+bolometers is limited by white photon and phonon noise from the
 instrument and ambient backgrounds. The low-frequency noise, however,
-is dominated by sources which produce slow variations in mean backgrounds
-(e.g., thermal variations within the cryostat, and the atmosphere for
-ground-based cameras), and drifts in the readout electronics. Such
-noise has a power spectrum $\propto 1/f^\alpha$ ($\alpha>0$), and the
-frequency at which it is comparable to the white noise level is called
-the ``$1/f$ knee''. Since the low-frequency noise is largely
-correlated between all, or subsets, of the bolometers in time, it can
-be suppressed during map-making, since astronomical signals have the
-distinct property that they are fixed in a sky reference frame
-(assuming they are not time-varying). If successful, the noise in the
-resulting map is said to be ``white noise limited'', meaning that the
-map noise is uncorrelated spatially, and has an amplitude that scales
-as the $\mathrm{NEFD}/\sqrt{t}$, where the NEFD is the
-noise-equivalent flux-density (the white noise level of a bolometer in
-1\,s of integration), and $t$ is the amount of integration time in a
-map pixel.
+is typically dominated by sources which produce slow variations the
+background (e.g., thermal variations within the cryostat, and the
+atmosphere for ground-based cameras), and drifts in the readout
+electronics. Such noise has a power spectrum $\propto 1/f^\alpha$
+($\alpha>0$), and the frequency at which it is comparable to the white
+noise level is called the ``$1/f$ knee''. Since the low-frequency
+noise is largely correlated between all, or subsets, of the bolometers
+in time, it can be suppressed during map-making, since astronomical
+signals have the distinct property that they are fixed in a sky
+reference frame (assuming they are not time-varying). If successful,
+the noise in the resulting map is said to be ``white noise limited'',
+meaning that the map noise is uncorrelated spatially, and has an
+amplitude that scales as the $\mathrm{NEFD}/\sqrt{t}$, where the NEFD
+is the noise-equivalent flux-density (the white noise level of a
+bolometer in 1\,s of integration), and $t$ is the amount of
+integration time in a map pixel.
 
 There are numerous ways to attack this map-making problem, both in
 terms of the data-collection method, and processing. The two most
@@ -211,7 +209,7 @@ offering scan patterns that cross the sky at a wide range of position
 angles, ultimately observing each portion of the map at a number of
 different times. Such methods are now used by virtually all existing
 ground-based submillimetre cameras
-\citep[e.g.][]{glenn1998,weferling2002,wilson2008,kovacs2008b}., in
+\citep[e.g.,][]{glenn1998,weferling2002,wilson2008,kovacs2008b}., in
 favour of ``chopping'' methods (where the secondary is quickly moved
 to modulate the signal) that were more appropriate for older
 instruments that had poorer low-frequency noise performance, and were
@@ -225,14 +223,14 @@ other simple filters), and then re-gridding these cleaned data into a
 map. Such was the basic recipe for the reduction of chopped data from
 SCUBA-2's predecessor SCUBA
 \citep{1998ASPC..145..216J,2000ASPC..216..559J}, and MAMBO
-\citep[e.g.][]{omont2001}, another camera from the same
+\citep[e.g.,][]{omont2001}, another camera from the same
 generation. Generally speaking, such methods are fast, although
 dependending on the science goals and noise properties of the data,
 they may not achieve the best noise performance on the angular scales
 of interest. In more recent years a method that has been popular for
 reducing data in fields of faint point sources with BOLOCAM
-\citep[e.g.][]{laurent2005}, and its younger sibling AzTEC
-\citep[e.g.][]{scott2008}, is ``principal component analysis'' (PCA)
+\citep[e.g.,][]{laurent2005}, and its younger sibling AzTEC
+\citep[e.g.,][]{scott2008}, is ``principal component analysis'' (PCA)
 cleaning. A statistical black-box removes the most correlated
 components of the bolometer signals, enabling the detection of
 point-sources very close to the theoretical white-noise limits of the
@@ -258,22 +256,22 @@ data from SCUBA is described in \citet{borys2004}.  The downside to
 such methods is that they can be both computationally expensive and
 have large memory requirements. While for some experimental designs
 fast iterative methods for the inversion do exist with minimal memory
-usage \citep[e.g.][]{wright1996}, for the more general map-making
-problem involving many detectors, the problem is significantly
-complicated both by the need to measure the cross power-spectra for
-all unique pairs of bolometers, and then to perform the inversion
-itself. The most promising maximum-likelihood method that may one day
-be applied to \scuba\ data is ``SANEPIC'', which successfully reduced
-maps from the Balloon-borne Large-Aperture Submillimeter Telescope,
-involving hundreds of bolometers, and correctly incorporating
-inter-bolometer noise correlations \citep[][]{patanchon2008}.
+usage \citep[e.g.,][]{wright1996}, for the more general map-making
+problem involving many detectors, things are significantly complicated
+both by the need to measure the cross power-spectra for all unique
+pairs of bolometers, and then to perform the inversion itself. The
+most promising maximum-likelihood method that may one day be applied
+to \scuba\ data is ``SANEPIC'', which successfully reduced maps from
+the Balloon-borne Large-Aperture Submillimeter Telescope, involving
+hundreds of bolometers, and correctly incorporating inter-bolometer
+noise correlations \citep[][]{patanchon2008}.
 
 %  Styles of map-making: least
 %squares \citep{janssen1992} maximum likelihood
 %\citep[e.g.,][]{patanchon2008}; iterative -- see \citet{johnstone2000}
 %implementation of \citet{wright1996} to remove chop,
 %\citet{kovacs2008} for SHARC-2 etc.; de-correlation using PCA analysis
-%\citep[e.g.][]{laurent2005,scott2008,aguirre2010}.
+%\citep[e.g.,][]{laurent2005,scott2008,aguirre2010}.
 
 The third approach adopted here for \scuba\ is a compromise between
 the previous two methods. Under the assumption that a significant
@@ -317,27 +315,20 @@ hosted by the Canadian Astronomical Data Centre (CADC). Details of the
 pipeline design are given in \citet{gibb2005} and
 \citet{2008AN....329..295C}.
 
-This paper is divided in the following way. We first describe the
-properties of \scuba\ data and scan patterns in Section~\ref{sec:data}
-to motivate the data model that we have adopted. Note that most of the
-analysis described here applies equally to all of the data taken
-to-date with \scuba, including during the Shared-Risks Observing
-period (S2SRO) from 2010 February 11 to 2010 March 25 (during which
-only single subarrays were available at each of the two observing
-wavelengths). A comparison between the S2SRO and fully-commissioned
-instrument is given in Section~\ref{sec:s2sro}. Next, the details of
-the SMURF algorithm are given in Section~\ref{sec:algorithm}. The
-paper is concluded in Section~\ref{sec:examples} with three detailed
-test cases that span the majority of observation types likely to be
-undertaken with \scuba, with an emphasis on the mitigation of
-divergence problems, and characterizing the output maps: (i) Uranus, a
-bright, compact source (Section~\ref{sec:point}); (ii) the Lockman
-Hole, a blind survey of faint point-like source
-(Section~\ref{sec:cosmo}); and (iii) the star-forming region M17,
-including bright, extended emission (Section~\ref{sec:extended}). All
-of the data analyzed in this paper are publicly available through the
-CADC \scuba\ raw-data queries page for the dates and observation
-numbers given in the
+This paper is organized in the following way. We first describe the
+properties of \scuba\ data in Section~\ref{sec:data} to motivate the
+data model that we have adopted. Next, the details of the SMURF
+algorithm are given in Section~\ref{sec:algorithm}. The paper is
+concluded in Section~\ref{sec:examples} with three detailed test cases
+that span the majority of observation types likely to be undertaken
+with \scuba, with an emphasis on the mitigation of divergence
+problems, and characterizing the output maps: (i) Uranus, a bright,
+compact source (Section~\ref{sec:point}); (ii) the Lockman Hole, a
+blind survey of faint point-like source (Section~\ref{sec:cosmo}); and
+(iii) the star-forming region M17, including bright, extended emission
+(Section~\ref{sec:extended}). All of the data analyzed in this paper
+are publicly available through the CADC \scuba\ raw-data queries page
+for the dates and observation numbers given in the
 text\footnote{\texttt{http://www3.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/
 jcmt/search/scuba2}}. All of the analysis was performed using
 \texttt{Starlink} version ... .
@@ -389,12 +380,12 @@ jcmt/search/scuba2}}. All of the analysis was performed using
 \label{sec:data}
 %------------------------------------------------------------------------------
 
-In this section we summarize how \scuba\ bolometers detect temperature
-variations (Section~\ref{sec:bolos}), give exampels of typical
-bolometers signals (Section~\ref{sec:bolosignal}), and the impact of
-magnetic field pickup (Section~\ref{sec:magpickup}), and finally
-illustrate the use of principal component analysis to explore the
-correlated noise properties of \scuba\ data (Section~\ref{sec:pca}).
+In this section we summarize how \scuba\ works,
+(Section~\ref{sec:bolos}), give exampels of typical bolometers signals
+(Section~\ref{sec:bolosignal}), and the impact of magnetic field
+pickup (Section~\ref{sec:magpickup}), and finally illustrate the use
+of principal component analysis to explore the correlated noise
+properties of \scuba\ data (Section~\ref{sec:pca}).
 
 %--------------------------------------------------
 \subsection{Description of \scuba}
@@ -405,53 +396,44 @@ While the details of how \scuba\ works are described in
 \citet{holland2012}, and its calibration in \citet{dempsey2012}, we
 summarize the basic concepts relevant to map-making here.
 
-Incoming light passes first through a beam-splitter, and then bandpass
+Incoming light passes through a beam-splitter, and then bandpass
 filters, providing simultaneous illumination and wavelength definition
-of both the 450 and 850\,\micron\ focal planes. The bolometers in each
-focal plane consist of absorbers coupled to superconducting
-transition-edge sensors (TESs) for thermometry. The focal planes are
-held at a temperature somewhat below the critical temperatures of the
-TESs by the fridge. The devices are then biased into the
-superconducting transition using a combination of individual pixel
-heaters (to compensate for most of the bulk variations in loading from
-the atmosphere and other backgrounds), and an electrical voltage
-bias. Throughout an observation the heater bias is fixed, but
-smaller-scale load variations both from the backgrounds and, to a much
-lesser extent, astronomical sources, significantly alter the TES
-impedences as their temperatures vary. Thermoelectrical feedback then
-keeps the TESs ``locked'' in the superconducting transition; an
-increase in temperature increases the impedence, and lowers the
-current, and therefore the heating resulting from the voltage
-bias. These current changes produce varying magnetic fields that are
-amplified using chains of superconducting quantum interference devices
-(SQUIDs), and the larger output currents are digitized. Each detector
-has its own SQUID for the first-stage of the amplification, but the
-remaining stages occur within a common chain of SQUIDs for each of the
-32 columns. All 40 rows are read-out in sequence at a row-visit
-frequency of about 12\,kHz. Such a high sample rate is unnecessary to
-produce maps, so the data are re-sampled to approximately 200\,Hz
-before writing to disk.  It should also be noted that there is an
-additional 41st row of SQUID readouts that are not connected to
-TESs. These ``dark SQUIDs'' track non-thermal noise sources that are
-common to each column's amplifier chain. The relationship between the
-output digitized current, $I$, and the input power, $P$, or $dI/dP$ is
-established using \emph{flatfield} observations immediately prior to
-science observations, in which the output signal is measured
-throughout a ramp of the pixel heaters (which provide a known input
-power); see Section~2.1 in \citet{dempsey2012} and Section~5.3 in
-\citet{holland2012}. Finally, the conversion to astronomical flux
-units from power involves a correction for atmospheric extinction
-\citep[primarily using the JCMT Water Vapour Monitor to track
-line-of-sight opacity variations, see Section~3 in][]{dempsey2012},
-and the application of a flux conversion factor (FCF) which is
-established from regular measurements of calibrators such as Uranus
-\citep[Section~5 in][]{dempsey2012}.
+of both the 450 and 850\,\micron\ focal planes. Each focal plan is
+populated by four \emph{subarrays} (labeled s4a--s4d at 450\,\micron,
+and s8a--s8d at 850\,\micron), each consisting of 32 columns and 40
+rows of bolometers. The bolometers are thermal absorbers coupled to
+superconducting transition-edge sensors (TESs) for thermometry;
+temperature variations in the TESs produce changing currents, and
+therefore varying magnetic fields.  The changing magnetic fields are
+detected and amplified using chains of superconducting quantum
+interference devices (SQUIDs), and the larger output currents are
+digitized. Each detector has its own SQUID for the first-stage of the
+amplification, but the remaining stages occur within a common chain of
+SQUIDs for each of the 32 columns. All 40 rows are read-out in
+sequence at a row-visit frequency of about 12\,kHz. Such a high sample
+rate is unnecessary to produce maps, so the data are re-sampled to
+approximately 200\,Hz before writing to disk.  It should also be noted
+that there is an additional 41st row of SQUID readouts that are not
+connected to TESs. These \emph{dark SQUIDs} track non-thermal noise
+sources that are common to each column's amplifier chain. The
+relationship between the output digitized current, $I$, and the input
+power, $P$, or $dI/dP$ is established using \emph{flatfield}
+observations immediately prior to science observations, in which the
+output signal is measured throughout a ramp of the pixel heaters
+(which provide a known input power); see Section~2.1 in
+\citet{dempsey2012} and Section~5.3 in \citet{holland2012}. Finally,
+the conversion to astronomical flux units from power involves a
+correction for atmospheric extinction \citep[primarily using the JCMT
+Water Vapour Monitor to track line-of-sight opacity variations, see
+Section~3 in][]{dempsey2012}, and the application of a flux conversion
+factor (FCF) which is established from regular measurements of
+calibrators such as Uranus \citep[Section~5 in][]{dempsey2012}.
 
 The predominant noise features in \scuba\ bolometers are: (i) the
 effectively white thermal noise produced by the phonon and optical
 loading on the absorbers (largely independent from bolometer to
 bolometer); and (ii) longer timescale drifts resulting from slow
-variations in the mean load (e.g. fridge, telescope, or atmospheric
+variations in the mean load (e.g., fridge, telescope, or atmospheric
 changes), and also the readout electronics (often correlated amongst
 many or all of the bolometers). As such, the power spectra of
 bolometer time-series exhibit a ``$1/f^\alpha$'' ($\alpha>0$) shape
@@ -495,7 +477,7 @@ of the 450\,\micron\ diffraction-limited full-width at half-maximum
 point spread function (PSF). The scan \emph{patterns} are designed,
 primarily, to mitigate the effects of low-frequency $1/f$ drift. The
 simplest scan one might use is a raster ``boustrophedon'' pattern,
-i.e. a series of parallel passes across the field. However, such a
+i.e., a series of parallel passes across the field. However, such a
 scan yields extremely poor performace for structures that are
 transverse to the scan direction, since a long time will have elapsed
 between each parallel step. In addition, other periodic noise features
@@ -523,7 +505,7 @@ complete description of the \scuba\ observing modes, see Section~5 in
 \begin{figure*}
 \includegraphics[width=0.49\linewidth]{bolos_point_mix_s2sro.pdf}
 \includegraphics[width=0.49\linewidth]{bolos_point_mix.pdf}
-\caption{A comparison between single bolometer time series in each of
+\caption{A comparison between single bolometer time-series in each of
   the 450 and 850\,\micron\ bands with the mixing chamber temperature
   and azimuth/elevation pointing offsets, before and after upgrading
   the instrument. The grey signals overplotted in the top two panels
@@ -598,7 +580,7 @@ complete description of the \scuba\ observing modes, see Section~5 in
 \label{sec:bolosignal}
 %-------------------------------------------------
 
-In Fig.~\ref{fig:bolos_mix} we show sample time series from single
+In Fig.~\ref{fig:bolos_mix} we show sample time-series from single
 bolometers in each of the 450 and 850\,\micron\ focal planes, as well
 as variations in the mixing chamber temperature (as a proxy for the
 focal-plane temperature), and the telescope pointing, for two data
@@ -619,7 +601,7 @@ wavelength, with the telescope motion.
 The low-frequency signal component of the S2SRO bolometer output is
 also highly correlated amongst bolometers in the same subarray. We
 have calculated a common-mode signal, $\mathbf{c}(t)$, as the average
-time series of all the working bolometers. We then fit the amplitude
+time-series of all the working bolometers. We then fit the amplitude
 of $\mathbf{c}(t)$ at each wavelength to the signals shown in
 Fig.~\ref{fig:bolos_mix} and remove it, yielding the grey residual
 signals. These residuals are quite flat, although still with
@@ -651,7 +633,7 @@ data sets, in Fig.~\ref{fig:pspec}. To produce this figure, we follow
 the convention that the PSD as a function of frequency,
 $\mathbf{P}(f)$, is normalized such that the integral over frequency
 gives the same variance as the time-series variance across the full
-time series. In other words, given a bolometer signal $\mathbf{b}(t)$,
+time-series. In other words, given a bolometer signal $\mathbf{b}(t)$,
 %
 \begin{equation}
 \label{eq:psd}
@@ -727,7 +709,7 @@ An additional noise source that is significant in only a small subset
 of the data (and moreso during the S2SRO period) is magnetic field
 pickup. Since the bolometer signals are ultimately detected through
 the amplification of magnetic fields, any additional changing fields
-within the cryostat will also be detected.
+within the instrument will also be detected.
 
 Example data from the 450\,\micron\ subarray s4a where pickup appears
 to be significant (observation 16 on 20100228) are shown in
@@ -794,10 +776,10 @@ is approximately three orders-of-magnitude smaller.
   subarray) and 850\,\micron\ (s8b subarray) time-series bolometer
   data, for the same observation as that used in the right-hand panels
   of Figs.~\ref{fig:bolos_mix} and \ref{fig:pspec}. For each component
-  the top plot shows the time series of the normalized eigenvectors,
+  the top plot shows the time-series of the normalized eigenvectors,
   the middle plot its PSD, and the bottom coloured panels the
   eigenvalues for the bolometers at each wavelength (the amplitudes of
-  the eigenvectors in the time series). For reference, both the mean,
+  the eigenvectors in the time-series). For reference, both the mean,
   $\bar{\lambda}$, and \rms, $\lambda_\mathrm{rms}$, eigenvalues for
   the bolometers in each subarray are also shown. Most of the
   correlated $1/f$ signal is encapsulated in Components~1 and 2, and
@@ -820,13 +802,13 @@ Analysis \citep[PCA,][]{laurent2005,scott2008}. Here we use PCA to
 explore correlated signals in \scuba\ data.
 
 The basic method is as follows: (i) a covariance matrix is built up
-for all pairs $(i,j)$ of the $N$ bolometer time series,
+for all pairs $(i,j)$ of the $N$ bolometer time-series,
 $\langle\mathbf{b}_i(t),\mathbf{b}_j(t)\rangle$; and (ii) a singular
 value decomposition identifies a new set of statistically uncorrelated
-eigenvectors, $\mathbf{\xi}_i(t)$ (i.e. whose covariance matrix is
-diagonal), such that each of the bolometer time series is a linear
+eigenvectors, $\mathbf{\xi}_i(t)$ (i.e., whose covariance matrix is
+diagonal), such that each of the bolometer time-series is a linear
 combination of the eigenvectors, or \emph{components}
-i.e. $\mathbf{b}_i(t) = \bar{\mathbf{\xi}}
+i.e., $\mathbf{b}_i(t) = \bar{\mathbf{\xi}}
 \mathbf{\lambda}_i^\mathrm{T}$, where each row of the matrix
 $\bar{\mathbf{\xi}}$ is an eigenvector, and
 $\mathbf{\lambda}_i^\mathrm{T}$ is a column vector containing the
@@ -860,7 +842,7 @@ calculated separately at each wavelength also shown).
 
 The majority of the correlated signal at both wavelengths in
 Fig.~\ref{fig:pca} is clearly produced by Components~1 and 2. In both
-cases, the eigenvector time series exhibit a roughly periodic signal
+cases, the eigenvector time-series exhibit a roughly periodic signal
 that resembles the scan pattern in the right-hand panel of
 Fig.~\ref{fig:pca}. While these correlated signals also clearly appear
 at both wavelengths, referring to the maps of eigenvalues, they are
@@ -901,15 +883,15 @@ features in common. First, the PSDs exhibit moderate low-frequency
 $1/f$ noise. Second, there are broad-line features at frequencies
 above $\sim$30\,Hz which we believe to be aliased high-frequency
 noise, in part due to the clear correlation patterns that appear along
-columns in the eigenvalue maps at both wavelengths (e.g. columns 26
+columns in the eigenvalue maps at both wavelengths (e.g., columns 26
 and 29 at 450\,\micron in Component~6). Finally, these components also
 have potentially unrelated features mixed into them, like sudden
 offsets that are likely residuals due to imperfect step correction
-(e.g. $\sim$50\,s in the eigenvector time-series for Component~6; also
+(e.g., $\sim$50\,s in the eigenvector time-series for Component~6; also
 see Section~\ref{sec:steps}).
 
 Finally, Component~12 in Fig.~\ref{fig:pca} is again significant in
-only a handful of detectors in the 850\,\micron\ subarray (e.g. column
+only a handful of detectors in the 850\,\micron\ subarray (e.g., column
 21 row 25). The time-series plot for the eigenvector exhibits a large
 positive tail of sudden excursions which gradually worsen over
 time. Bolometers that exhibit this signal are probably poorly biased.
@@ -920,7 +902,7 @@ typically one or two strong signal components detected, in general,
 the details can vary significantly from data set to data set, and the
 lengths of the time-series analyzed. The reason for this is probably
 due to the fact that many of the noise sources are not stationary in
-time (e.g. scan-synchronous noise which obviously depends on the scan
+time (e.g., scan-synchronous noise which obviously depends on the scan
 pattern). It should also be clear from this example that while PCA
 offers some helpful insight into the various sources of noise, it does
 not necessarily identify clean patterns that can easily be
@@ -940,27 +922,20 @@ each column would not remove it.
 \centering
 \includegraphics[width=0.75\linewidth]{dimm.pdf}
 \caption{Typical map-making algorithm. Raw data (stored in multiple
-  files) are read and concatenated into continuous time series. A
+  files) are read and concatenated into continuous time-series. A
   pre-processing stage repairs DC steps, applies a flatfield
   correction, and identifies and removes the noisiest bolometers. The
   iterative portion then begins: estimating and removing the
   common-mode signal; applying the extinction correction; high-pass
   filtering to remove residual independent low-frequency noise;
   estimating the map by re-gridding the data; and finally measuring
-  the noise in the residual time series. If the \rms\ has converged,
-  the final map is written to disk. Otherwise any multiplicative
+  the noise in the residual time-series. If the solution has
+  converged, the map is written to disk. Otherwise any multiplicative
   factors that may have been applied to the data are inverted (e.g.,
-  extinction correction and relative gains measured during the
-  common-mode calculation), and each additive component is added back
-  into the time series and re-estimated in turn.  {\bf Per: The data
-  flow is not clear to me. One way would be to take the ast map and
-  remove extinction and gain correction and subtract it from the raw
-  data and then simply start the iteration again. That would refine
-  the com model from ast model pollution. But the text suggest that
-  the other models also are removed from the data. Indeed this would
-  be way different models can interact diverge. This process how and
-  when this is done is not clear and there must be a number of
-  subtleties affecting the subtraction of the models.}}
+  extinction correction), and then each additive component is
+  re-estimated in turn, with the previous estimate first being added
+  back into the time-series (and importantly, \emph{not} the other
+  components).}
 \label{fig:dimm}
 \end{figure}
 
@@ -1009,7 +984,7 @@ noise model is encapsulated in a C structure, and there is a standard
 interface for all functions that handle models (member data and
 functions for the class, respectively). In this way it is easy to
 extend SMURF with new models. Parallelisation is incorporated in the
-most time-consuming low-level routines using threads (e.g. performing
+most time-consuming low-level routines using threads (e.g., performing
 Fast Fourier Transforms, re-gridding the data), usually handling
 either independent blocks of bolometers, or blocks of time, in each
 thread, depending on the nature of the
@@ -1035,7 +1010,7 @@ correlated signals. In addition to this $1/f$ noise, there is also
 uncorrelated white noise, and finally residual correlated (but
 non-astronomical) signals that appear at all frequencies with more
 complicated relationships amongst groups of bolometers
-(e.g. Fig.~\ref{fig:pca}). While the low-frequency noise can be
+(e.g., Fig.~\ref{fig:pca}). While the low-frequency noise can be
 significantly reduced using simple common-mode removal (subtracting
 the average signal from all bolometers at each time step), these
 remaining correlated noise patterns are much more difficult to
@@ -1157,7 +1132,7 @@ during pre-processing.
 cleaning by principal component analysis (PCA) is available as an
 experimental pre-processing option (Section~\ref{sec:pca}). The most
 significant components in the analysis are identified, and the
-projection of each bolometer time series along their eigenvectors are
+projection of each bolometer time-series along their eigenvectors are
 removed. A single parameter specifies the threshold on the amplitude
 of the eigenvalues to be removed, as a number of standard deviations
 away from the mean value. Subarrays are cleaned independently, once,
@@ -1178,12 +1153,12 @@ Spikes of short duration and high amplitude are often seen in the time
 series data. If not removed, they can cause ringing when filtering the
 data. Two alternative approaches may be used to remove these
 spikes. This section describes the detection and removal of spikes
-within the time series of each bolometer, and Section~\ref{sec:ast}
+within the time-series of each bolometer, and Section~\ref{sec:ast}
 describes the iterative detection and removal of spikes as part of map
 estimation. In practice, map-based despiking usually gives superior
 results, and so time-domain despiking is switched off by default.
 
-Each one-dimensional bolometer time series is processed
+Each one-dimensional bolometer time-series is processed
 independently. At each time slice, the median value of the current
 bolometer is found in a box centred on the time slice, and containing
 a specified number of time slices (typically 50). If the residual
@@ -1212,23 +1187,23 @@ usually raised when making maps of bright point sources.
 \begin{figure*}
 \centering
 \includegraphics[width=\linewidth]{steps1.pdf}
-\caption{Examples of steps in time series data. Steps occur with a wide
+\caption{Examples of steps in time-series data. Steps occur with a wide
 range of heights from the large steps shown on the left to the small
 steps shown on the right. Large steps are often followed by a brief
 ``over-shoot'' as shown on the left. In both plots, the black curve is
-the uncorrected time series, and the red curve is the corrected time
-series. Samples close to a step are omitted in the corrected time series.
-In the right hand plot, the blue curve is the uncorrected time series for
+the uncorrected time-series, and the red curve is the corrected time
+series. Samples close to a step are omitted in the corrected time-series.
+In the right hand plot, the blue curve is the uncorrected time-series for
 a nearby bolometer. The similarity between the red and blue curves shows
 that the step correction is performing well.
 }
 \label{fig:steps1}
 \end{figure*}
 
-Sudden steps can occur in the time stream data from each bolometer,
+Sudden steps can occur in the time-series data from each bolometer,
 with the most likely cause being cosmic ray events \citep[see
 Section~3.5.3 in][]{holland2012}. The black curves in
-Fig.~\ref{fig:steps1} show examples of such steps in the time streams
+Fig.~\ref{fig:steps1} show examples of such steps in the time-series
 for two bolometers. If not removed, these steps can cause severe
 ringing when filtering, and visible streaks in the final map,
 corresponding to the paths of individual bolometers over the sky.
@@ -1247,15 +1222,15 @@ occur close together in time, such as the large downward step followed
 by a smaller upward step close to sample 5000 in the right hand plot
 of Fig.~\ref{fig:steps1}.
 
-Detecting and correcting such a wide variety of steps reliably has proved
-to be a challenge. In outline, the following stages
-are involved in detecting steps in a single bolometer time stream:
+Detecting and correcting such a wide variety of steps reliably has
+proved to be a challenge. In outline, the following stages are
+involved in detecting steps in a single bolometer time-series:
 
 \begin{enumerate}
 
-\item median smooth the whole time stream;
+\item median smooth the whole time-series;
 
-\item find the gradient of the median smoothed time series at each
+\item find the gradient of the median smoothed time-series at each
 sample;
 
 \item smooth the gradient values to determine the local mean gradient
@@ -1272,7 +1247,7 @@ samples;
 \end{enumerate}
 
 The above process produces a list of candidate steps in each bolometer
-time series. Each candidate step is then verified, measured and corrected
+time-series. Each candidate step is then verified, measured and corrected
 using the following procedure:
 
 \begin{enumerate}
@@ -1310,13 +1285,13 @@ samples on either side, are flagged as unusable.
 
 \end{enumerate}
 
-Once all steps have been corrected within a bolometer time stream, a
-constant value is added to all samples in the time stream to restore its
+Once all steps have been corrected within a bolometer time-series, a
+constant value is added to all samples in the time-series to restore its
 original mean value.
 
 The results of step correction are shown by the red curves in
 Fig.~\ref{fig:steps1}. For comparison, the blue curve shows the
-uncorrected time stream from a nearby bolometer that does not suffer from
+uncorrected time-series from a nearby bolometer that does not suffer from
 steps. The agreement between the red and blue curves confirms that
 the step correction algorithm is working satisfactorily.
 
@@ -1339,7 +1314,7 @@ mean of the RMS residuals in the two fits.
 
 In addition to replacing bad samples before the FFT, it is also
 necessary to ensure that the data values at the start and end of the
-time series are similar. Since an FFT treats the data as a single
+time-series are similar. Since an FFT treats the data as a single
 cycle in an infinitely repeating waveform, any large difference
 between starting and ending value will effectively introduce sudden
 steps at the start and end of each cycle, causing unwanted
@@ -1350,27 +1325,27 @@ series. Two methods are available to avoid these two problems:
 
 \begin{itemize}
 \item Apodisation: a number of samples at the start and end of each
-bolometer time series are multiplied by a cosine function in order to
+bolometer time-series are multiplied by a cosine function in order to
 roll the data values off smoothly to zero. The default number of
-samples modified at each end of the time series is given by half the
+samples modified at each end of the time-series is given by half the
 ratio of the sampling frequency to the lowest retained frequency. In
-addition, each end of the time stream is padded with double this
+addition, each end of the time-series is padded with double this
 number of zeros. This method is illustrated in
 Fig.~\ref{fig:pad2}. This method is not used by default as it reduces
 the amount of data available for the map, and can significantly hinder
-very short observations (e.g. of calibrators when focussing the
+very short observations (e.g., of calibrators when focussing the
 telescope).
 
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{pad2.pdf}
-\caption{The black curve shows a bolometer time stream, padded
-with zeros. The red curve shows the time stream after apodisation.}
+\caption{The black curve shows a bolometer time-series, padded
+with zeros. The red curve shows the time-series after apodisation.}
 \label{fig:pad2}
 \end{figure}
 
 \item Padding with artificial data: instead of padding with zeros,
-each time stream is padded with artificial data that connects the two
+each time-series is padded with artificial data that connects the two
 ends of the data stream smoothly and includes Gaussian noise. No
 apodisation is performed. The number of samples of padding at each end
 is again equal to the ratio of the sampling frequency to the lowest
@@ -1381,9 +1356,9 @@ the context of CMB map-making. This method is used by default.
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{pad1.pdf}
-\caption{The black curve shows the same bolometer time stream as in
+\caption{The black curve shows the same bolometer time-series as in
 Fig.~\ref{fig:pad2}, againpadded with zeros. The red curve shows the
-time stream after padding with artificial data.}
+time-series after padding with artificial data.}
 \label{fig:pad1}
 \end{figure}
 
@@ -1468,7 +1443,7 @@ model estimates. One exception to this rule is the extinction
 correction, $\mathbf{e}_i(t)$ in Eq.~\ref{eq:model}, which is simply a
 multiplicative factor that is known prior to map-making. Note that the
 order in which this correction occurs will modify the units of
-subsequently calculated additive model components (e.g. additional
+subsequently calculated additive model components (e.g., additional
 brackets may be needed in Eq.~\ref{eq:model} after
 $\mathbf{e}_i(t)$). Another exception is the calculation of
 $\mathbf{n}^\mathrm{c}(t)$ and $\mathbf{n}^\mathrm{f}_i(t)$ in which
@@ -1543,7 +1518,7 @@ degenerices, see Section~\ref{sec:converge}.
 \subsubsection{\model{COM,GAI}: common-mode estimation}
 \label{sec:comgai}
 
-﻿Fig.~\ref{fig:com} shows the time series from a selection of typical
+﻿Fig.~\ref{fig:com} shows the time-series from a selection of typical
 bolometers.\footnote{The data have been flat-fielded and each time
 series has been adjusted to a mean value of zero.} The similarity
 between most bolometers is evident, and forms the common-mode signal
@@ -1556,7 +1531,7 @@ faint extended structure.  The purpose of the \model{COM} and
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{com.pdf}
-\caption{A selection of typical bolometer time series after
+\caption{A selection of typical bolometer time-series after
 flatfielding and removal of a constant baseline. It can be seen that
 most bolometers exhibit a common time variation overlayed with other
 features. Empty squares indicate the locations of dead bolometers.}
@@ -1574,7 +1549,7 @@ sensitivities and so the amplitude of the common-mode variations will
 also vary from bolometer to bolometer. Comparing each bolometer time
 stream with the common-mode signal allows an estimate of the relative
 bolometer sensitivity to be obtained. In practice, a least squares
-linear fit is performed between the bolometer time series and the
+linear fit is performed between the bolometer time-series and the
 common-mode to determine a gain ($g_i$ in Eq.~\ref{eq:noise}) and
 offset for each bolometer.  The gain and offset for each bolometer is
 known as the \model{GAI} model. Each bolometer value can then
@@ -1603,7 +1578,7 @@ to the other bolometers, are flagged as bad in order to omit them from
 the final map. If the option described above for handling time-varying
 sensitivities is used, then a correlation coefficient can be
 determined for each individual block of time slices.  This allows
-individual bad blocks to be rejected from a bolometer time stream,
+individual bad blocks to be rejected from a bolometer time-series,
 rather than rejecting the whole bolometer. This is beneficial for
 bolometers that follow the common-mode for most of the time but suffer
 from transient problems at specific times. As a warning, rejecting
@@ -1629,7 +1604,7 @@ contribute signal to some bolometers but not other bolometers, thus
 biassing the simple mean used to estimate the common mode. However, on
 each iteration of the map-making algorithm illustrated in
 Fig.~\ref{fig:dimm}, a large fraction of the remaining astronomical
-signal is extracted from the bolometer time series and transferred to the
+signal is extracted from the bolometer time-series and transferred to the
 output map, resulting in subsequent estimates of the common-mode being
 more accurate.
 
@@ -1637,7 +1612,7 @@ Any extended astronomical emission on a scale comparable to or larger
 than the spatial extent of the area used to estimate the common-mode
 will contribute a similar signal to all bolometers. Therefore such
 extended emission is indistinguishable from the other sources of
-common-mode signal (e.g. atmosphere variations) and will be removed by
+common-mode signal (e.g., atmosphere variations) and will be removed by
 the model. This places a limit on the spatial extent of astronomical
 structure that can be recovered.
 
@@ -1672,7 +1647,7 @@ solution. Unlike the additive model components, it is inverted at the
 start of each iteration to preserve the amplitude of the data before
 the re-calculation of other model components.
 
-\subsubsection{\model{FLT}: fourier transform filter}
+\subsubsection{\model{FLT}: Fourier transform filter}
 \label{sec:flt}
 
 This model takes the FFT of the bolometer time-stream data, and can
@@ -1699,7 +1674,7 @@ to produce map estimates effectively low-pass filters the data at a
 frequency that corresponds to the inverse of the crossing time of a
 single map pixel. Notch filters have not been proven to be useful with
 \scuba\ data, particularly since line features tend to move around
-(i.e. a dynamic line-detection system would have to be developed, and
+(i.e., a dynamic line-detection system would have to be developed, and
 care would have to be taken that astronomical sources are not
 suppressed).
 
@@ -1821,7 +1796,7 @@ data (Fig.~\ref{fig:pspec}). Taking this constant level for
 $\mathbf{P}(f)$ we then calculate the expected variance of the
 time-series (in approximately 200\,Hz samples) using
 Eq.~\ref{eq:psd}. If the bolometer noise were produced purely by
-uncorrelated thermal sources (i.e. no other long-scale drifts), with
+uncorrelated thermal sources (i.e., no other long-scale drifts), with
 no high-frequency line features, and without the attenuation at even
 higher frequencies by the anti-aliasing filter, this is the
 theoretical noise limit of the detectors. These measured variances are
@@ -2013,9 +1988,8 @@ offsets and focus. They are also necessary to measure the FCF
 in astronomical units.  In this example we produce a 450\,\micron\ map
 of Uranus (observation 26 on 20111017), which is a nearly point-like
 source for \scuba\ that is commonly used as a primary flux
-calibrator. The now standard constant-velocity daisy scan pattern was
-used (Section~\ref{sec:scan}), with a scan speed of 155
-arcsec\,sec$^{-1}$. We perform several different reductions of the
+calibrator. The CV daisy scan pattern was used, with a scan speed of
+155 arcsec\,sec$^{-1}$. We perform several different reductions of the
 data to illustrate the purpose of various model components and the
 convergence properties of the solution (Fig.~\ref{fig:pointmaps}). In
 all cases the maps are produced on a grid of azimuth (horizontal) and
@@ -2162,7 +2136,7 @@ poorly cross-linked scans of compact (though resolved) sources by
 %-------------------------------------------------
 
 \scuba\ surveys designed to detect extremely faint point-sources
-(e.g. high-redshift star-forming galaxies, and debris disks) are
+(e.g., high-redshift star-forming galaxies, and debris disks) are
 ideally limited by the white-noise performance of the instrument. The
 approach described here for maximizing the \snr\ of point-sources
 involves three major steps: (i) generating a map that removes most
@@ -2173,7 +2147,7 @@ properties of the map easier to deal with; and (iii) detecting point
 sources using a \emph{matched-filter}. Note that variations on this
 general procedure have been used extensively in the submm cosmology
 community using previous instruments
-\citep[e.g.][]{scott2002,borys2003,laurent2005,coppin2006,scott2008,perera2008,devlin2009}.
+\citep[e.g.,][]{scott2002,borys2003,laurent2005,coppin2006,scott2008,perera2008,devlin2009}.
 In this section we will reduce scans of the Lockman Hole taken during
 S2SRO as a pilot project for the Cosmology Legacy Survey. It consists
 of $\sim8.5$\,hours of data taken in 36 separate scans (average
@@ -2236,7 +2210,7 @@ map-maker has been tested in two ways: (i) large numbers of iterations
 are used to verify that the maps converge without the growth of large
 structure; and (ii) adding synthetic sources to the data at a range of
 brightnesses verify that the map-maker response to them is
-\emph{linear} (i.e. the relative shape and amplitude compared to the
+\emph{linear} (i.e., the relative shape and amplitude compared to the
 input source is independent of brightness). The response to a
 synthetic point source (solid line) after map-making (dotted line) is
 shown in Fig.~\ref{fig:lockman_psf}. Clearly the use of a high-pass
@@ -2459,7 +2433,7 @@ proven invaluable for the precise identifications of high-redshift
 submillimetre galaxies due to their relatively low surface densities
 (compare with optical catalogues, for example), and a strong
 correlation between the radio and submillimetre emission mechanisms
-\citep[e.g.][]{smail2000,pope2006,ivison2007,chapin2009b}. Taking a
+\citep[e.g.,][]{smail2000,pope2006,ivison2007,chapin2009b}. Taking a
 representative search radius of 8\,arcsec from these studies with
 similar \snr\ sources and source sizes (the same size as the blue
 circles), 9 out of 10 peaks in the smoothed signal map have potential
@@ -2536,7 +2510,7 @@ may not be possible for the observer to define, in advance, a mask of
 regions containing blank sky. Indeed, for this map, much of the field
 clearly contains extended structure. Furthermore, the goal of such
 maps may be to detect \emph{previously unknown} cool, dense regions of
-the ISM that may not have appeared at other wavelengths (e.g. the
+the ISM that may not have appeared at other wavelengths (e.g., the
 first optically-thick cloud-collapse stages of star-formation). While
 the option does exist for the user to supply their own mask, a
 facility has been added to SMURF to generate one automatically by
@@ -2645,7 +2619,7 @@ power at a range of scales into a relatively empty region of the map.
 It is created by drawing a realization of noise within an 800\,arcsec
 on-a-side box, with an angular power spectrum $P(k) \propto k^{-3}$
 which is appropriate for Galactic cirrus clouds
-\citep[e.g.][]{gautier1992}. It is then filtered again with a
+\citep[e.g.,][]{gautier1992}. It is then filtered again with a
 14.5\,arcsec Gaussian to model the effect of the \scuba\ optical
 response. The RMS of these fluctuations is then normalized to 0.002 pW
 so that they are comparable to the dynamic range of M17 itself. The
@@ -2716,13 +2690,13 @@ right panel of Fig.~\ref{fig:m17_def_ps}. This formula produces
 extremely noisy values at large frequencies (small scales), and we
 therefore set it to a value of 1 above 0.015\,arcsec$^{-1}$, as well
 as any point in the curve where $P_\mathrm{M}(k)$ exceeds
-$P_\mathrm{S}(k)$ (i.e. $G(K)$ is assumed to be $\le$1). As expected,
+$P_\mathrm{S}(k)$ (i.e., $G(K)$ is assumed to be $\le$1). As expected,
 the larger the scale of the filter, the lower the spatial frequency at
 which the map transfer function falls. We then correct the map and
 jackknife PSDs by dividing by $G(k)$ to produce the thick solid, and
 dashed lines in the right panel of Fig.~\ref{fig:m17_def_ps}. This
 shows us that, even though the raw noise in the left panel is lower at
-small scales when a smaller-scale filter is used (e.g. the red dashed
+small scales when a smaller-scale filter is used (e.g., the red dashed
 line), once we correct for the transfer function, we actually win in a
 \snr\ sense at large scales using the larger-scale filter, as would be
 expected.
