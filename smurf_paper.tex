@@ -903,22 +903,31 @@ each column would not remove it.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.75\linewidth]{dimm.pdf}
+\includegraphics[width=\linewidth]{dimm.pdf}
 \caption{Typical map-making algorithm. Raw data (stored in multiple
-  files) are read and concatenated into continuous time-series. A
-  pre-processing stage repairs DC steps, applies a flatfield
-  correction, and identifies and removes the noisiest bolometers. The
-  iterative portion then begins: estimating and removing the
-  common-mode signal; applying the extinction correction; high-pass
-  filtering to remove residual independent low-frequency noise;
-  estimating the map by re-gridding the data; and finally measuring
-  the noise in the residual time-series. If the solution has
+  files) are read and concatenated into continuous time-series, and
+  flatfieded. Based on the scan speed of the telescope, the data are
+  down-sampled to match the selected output map pixel size (usually 2
+  and 4\,arcsec at 450 and 850\,\micron, respectively, to ensure
+  adequate sampling of the \scuba\ PSFs). A cleaning stage repairs DC
+  steps and spikes, and fills gaps to ensure continuity. Finally, the
+  mean of each bolometer time-series is removed (higher-order
+  polynomials may also be used). The iterative portion then begins
+  (dashed box): estimating and removing the common-mode signal (the
+  combined \model{COM} and \model{GAI} models); applying the
+  extinction correction (\model{EXT}); high-pass filtering to remove
+  residual independent low-frequency noise (\model{FLT}); estimating
+  the map by re-gridding the data, and then removing its projection
+  from the time-series (\model{AST}); and finally measuring the noise
+  in the residual time-series (\model{NOI}). If the solution has
   converged, the map is written to disk. Otherwise any multiplicative
-  factors that may have been applied to the data are inverted (e.g.,
-  extinction correction), and then each additive component is
-  re-estimated in turn, with the previous estimate first being added
-  back into the time-series (and importantly, not the other
-  components).}
+  factors that may have been applied to the data are inverted (i.e.,
+  the extinction correction, \model{EXT}), and then the models for the
+  low-frequency noise; the common-mode (\model{COM,GAI}) and high-pass
+  filter (\model{FLT}). Each model is then re-estimated in turn until
+  \model{AST}, at which point the previous estimate of the
+  astronomical signal is added back into the data prior to its
+  re-calculation.}
 \label{fig:dimm}
 \end{figure}
 
