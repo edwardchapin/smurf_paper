@@ -103,15 +103,15 @@ with the Sub-Millimetre User Reduction Facility}
   execution times that are shorter than the observing times.  SMURF is
   used in an automated setting, both at the telescope for real-time
   feedback to observers, as well as for the production of generic
-  science products at the Canadian Astronomy Data Centre. Three
-  detailed case studies are used to: (i) explore convergence
-  properties of the map-maker using simple prior constraints (Uranus
-  -- a point source); (ii) achieve the white-noise limit for faint
-  point-source studies (extragalactic blank-field survey of the
-  Lockman Hole); and (iii) demonstrate that our strategy is capable of
-  recovering angular scales comparable to the size of the array
-  footprint (approximately 5\,arcmin) for bright extended sources
-  (star-forming region M17).
+  science products for the JCMT Science Archive at the Canadian
+  Astronomy Data Centre. Three detailed case studies are used to: (i)
+  explore convergence properties of the map-maker using simple prior
+  constraints (Uranus -- a point source); (ii) achieve the white-noise
+  limit for faint point-source studies (extragalactic blank-field
+  survey of the Lockman Hole); and (iii) demonstrate that our strategy
+  is capable of recovering angular scales comparable to the size of
+  the array footprint (approximately 5\,arcmin) for bright extended
+  sources (star-forming region M17).
 \end{abstract}
 
 
@@ -282,7 +282,7 @@ are the Comprehensive Reduction Utility for SHARC-2
 \citep[CRUSH,][]{kovacs2008}, and the pipeline developed for the
 Bolocam Galactic Plane Survey \citep[][which uses iterative PCA
 cleaning to avoid the suppression of large-scale
-structure]{aguirre2010}.
+structure]{aguirre2011}.
 
 A reasonable model for correlated noise in \scuba\ is a single
 ``common-mode'' signal seen by all of the bolometers. Iterative
@@ -294,7 +294,7 @@ SMURF to reduce data faster than they are taken, on single high-end
 desktop computers, and it has successfully been used as part of a
 real-time pipeline offering feedback to observers at the
 telescope. The pipeline is also used to generate near-science grade
-products using the JCMT Science Archive \citep{2011ASPC..442..203E}
+products for the JCMT Science Archive \citep{2011ASPC..442..203E}
 hosted by the Canadian Astronomy Data Centre (CADC). Details of the
 pipeline design are given in \citet{gibb2005} and
 \citet{2008AN....329..295C}.
@@ -1767,7 +1767,7 @@ noise from Bolocam data at 143 and 268\,GHz (also atop Mauna Kea),
 finding only marginal improvements by fitting a plane, or even using
 higher-order polynomials (see their Fig.~10, as well as the discussion
 and references to earlier work in their Section~4.3). In
-\citet{aguirre2010} iterative PCA cleaning was used to remove the
+\citet{aguirre2011} iterative PCA cleaning was used to remove the
 atmosphere since the simpler methods mentioned left substantial
 residuals in their data (similar to the \scuba\ data described here,
 although PCA cleaning is prohibitively slow in this case).
@@ -2640,7 +2640,7 @@ data for which a more complicated model is developed; the degeneracies
 we have observed for \scuba\ maps using our more brute-force approach
 with a high-pass filter tend to look similar regardless of the order
 (only the convergence time is affected).  For Bolocam data of the
-Galactic Plane, \citet{aguirre2010} used a maximum-entropy filtering
+Galactic Plane, \citet{aguirre2011} used a maximum-entropy filtering
 step to suppress large-scales. Regardless of the method used,
 simulations are always required to establish the transfer function and
 noise properties as a function of angular scale.
@@ -2653,57 +2653,76 @@ noise properties as a function of angular scale.
 
 This paper has described the Submillimetre User Reduction Facility
 (SMURF), which was designed to produce maps from the rapidly sampled
-$\sim10^4$ bolometers of the \scuba\ instrument. We have presented
-sufficient detail in order to be useful not only to users of \scuba,
-but for similar detector arrays in the future. The basic elements are:
+$\sim10^4$ bolometers of the \scuba\ instrument. While similar to
+other algorithms in the literature that iteratively model and remove
+correlated noise components from the data, successively improving the
+map \citep[e.g.,][]{kovacs2008,aguirre2011}, we have shown that a
+relatively simpler approach provides good results for \scuba\ data,
+with reasonable computational requirements. This conclusion is
+encouraging for the development of future large-format bolometer
+arrays.
 
-\begin{enumerate}
+%We have presented
+%sufficient detail in order to be useful not only to users of \scuba,
+%but for similar detector arrays in the future. The basic elements are:
 
-\item A simple model which removes most noise in a common-mode
-rejection step, along with high-pass filtering, results in maps that
-approach the white-noise performance of the detectors.
+The most significant correlated noise sources in \scuba\ data occur at
+low-frequencies ($\lsim$2\,Hz), and are probably a mixture of
+atmospheric signals and magnetic field pickup. Most of this signal can
+be removed using common-mode rejection, although a principal component
+analysis (PCA) identifies a number of other less-significant
+correlated noise patterns that also dominate at low
+frequencies. Unfortunately these patterns are difficult to model, and
+their character varies from observation to observation. One could use
+the PCA directly to remove them, but this technique is prohibitively
+slow for existing high-end desktop computers given the volume of
+\scuba\ data. However, we have demonstrated that high-pass filtering
+can remove the bulk of these residual correlated noise components
+using significantly more efficient Fast Fourier Transforms (FFTs). The
+basic algorithm therefore consists of iterative common-mode rejection
+and high-pass filtering along with estimates of the map, which allows
+us to approach the white-noise limit of the instrument.
 
-\item The main problem to overcome with our strategy is the divergence
-of the map on large angular scales, due to the degeneracy between the
-map, common-mode, and other residual low-frequency noise
-contributions. A simple strategy of constraining empty regions of the
-map to zero (either a user-supplied mask for known sources, or an
-iterative determination of signal above some \snr\ threshold) provides
-good constraints for compact objects, and bright/extended structures.
+The main problem to overcome is divergence on large angular scales,
+due to the degeneracy between the map, and the low-frequency signal
+components that are removed (model degeneracies are a generic problem
+of iterative map-makers). A simple strategy of constraining empty
+regions of the map to zero (using either a user-supplied mask for
+known sources, or an iterative determination of signal above some
+\snr\ threshold) provides good constraints for compact objects, and
+bright/extended structures, allowing us to effectively recover angular
+scales up to the order of the array footprint (approximately
+5\,arcmin).
 
-\item For maps of faint point sources, a single (non-iterative)
-high-pass filter at the start of the reduction produces maps that are
-nearly white-noise limited. We illustatre how to completely whiten the
-maps using jackknife measurements of the angular noise power spectrum
-in order to reliably extract sources down to the limits of the map.
+For maps of faint point sources, a single (non-iterative) high-pass
+filter at the start of the reduction produces maps that are nearly
+white-noise limited. Residual large-scale noise can be removed with a
+whitening filter, and sources detected using a matched-filter
+(smoothing with the effective filtered point spread function).
 
-\item The map-maker has an automatic stopping criterion based on the
-change in the map and $\chi^2$ between subsequent iterations, allowing
-it to adapt to a wide range of data in a pipeline setting.
+The iterative solution is stopped once convergence in the $\chi^2$
+statistic, and/or variations in the map itself is achieved. This
+enables SMURF to run in a pipeline setting without user interaction
+for a wide variety of observations. Furthermore, the execution times
+are shorter than the observation lengths, and memory requirements for
+even the longest \scuba\ observations are within the capabilities of
+single, high-end desktop computers. SMURF can therefore provide real-time
+feedback at the telescope to observers, and it also produces near
+science-grade data products for the JCMT Science Archive hosted by the
+Canadian Astronomy Data Centre.
 
-\item Principal Component Analysis (PCA) has been used to identify
-correlated noise contributions to \scuba\ data, and it is available as
-a generic data cleaning option.
+%SMURF is highly configurable, making it easy to vary the order
+%and types of models that are fit to the data. It is also easy to add
+%new models to the existing infrastructure.
 
-\item The memory requirements and execution times are reasonable
-(possible to reduce data in less time than it takes to collect) on
-modern high-end desktop computers due to the simplicity of the SMURF
-algorithm. It is used in real-time at the telescope for feedback
-during observations, and it is also regularly produces nearly
-science-grade products at the Canadian Astronomy Data Centre.
-
-\item SMURF is highly configurable, making it easy to vary the order
-and types of models that are fit to the data. It is also easy to add
-new models to the existing infrastructure.
-
-\item It is believed that a maximum-likelihood map-maker, such as
-SANEPIC, will provide improved maps over the iterative algorithm
-described here. However, SMURF will most likely be used as an initial
-step in such processing since it can quickly clean the bolometer
-time-series, as well as perform map-based despiking (a necessarily
-iterative step).
-
-\end{enumerate}
+One regime in which SMURF does not presently perform well is in maps
+of faint extended structures, since the zero-masking technique we have
+adopted cannot be used. Since SMURF is both highly configurable and
+extensible, it may be possible to develop an improved data model
+and/or map constraint to assist in these situations, as more
+experience with the instrument is gained. However, the best long-term
+prospects are probably to turn to a maximum-likelihood algorithm, such
+as SANEPIC \citep{patanchon2008}.
 
 %------------------------------------------------------------------------------
 \section{Acknowledgements}
@@ -2716,14 +2735,16 @@ Research, and the National Research Council of Canada. Additional
 funds for the contruction of \scuba\ were provided by the Canada
 Foundation for Innovation. EC thanks CANARIE/CANFAR for additional
 funding. This research was supported in part by the Natural Sciences
-and Engineering Research Council of Canada. The authors thank the
-members of the SCUBA-2 commissioning team for testing the
-map-maker and reporting anomalies; in particular Antonio Chrysostomou
-and Jessica Dempsey. We also thank Dennis Kelly, Alex van Engelen and
-Jennifer Balfour for work on the SCUBA-2 observation simulator;
-and Mark Thompson, Craig Walther and S\'{e}verin Gaudet for being
-on the Critical Design Review panel.
-
+and Engineering Research Council of Canada. EC also thanks Matthew
+Hasselfield and Mark Halpern for helpful discussions about multiplexed
+TES arrays and their noise characteristics.  The authors thank the
+members of the SCUBA-2 commissioning team for testing the map-maker
+and reporting anomalies; in particular Antonio Chrysostomou and
+Jessica Dempsey. We also thank Dennis Kelly, Alex van Engelen and
+Jennifer Balfour for work on the SCUBA-2 observation simulator; and
+Mark Thompson, Craig Walther and S\'{e}verin Gaudet for being on the
+Critical Design Review panel. Finally, we thank Per Friberg and Gary
+Davis for their helpful comments on the manuscript.
 
 %------------------------------------------------------------------------------
 \bibliographystyle{mn2e}
