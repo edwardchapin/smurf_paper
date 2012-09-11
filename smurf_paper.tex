@@ -408,9 +408,9 @@ cross-linking (visiting every point of the mapped area on several
 different time scales, and at different scan angles); and (ii) minimal
 accelerations to reduce turn-around overheads (which could be quite
 large given the 600\,arcsec\,s$^{-1}$ maximum scan speed). For areas
-larger than the array footprint a closed ``PONG'' pattern is used, in
-which the boresight travels in approximately straight lines and
-``bounces'' off the edges at 45\,degree angles until the area is
+larger than the array footprint a rectangular ``PONG'' pattern is
+used, in which the boresight travels in approximately straight lines
+and ``bounces'' off the edges at 45\,degree angles until the area is
 uniformly filled in. It is also usually combined with a rotation
 through a number of fixed position angles to create a ``rotating
 PONG'' with even better cross-linking. For smaller areas (of order the
@@ -1432,7 +1432,7 @@ features. Empty squares indicate the locations of dead bolometers.}
 \end{figure}
 
 The \model{COM} model is the common-mode signal itself
-($\mathbf{n}^{c}(t)$ in Eq.~\ref{eq:noise}). It is a single time
+[$\mathbf{n}^{c}(t)$ in Eq.~\ref{eq:noise}]. It is a single time
 series that is estimated by finding the mean of all bolometers at each
 time step. Bolometer values that have been flagged as unusable are
 excluded from the mean.
@@ -1443,7 +1443,7 @@ also vary from bolometer to bolometer. Comparing each bolometer
 time-series with the common-mode signal allows an estimate of the
 relative bolometer sensitivity to be obtained. In practice, a least
 squares linear fit is performed between the bolometer time-series and
-the common-mode to determine a gain ($g_i$ in Eq.~\ref{eq:noise}) and
+the common-mode to determine a gain [$g_i$ in Eq.~\ref{eq:noise}] and
 offset for each bolometer.  The gain and offset for each bolometer is
 known as the \model{GAI} model. Each bolometer value can then
 optionally be scaled and shifted using these values so that all
@@ -1677,8 +1677,8 @@ Sections~\ref{sec:examples}.
 \label{sec:noi}
 
 The primary purpose of the noise component, \model{NOI}, is to measure
-the white noise levels of each bolometer ($\mathbf{n}^\mathrm{w}_i(t)$
-in Eq.~\ref{eq:noise}). The measurement generally occurs once all of
+the white noise levels of each bolometer [$\mathbf{n}^\mathrm{w}_i(t)$
+in Eq.~\ref{eq:noise}]. The measurement generally occurs once all of
 the other models have been fit and removed. This noise may then be
 used to estimate weights for the data in subsequent iterations.
 
@@ -2647,8 +2647,8 @@ noise properties as a function of angular scale.
 
 
 %------------------------------------------------------------------------------
-\section{Summary and future work}
-\label{sec:summary}
+\section{Conclusions}
+\label{sec:conclusions}
 %------------------------------------------------------------------------------
 
 This paper has described the Submillimetre User Reduction Facility
