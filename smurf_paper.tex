@@ -277,11 +277,13 @@ simplifies the problem (at the expensive of large-scale structure in
 the data). More similar to the algorithm described here was the
 iterative pipeline recipe for fitting and removing baseline drifts in
 SCUBA scan-map data as the astronomical image estimate improved
-\citep{1999ASPC..172..171J}. The two closest modern relatives of SMURF
-are the Comprehensive Reduction Utility for SHARC-2
-\citep[CRUSH,][]{kovacs2008}, and the pipeline developed for the
-Bolocam Galactic Plane Survey \citep[][which uses iterative PCA
-cleaning to avoid the suppression of large-scale
+\citep{1999ASPC..172..171J}. The closest modern relatives of SMURF are
+the Comprehensive Reduction Utility \citep[CRUSH,][]{kovacs2008} for
+the Submillimeter High-Angular Resolution Camera 2 (SHARC-2), the
+Bolometer array data Analysis software (BoA) for the Large APEX
+BOlometer CAmera \citep[LABOCA,][]{siringo2009}, and the pipeline
+developed for the Bolocam Galactic Plane Survey \citep[][which uses
+iterative PCA cleaning to avoid the suppression of large-scale
 structure]{aguirre2011}.
 
 A reasonable model for correlated noise in \scuba\ is a single
@@ -1768,7 +1770,7 @@ discussion and references to earlier work in their section~4.3). In
 \citet{aguirre2011} iterative PCA cleaning was used to remove the
 atmosphere since the simpler methods mentioned left substantial
 residuals in their data (similar to the \scuba\ data described here,
-although PCA cleaning is prohibitively slow in this case).
+although PCA cleaning is prohibitively slow in our case).
 
 %-------------------------------------------------
 \subsection{Convergence tests and model degeneracies}
@@ -2655,9 +2657,9 @@ This paper has described the Submillimetre User Reduction Facility
 $\sim10^4$ bolometers of the \scuba\ instrument. While similar to
 other algorithms in the literature that iteratively model and remove
 correlated noise components from the data, successively improving the
-map \citep[e.g.,][]{kovacs2008,aguirre2011}, we have shown that a
-relatively simpler approach provides good results for \scuba\ data,
-with reasonable computational requirements. This conclusion is
+map \citep[e.g.,][]{kovacs2008,siringo2009,aguirre2011}, we have shown
+that a relatively simpler approach provides good results for \scuba\
+data, with reasonable computational requirements. This conclusion is
 encouraging for the development of future large-format bolometer
 arrays, for which our specific approach should be useful when even
 larger volumes of data are involved.
@@ -2684,7 +2686,7 @@ angular scales, due to the degeneracy between the map, and the
 low-frequency signal components that are removed. A simple strategy of
 constraining empty regions of the map to zero (using either a
 user-supplied mask for known sources, or an iterative determination of
-signal above some \snr\ threshold) provides good constraints for
+signal above some \snr\ threshold) provides good constraints for both
 compact objects, and bright/extended structures, allowing us to
 effectively recover angular scales up to the order of the array
 footprint (approximately 5\,arcmin).
@@ -2732,18 +2734,19 @@ Centre on behalf of the Science and Technology Facilities Council of
 the United Kingdom, the Netherlands Organisation for Scientific
 Research, and the National Research Council of Canada. Additional
 funds for the contruction of \scuba\ were provided by the Canada
-Foundation for Innovation. EC thanks CANARIE/CANFAR for additional
-funding. This research was supported in part by the Natural Sciences
-and Engineering Research Council of Canada. We thank Mark Halpern,
-Matthew Hasselfield, and Gaelen Marsden for many useful discussions.
-The authors thank the members of the SCUBA-2 commissioning team for
-testing the map-maker and reporting anomalies; in particular Antonio
-Chrysostomou, Jessica Dempsey, and Wayne Holland. We acknowledge the
-contributions of Dennis Kelly, Alex van Engelen and Jennifer Balfour
-for early investigations related to SMURF; and Mark Thompson, Craig
-Walther and S\'{e}verin Gaudet for being on the Critical Design Review
-panel. Finally, we thank Per Friberg and Gary Davis for their helpful
-comments on the manuscript.
+Foundation for Innovation.  This research was supported in part by the
+Natural Sciences and Engineering Research Council of Canada.  EC
+thanks CANARIE/CANFAR for additional funding.  The authors thank the
+members of the SCUBA-2 commissioning team for testing the map-maker
+and reporting anomalies; in particular Antonio Chrysostomou, Jessica
+Dempsey, and Wayne Holland.  We also Mark Halpern, Matthew
+Hasselfield, and Gaelen Marsden for many useful discussions, and
+observers who provided useful feedback; especially David Nutter and
+Todd McKenzie.  We acknowledge the contributions of Dennis Kelly, Alex
+van Engelen and Jennifer Balfour for early investigations related to
+SMURF; and Mark Thompson, Craig Walther and S\'{e}verin Gaudet for
+being on the Critical Design Review panel. Finally, we thank Per
+Friberg and Gary Davis for their helpful comments on the manuscript.
 
 
 %------------------------------------------------------------------------------
