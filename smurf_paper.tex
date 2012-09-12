@@ -2681,21 +2681,25 @@ basic algorithm therefore consists of iterative common-mode rejection
 and high-pass filtering along with estimates of the map, which allows
 us to approach the white-noise limit of the instrument.
 
-The main problem with the iterative solution is divergence on large
-angular scales, due to the degeneracy between the map, and the
+We have found that the iterative solution tends to diverge on large
+angular scales due to the degeneracy between the map, and the
 low-frequency signal components that are removed. A simple strategy of
 constraining empty regions of the map to zero (using either a
 user-supplied mask for known sources, or an iterative determination of
 signal above some \snr\ threshold) provides good constraints for both
-compact objects, and bright/extended structures, allowing us to
+compact objects, and bright/extended structures. Particularly in the
+latter case, using a combination of synthetic sources and an empirical
+measurement of the map noise from jackknife tests (differences of
+independent portions of the data), we have demonstrated that we can
 effectively recover angular scales up to the order of the array
 footprint (approximately 5\,arcmin).
 
 For maps of faint point sources, a single (non-iterative) high-pass
 filter at the start of the reduction produces maps that are nearly
 white-noise limited. Residual large-scale noise can be removed with a
-whitening filter, and sources detected using a matched-filter
-(smoothing with the effective filtered point spread function).
+whitening filter (also established from jackknife estimates of the
+noise), and sources detected using a matched-filter (smoothing with
+the effective filtered point spread function).
 
 The iterative solution is stopped once convergence in the $\chi^2$
 statistic, and/or variations in the map itself is achieved. This
@@ -2719,7 +2723,7 @@ extensible, it may be possible to develop an improved data model
 and/or map constraint to assist in these situations, as more
 experience with the instrument is gained. However, provided sufficient
 computing power is available, the best solution in the long-term will
-likely be a maximum-likelihood algorithm, such as SANEPIC
+be a maximum-likelihood algorithm, such as SANEPIC
 \citep{patanchon2008}. Even in this case, the existing iterative
 solution from SMURF will probably be used as an initial step, since it
 can quickly clean the bolometer time-series, as well as perform
