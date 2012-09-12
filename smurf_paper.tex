@@ -360,7 +360,7 @@ maps, so the data are re-sampled to approximately 200\,Hz before
 writing to disk. This rate provides a sample every 3.0\,arcsec, or
 approximately one third of the 450\,\micron\ diffraction-limited
 full-width at half-maximum (FWHM) -- a typical rule-of-thumb for
-adequately sampling a Gaussian point spread function (PSF). There is
+adequately sampling a Gaussian point spread function (PSF) -- at the maximum scanning speed. There is
 an additional 41st row of SQUID readouts that are not connected to
 TESs. These ``dark SQUIDs'' track non-thermal noise sources that are
 common to each column's amplifier chain. The relationship between the
@@ -861,7 +861,7 @@ access to a large suite of libraries (including a commanding and
 messaging interface, astrometric coordinate conversions and generation
 of standard WCS information, file formats etc.). Furthermore,
 Starlink\footnote{\url{http://www.starlink.ac.uk}} is
-open-source\footnote{\url{https://github.com/Starlink}}, and already
+open-source\footnote{\url{https://github.com/Starlink}} (distributed under the GNU General Public Licence v3), and already
 used extensively at the Joint Astronomy Centre (host of the JCMT) for
 many other systems \citep{jenness2011}, which helps with
 interoperability. Though originally written in FORTRAN, many of the
@@ -1014,8 +1014,8 @@ As an alternative, we also investigated an algorithm in which the FFT
 of $x_i$ is simply truncated to the target sample rate before
 transforming back to the time domain (i.e., applying a hard-edged
 low-pass filter). In practice the noise performance was
-indistinguishable, and required slightly more execution time using
-this method. It is therefore not currently available to users.
+indistinguishable, and required slightly longer execution time than using
+the method above. Therefore this method is not used.
 
 \subsubsection{Time-domain de-spiking}
 \label{sec:timedespike}
@@ -1890,7 +1890,7 @@ The accurate measurement of positions and brightnesses of known point
 sources are necessary in real-time to establish telescope pointing
 offsets and focus. They are also necessary to measure the FCF
 (absolute calibration), and hence noise performance of the instrument
-in astronomical units.  In this example we produce a 450\,\micron\ map
+in astronomically-useful units.  In this example we produce a 450\,\micron\ map
 of Uranus (observation 26 on 20111017), which is a nearly point-like
 source for \scuba\ that is commonly used as a primary flux
 calibrator. The CV daisy pattern was used, with a scan speed of 155
@@ -2232,7 +2232,7 @@ estimated from the RMS power at angular frequencies $>
 spectrum of the map by this function, and then transforming back into
 real space. The whitened map is shown in Fig.~\ref{fig:lockman_maps}b,
 and for comparison, the jackknife map has also been whitened in
-Fig.~\ref{fig:lockman_maps}e. In both cases, the maps are visually
+Fig.~\ref{fig:lockman_maps}e. In both cases, the maps are visibly
 flatter than the non-whitened cases.
 
 The angular power spectrum of the whitened signal map is shown with a
@@ -2267,7 +2267,7 @@ both through the whitening and matched filters (each of which are
 linear operations).
 
 Have real astronomical sources been detected using the matched filter?
-For both the smoothed signal and jackknife maps, orange circles denote
+For both the smoothed signal and jackknife maps, blue circles denote
 3.8-$\sigma$ peaks. While not justified here, this threshold is fairly
 typical for other ground-based submillimetre surveys in recent years
 \citep[e.g.,][]{coppin2006,perera2008,2009ApJ...707.1201W} leading to
@@ -2588,7 +2588,7 @@ right panel of Fig.~\ref{fig:m17_def_ps}. This formula produces
 extremely noisy values at large frequencies (small scales), and we
 therefore set it to a value of 1 above 0.015\,arcsec$^{-1}$, as well
 as any point in the curve where $P_\mathrm{M}(k)$ exceeds
-$P_\mathrm{S}(k)$ (i.e., $G(K)$ is assumed to be $\le$1). As expected,
+$P_\mathrm{S}(k)$ (i.e., $G(k)$ is assumed to be $\le$1). As expected,
 the larger the scale of the filter, the lower the spatial frequency at
 which the map transfer function falls. We then correct the map and
 jackknife PSDs by dividing by $G(k)$ to produce the thick solid, and
