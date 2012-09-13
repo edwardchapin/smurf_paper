@@ -4,11 +4,29 @@
 
 \documentclass[useAMS,usenatbib,nofootinbib]{mn2e}
 
+% --- Uncomment following block for use with pdflatex and pdf images ----------
 %% Recommended by MN for handling hyperlinks
+
 \usepackage[pdftex,pdfpagemode={UseOutlines},bookmarks,bookmarksopen,colorlinks,linkcolor={blue},citecolor={green},urlcolor={red}]{hyperref}
 
-% this is needed to get pdftex to work properly!
 \usepackage[pdftex]{graphicx}
+
+% add a .pdf suffix to image file names
+\newcommand{\imagefile}[1]{#1.pdf}
+% -----------------------------------------------------------------------------
+
+
+
+% --- Uncomment following block for latex and postscript images ---------------
+%% Recommended by MN for handling hyperlinks - PS version
+
+%\usepackage[bookmarks,bookmarksopen,colorlinks,linkcolor={blue},citecolor={green},urlcolor={red}]{hyperref}
+
+% add a .eps suffix to image file names
+%\newcommand{\imagefile}[1]{#1.eps}
+% -----------------------------------------------------------------------------
+
+
 
 \usepackage{amsmath}
 \usepackage{url}
@@ -55,6 +73,7 @@
 
 % how are model names displayed
 \newcommand{\model}[1]{\texttt{#1}}
+
 
 % ----------------------------------------------------------------------------
 
@@ -429,8 +448,8 @@ traces out a small circle. For a more complete description of the
 \citet{2010SPIE.7740E..66K}.
 
 \begin{figure*}
-\includegraphics[width=0.49\linewidth]{bolos_point_mix_s2sro.pdf}
-\includegraphics[width=0.49\linewidth]{bolos_point_mix.pdf}
+\includegraphics[width=0.49\linewidth]{\imagefile{bolos_point_mix_s2sro}}
+\includegraphics[width=0.49\linewidth]{\imagefile{bolos_point_mix}}
 \caption{A comparison between single bolometer time-series in each of
   the 450 and 850\,\micron\ bands with the mixing chamber temperature
   and azimuth/elevation pointing offsets, before and after upgrading
@@ -459,8 +478,8 @@ traces out a small circle. For a more complete description of the
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.49\linewidth]{pspec_s2sro.pdf}
-\includegraphics[width=0.49\linewidth]{pspec.pdf}
+\includegraphics[width=0.49\linewidth]{\imagefile{pspec_s2sro}}
+\includegraphics[width=0.49\linewidth]{\imagefile{pspec}}
 \caption{Bolometer power spectral densities for the same two data sets
   (before and after upgrades) used in Fig.~\ref{fig:bolos_mix}. The
   PSDs have been boxcar smoothed with a width of 0.1\,Hz to reduce the
@@ -634,7 +653,7 @@ bolometers and field-of-view (approximately a factor of 4).
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{magpickup.pdf}
+\includegraphics[width=\linewidth]{\imagefile{magpickup}}
 \caption{Evidence for significant magnetic field pickup for
   observation 16 on 20100228 at 450\,\micron\ (s4a subarray).  The top
   panel shows two un-flatfielded (but mean-subtracted and step
@@ -754,7 +773,7 @@ low-frequency drift).
 
 \begin{figure*}
 \centering
-\includegraphics[width=\linewidth]{pca.pdf}
+\includegraphics[width=\linewidth]{\imagefile{pca}}
 \caption{The first twelve components from a principal component
   analysis, ranked by the mean eigenvalues, of combined 450 (s4a
   subarray) and 850\,\micron\ (s8b subarray) time-series bolometer
@@ -900,7 +919,7 @@ Fig.~\ref{fig:dimm}.
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{dimm.pdf}
+\includegraphics[width=\linewidth]{\imagefile{dimm}}
 \caption{Typical map-making algorithm. Raw data (stored in multiple
   files) are read and concatenated into continuous time-series, and
   flatfieded. Based on the scan speed of the telescope, the data are
@@ -1062,7 +1081,7 @@ usually raised when making maps of bright point sources.
 
 \begin{figure*}
 \centering
-\includegraphics[width=\linewidth]{steps1.pdf}
+\includegraphics[width=\linewidth]{\imagefile{steps1}}
 \caption{Examples of steps in time-series data. Steps occur with a wide
 range of heights from the large steps shown on the left to the small
 steps shown on the right. Large steps are often followed by a brief
@@ -1214,7 +1233,7 @@ of calibrators when focussing the telescope).
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{pad2.pdf}
+\includegraphics[width=\linewidth]{\imagefile{pad2}}
 \caption{The black curve shows a bolometer time-series, padded
 with zeros. The red curve shows the time-series after apodisation.}
 \label{fig:pad2}
@@ -1231,7 +1250,7 @@ the context of CMB map-making. This method is used by default.
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{pad1.pdf}
+\includegraphics[width=\linewidth]{\imagefile{pad1}}
 \caption{The black curve shows the same bolometer time-series as in
 Fig.~\ref{fig:pad2}, again padded with zeros. The red curve shows the
 time-series after padding with artificial data.}
@@ -1428,7 +1447,7 @@ faint extended structure.  The purpose of the \model{COM} and
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{com.pdf}
+\includegraphics[width=\linewidth]{\imagefile{com}}
 \caption{A selection of typical bolometer time-series after
 flatfielding and removal of a constant baseline. It can be seen that
 most bolometers exhibit a common time variation overlaid with other
@@ -1987,7 +2006,7 @@ poorly cross-linked scans of compact (though resolved) sources by
 
 \begin{figure*}
 \centering
-\includegraphics[width=\linewidth]{pointmaps.pdf}
+\includegraphics[width=\linewidth]{\imagefile{pointmaps}}
 \caption{Multiple reductions of a 450\,\micron\ CV daisy scan of
   Uranus, all scaled between $-$0.002\,pW (white) and +0.002\,pW
   (black). (a) Reduction in which only common-mode subtraction is used
@@ -2016,7 +2035,7 @@ poorly cross-linked scans of compact (though resolved) sources by
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{degeneracy.pdf}
+\includegraphics[width=\linewidth]{\imagefile{degeneracy}}
 \caption{Demonstration of the degeneracy between large-scale
   structures in the map and common-mode removal, corresponding to
   panels (a) and (b) in Fig.~\ref{fig:pointmaps}. The black and grey
@@ -2072,7 +2091,7 @@ bolometer time-series (which resulted in maps full of large streaks).
 
 \begin{figure*}
 \centering
-\includegraphics[width=\linewidth]{lockman_maps.pdf}
+\includegraphics[width=\linewidth]{\imagefile{lockman_maps}}
 \caption{Reduction of a blank-field survey: the Lockman Hole. (a) Raw
   output of SMURF using high-pass filtering as a pre-processing step,
   followed by 4 iterations using only the \model{COM} model to remove
@@ -2132,7 +2151,7 @@ well-known, and linear.
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{lockman_psf.pdf}
+\includegraphics[width=\linewidth]{\imagefile{lockman_psf}}
 \caption{Slice through the angular response to an ideal Gaussian point
   source (solid line) along the R.A. axis following map-making using
   the default blank-field processing with SMURF (dotted line), and
@@ -2210,7 +2229,7 @@ in Figs.~\ref{fig:lockman_maps}(a) and (d).
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{lockman_pspec.pdf}
+\includegraphics[width=\linewidth]{\imagefile{lockman_pspec}}
 \caption{Radial (azimuthally-averaged) angular power spectral
   densities for the raw map output by SMURF (dashed black line), the
   jackknife (solid orange line), and whitened (solid black line) maps
@@ -2317,7 +2336,7 @@ papers on the subject:
 
 \begin{figure}
 \centering
-\includegraphics[width=\linewidth]{lockman_hist.pdf}
+\includegraphics[width=\linewidth]{\imagefile{lockman_hist}}
 \caption{Histograms of \snr\ using pixels from the central region of
   the Lockman Hole (second contour) in
   Fig.~\ref{fig:lockman_maps}a. The top panel shows the histograms for
@@ -2357,7 +2376,7 @@ papers and references therein for examples.
 
 \begin{figure*}
 \centering
-\includegraphics[width=\linewidth]{m17.pdf}
+\includegraphics[width=\linewidth]{\imagefile{m17}}
 \caption{An 850\,\micron\ rotating PONG map of M17. Intensity is
 logarithmically scaled between $-$0.0003\,pw (white) and +0.01\,pW
 (black). Iteration numbers are given in the corner of each
@@ -2431,7 +2450,7 @@ and the brightest regions are more extended.
 
 \begin{figure*}
 \centering
-\includegraphics[width=\linewidth]{m17_jk.pdf}
+\includegraphics[width=\linewidth]{\imagefile{m17_jk}}
 \caption{Maps of M17 used to characterise the noise properties and
 transfer function of SMURF (same intensity scale as
 Fig.~\ref{fig:m17}). For each column, a different high-pass filter
@@ -2459,8 +2478,8 @@ row: Jackknife maps for the bright extended reductions.}
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.49\linewidth]{pspec_m17_default.pdf}
-\includegraphics[width=0.49\linewidth]{cor_pspec_m17_default.pdf}
+\includegraphics[width=0.49\linewidth]{\imagefile{pspec_m17_default}}
+\includegraphics[width=0.49\linewidth]{\imagefile{cor_pspec_m17_default}}
 \caption{Angular PSDs for the region of the M17 map in
 Fig.~\ref{fig:m17_jk} containing synthetic data, using the default
 configuration. Left: raw PSDs for the input (noiseless) simulated data
@@ -2483,8 +2502,8 @@ scale improves the \snr\ at intermediates scales
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.49\linewidth]{pspec_m17_bright_extended.pdf}
-\includegraphics[width=0.49\linewidth]{cor_pspec_m17_bright_extended.pdf}
+\includegraphics[width=0.49\linewidth]{\imagefile{pspec_m17_bright_extended}}
+\includegraphics[width=0.49\linewidth]{\imagefile{cor_pspec_m17_bright_extended}}
 \caption{Lines have same meaning as in Fig.~\ref{fig:m17_def_ps},
 except now using the bright extended configuration. This configuration
 has resulted in an improved transfer function and \snr\ at large

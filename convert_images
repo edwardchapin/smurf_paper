@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo Converting .pdf files to .eps. Will fail/skip multi-page PDFs
+
+for i in `ls *.pdf`; do echo $i; pdftops -eps $i; done
+
