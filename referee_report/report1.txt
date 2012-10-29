@@ -1,0 +1,238 @@
+kts@ras.org.uk via manuscriptcentral.com 
+	
+Oct 26 (3 days ago)
+		
+to me, me, d.berry, agg, t.jenness, dscott, r.tilanus, frossie, wayne.holland
+Dear Dr Chapin
+
+I attach the reviewer's comments on your manuscript entitled "SCUBA-2:  iterative map-making with the Sub-Millimetre User Reduction Facility", ref. MN-12-2293-MJ, which you submitted to Monthly Notices of the Royal Astronomical Society.
+
+Moderate revision of your manuscript is requested before it is reconsidered for publication.
+
+You should submit your revised version, together with your response to the reviewer's comments via the Monthly Notices ScholarOne Manuscripts site http://mc.manuscriptcentral.com/mnras .
+Enter your Author Centre, where you will find your manuscript title listed under "Manuscripts with Decisions."  Under "Actions," click on "Create a Revision."  Your manuscript reference will be appended to denote a revision.
+
+IMPORTANT: do not submit your revised manuscript as a new paper!
+
+You will not be able to make your revisions to the originally submitted files of the manuscript held on ScholarOne Manuscripts.  Instead, you must delete the original files and abstract and replace them with your revised files.  Check that any requests for colour publication or online-only publication are correct.  Proof read the resulting PDF and HTML files that are generated carefully. If you have used a .bib file to generate your bibliography in Latex, please include this in your .tar archive along with the .bbl and .tex files; this will aid the editing and typesetting process.
+
+When submitting your revised manuscript, you will be able to respond to the comments made by the reviewer in the space provided.  You should also use this space to document any changes you make to the original manuscript.  In order to expedite the processing of the revised manuscript, please be as specific as possible in your response to the reviewer.  It would also be very helpful if you could highlight the changed sections, e.g. by the use of colour, colour highlighting or bold typeface - this will not delay in any way the subsequent processing of your paper.
+
+Because we are trying to facilitate timely publication of manuscripts submitted to MNRAS, your revised manuscript should be uploaded promptly. If you do not submit your revision within six months, we may consider it withdrawn and request it be resubmitted as a new submission.
+
+Please note that, due to the tight schedule, any post-acceptance changes notified after the paper has gone into production (i.e. the day after the acceptance email is sent) cannot be incorporated into the paper before it is typeset. Such changes will therefore need to be made as part of the proof corrections. To avoid excessive proof corrections and the delay that these can cause, you are strongly encouraged to ensure that each version of your paper submitted to MNRAS is completely ready for publication!
+
+I look forward to receiving your revised manuscript.
+
+Regards,
+
+Keith
+
+--
+Dr Keith T. Smith
+
+Assistant Editor (MNRAS)
+Royal Astronomical Society
+Burlington House
+Piccadilly
+London W1J 0BQ
+
+cc: all S1M-listed co-authors.
+
+
+Scientific Editor's Comments:
+
+Some of he figures (e.g., Fig. 4) are too small for comfortable reading, while others (e.g., Fig. 6) are unnecessarily large. In Fig. 9, the axes need to be explained and labelled (at least the time range); I'm not sure why you include broken bolometers as "typical" - the space could be better used! In figures with many panels, it helps to label the panels (a), (b), etc. and refer to the panels by label - see the instructions to authors.
+
+Although the paper is clearly written, it is rather wordy, and I encourage you to review the text and see whether you can express it more concisely.
+
+There are some awkward phrases, e.g.,
+"about 5000 bolometers" (don't you know how many?),
+"generic science products" (surely you don't mean "generic"?),
+"relatively simpler" (isn't "simpler" sufficient?),
+"relatively clean" (do you mean "cleaner"?),
+"nearly science-grade" (this requires explanation, or just omit this sentence, which occurs both in Section 1 and the conclusions: this duplication is unnecessary).
+"The reason for this is probably due to" (you mean "This is probably due to").
+
+
+Assistant Editor's Comments:
+
+Holland et al and Dempsey et al are not yet 'in press' as they have not been accepted. Please cite these as 'submitted to MNRAS'.
+
+When submitting a revised version of this paper, it would be helpful if you could include the latest versions of the two companion papers as supplementary material for the referee.
+
+
+Reviewer's Comments:
+
+Overall: The paper will be a useful reference for SMURF users and clearly represents a lot of work. Forgive me for only picking on the residual bits that I see need improving, but this will be the most efficient way to get to the end of this process.
+
+Although I appreciate the division between this paper (data processing) and others to do with the instrument etc, it would be useful from a user perspective to have some sense of number of working channels, some parametrization of survey depth as a function of time&area -- using your "white noise limit", number of bad detectors, statistics on spikes etc. A lot of material is presented in section 2 to characterize the bolometer data. It would be very useful to bring it home with an focal-plane-wide characterization summary.
+
+In the examples it seemed like the "default" pipeline was never the correct one to use. Is there a case where the default is the one to use?
+
+I really think it's useful and proper to cross-reference the millimeter kilopixel arrays with comparable data volumes and science overlap (SPT and ACT) and associated data processing literature out there. See specific comments below.
+
++ Abstract: "… 200 Hz. This rate is much greater…"
+
+This may be a true statement, but it neglects that very analogous arrays have been deployed in the millimeter. I'm thinking of SPT and ACT, which are arguably more similar to SCUBA2, by virtue of their kilopixel scale and multiplexed readout, than the previous generation submillimeter. SPT downsamples to 100 samp/sec. ACT writes to disk at 400 samp/sec and then downsamples to 200 samp/sec for analysis. SCUBA 2 has more pixels than either of these experiments (factor of 10 for SPT and 3 for ACT). Then again, as written the sentence is true, though maybe "data rate" would be better than "rate" which would make the claim stronger, even when including the millimeter kilopixel instruments.
+
++ Sec 1 Para 4: "``cross-linking'',in which each portion of the map is sampled on a range of temporal time scales"
+
+This is an odd definition of cross-linking. The essence of cross-linking, as it's name implies, is that the sky in a given pixel is sampled in various directions, thus connecting pixels in the map isotropically and producing nice symmetric noise properties (and in the case of a mapper like SMURF also symmetrizing the transfer function). Coming back to timescales, in the SMURF approach any timescale corresponding to a revisit of a pixel (except at map boundaries) is going to be wiped out due to filtering/ common mode removal. In this sense the main (nice) benefit of the X-linking is isotropy. I realize this is a general discussion of mapping, but even then, it's really that you're connecting all the pixels and thus isotropizing the covariance in map space. In principal the different time scales could come into play in a full ML mapper, but the different time scale visitations could be achieved without cross-linking. For these reasons, I would emphasize position angle variation etc, as you do in most parts of the following text -- don't lead in with "different time-scales".
+
++ Sec 1 Para 5: "baseline removal and other simple filters"
+
+This would be a nice place to cite SPT (Say, http://adsabs.harvard.edu/abs/2011ApJ...743...90S).
+
++ Sec 1 Para 6: "maximum likelihood techniques"
+
+This would be a nice place to cite ACT (Say, http://adsabs.harvard.edu/abs/2011ApJ...729...62D or http://adsabs.harvard.edu/abs/2012arXiv1208.0050D -- though this is not accepted).
+
++ Sec 1 Para 7: "merely linear in the number of iterations needed, while using a comparable amount of memory"
+
+I got tripped up here. Maybe you can clarify. Here are my thoughts:
+
+The first part seems like a tautology: of course iterative methods scale as the number of iterations. Often times, the bottom line is that inversion is essentially impossible computationally (for a map with a few million pixels say) and the iterative methods let you go forward. The less trivial questions are: how long do the iterations take and how many iterations do you need? The iteration time is going to scale as the time ordered data length (or say NlogN for FFT based methods). You'll need more iterations to get to larger scales (e.g., if you're trying to go beyond your array footprint): for most techniques that I've encountered, small scales will be recovered in ~10 iterations while larger scales can take thousands of iterations, depending on the instrument etc.
+
+Is the second bit true? Does the matrix inversion really take the same amount of memory as the iterative techniques for all map/time ordered data sizes?
+
++ Sec 1 Para 8: "single high-end desktop computers"
+
+It would be useful for SMURF/SCUBA2 users to know an example of what would qualify as "high-end". (Number of processors and amount of memory would probably be enough to give the idea.)
+
++ Sec 2.2, 2.4, Figure 1, etc: e.g., "It is also likely that a varying atmospheric contribution is also included in these eigenvectors…"
+
+I didn't get a good feeling from these sections as to how large a signal (say in pW over some time period) the atmospheric drift is in the data. There was a lot on scan synchronous noise (either before debugging the cryogenic problem or after where magnetic pickup seems to dominate). I was surprised to see that the change in elevation didn't give a signal due to changes in airmass. Could you give a better sense of how the atmosphere contributes? A possibly useful figure (though I know there are a lot of figures) is to plot time streams or spectra taken during different conditions (parametrized by PWV?). Even to just to give some quantitative sense of the magnitude in of the atmosphere in the data would be useful. The first components of the PCA were said to be scan synchronous noise dominated "presumably magnetic field pickup"… Is the atmosphere scan synchronous (e.g. b/c of airmass considerations?)… I was just left wondering here. From figure 1, right panel, it looks like after the magnetic field is removed, then the white noise totally dominates atmospheric drift. Figure 6 looks like a good example atmospheric drift maybe???
+
++ Figure 2: "2x10^5 pW Hz^{-1}"
+
+This number (and accompanying y-axis) seems reasonable given the plots in figure 1 (white noise is 2x10^4 pW Pk-Pk), but the white noise in Figure 6 looks much smaller (white noise is 0.01 pW Pk-Pk). Also glancing at Fig 9 in the companion paper (Holland et al) suggests NEPs of ~ 10^-16 W-rtHz or 10^-4 pW-rtHz. The latter numbers are more what I'm used to seeing in bolometer systems at these temps. Please clarify units. Is there a calibration missing…?
+
++ Sec 2.4, Para 4: "resembles the scan pattern in the right-hand panel of fig. 4"
+
+I don't see a scan pattern in figure 4…
+
++ Sec 3, Para 3: "the map is used to estimate and remove the astronomical signal contamination in the bolometer data…"
+
+This seems like a oxymoron: astronomical signal contamination. I think it'll confuse people. Maybe "remove the astronomical signal from the bolometer data, leaving only white noise (NOI)". Or something like that. (It's also weird to talk about data which is only noise as "clean"!)
+
++ Figure 5. "DC steps"
+
+There are enough acronyms running around this paper that it took me a while to realize what this meant. And that's only because I've worked in a lab where DC is a normal (and completely overloaded) term.  Maybe just drop "DC". You talk about "step correction" later. So probably "step" is less confusing that "DC step", which I don't see come up later.
+
++ Sec 3.1
+
+I didn't see any discussion of accounting for the time constants of the detectors or of the MCE anti-aliasing filter. Do you not deconvolve these as an initial step? Seems like this would give you a non-trivial transfer function at small scales if you did not…. (even if you have your nice cross-linked isotropic transfer function, you would have the unfortunate characteristic of wiping out small scale structure). Please clarify.
+
++ Sec 3.1.1 Para 2: "fractional samples"
+
+What is a fractional sample? Would be nice to clarify in text.
+
++ Sec 3.1.2, 3.1.3: de-spiking and step correction
+
+For the SMURF user, it would be nice to know how often this occurs in a dataset. (Related to my general comment of giving an idea of the array/observation properties of the time stream data) It would be nice to have some statistics.
+
++ Sec 3.1.4, Para 1:  "bad values are then replaced by linear interpolation between…"
+
+Are these given zero weight in the map?
+
++ Sec 3.1.4, Para 3: "The default number of samples modified at each end of the time-series is given by half the ratio of the sampling frequency to the lowest retained frequency."
+
+Unclear at this point what "lowest retained frequency" means -- please clarify.
+
++ Sec 3.2, Para 4: "During pre-processing, the map-maker divides by f_i once. Then in each iteration, the map-maker divides by f_i…"
+
+Seems like the data is repeatedly being divided by the flatfield and digitization constant… especially confusing b/c in the second paragraph we have "applied once during preprocessing"
+
++ Sec 3.2.1, Para 5: "cases where the data is dominated by magnetic field pickup"
+
+Why not remove magnetic field pickup as a preprocessing step? It's generally on scales larger than you'll ever recover with SMURF and you can use the tricks (dark squids etc) that you have in the DKS module…
+
++ Sec 3.2.1, Para 6: "Bolometer values that were flagged… are, however included in the new common-mode estimate"
+
+Again, couldn't this exclusion be a pre-processing step (after the hypothetical DKS preprocessing) so you don't have to deal with these bad detectors?
+
+
++ Sec 3.2.6, Para 2: "not all columns have working dark squids"
+
+Glancing at Holland et al, it looks like the arrays have 60-80% yield, could one of the dead detectors be used as a dark channel (or are they dead because the mux is dead?).  In fact it's nice to have a "dark squid" on all rows and columns to get rid of noise (low and high frequency) related to the electronics.
+
++ Sec 3.2.6, Para 2: "necessitating the continued use of FLT… they [DKS/TMP] are not generally used"
+
+Again, though, why not do this as a preprocessing step together with identifying all the bad non COM detectors? The dark detectors should not only carry information about the magnetic field pickup, but also contain high-frequency information related to row addressing and column readout that can be used to decontaminate the data. (Even if FLT does tend to kill everything on these scales, this could be a COM improving step where you can toss the bad detectors that don't follow common mode)
+
++ Sec 3.3, Para 1: "Once the white noise, n_i^w(t) has been measured from the bolometer PSDs in NOI"
+
+Is the noise time stream "model" n_i^w(t) really estimated from the PSDs or is this the weight w_i (or variance sigma_i^2…) that is estimated from the PSDs?
+
++ Sec 3.3, Para 1: "requsted threshikd"
+
+typo
+
++ Sec 3.3, Para 2: "does not necessarily correlate with convergence of the most important model component"
+
+It was not clear to me when one would every use the "chi-sq" convergence criterion. The map-based one looks much more conventional to me (a la the conjugate gradient techniques). Please include a blurb on when the SMURF user would use the "chi-sq" convergence criterion in addition or as replacement for the map-based one.
+
++ Sec 4.1, Para 4: "This example illustrate the need…"
+
+typo
+
++ Sec 4.1, Para 4: "a good, simple prior is to constrain the map to a value of zero away from the known locations of emission"
+
+How does not masking a bright source prevent filter ringing? are you masking all the "sidelobes" of the filter? Please describe the mechanics of this "simple prior" in an additional one or more sentences.
+
++ Figure 10:  "Same as (a) but using 50 iterations…"
+
+I think you mean 100 iterations?
+
++ Figure 10: "Uranus peak 0.15 pW" -> "Uranus peak 0.27 pW"… "little attenuation of the source flux"
+
+Can you explain why adding an extra filter to the process (just common mode -> filter + common mode) results in a increase (.15->.27 pW) in the peak brightness? Is there small scale noise (a stripe?) that is randomly knocking down the signal in the common mode removed case that gets nixed by the filter? Also can you quantify "little attenuation"? What do you expect for the uranus brightness in this measurement?
+
++ Sec 4.2, Para 1: "whitening (essentially flattening) the map"
+
+flattening in Fourier space? As written a neophyte might think you mean making the map flat=constant! this is a potentially confusing parenthetical piece of jargon… maybe just drop since you describe it later?
+
++ Sec 4.2, Para 2: "However, the way this filter affects point-sources is both well-known, and linear."
+
+Presumably this depends on the cut-off of the pre-processing filter. Does SMURF tell the user what this is going to be or does SMURF provide the tools to make the synthetic source so they can test it out? It would be useful to include such information.
+
++ Figure 12: "this search radius"
+
+8"? From the wording, it's unclear what is the "search radius". Please clarify.
+
++ Sec 4.2, Para 8: "Under this assumption, cross-correlation between between the map and the known PSF…"
+
+This statement also assumes white noise.
+
++ Sec 4.2, Para 8: "For the case at hand, the effective PSF for the whitened maps is given by the dotted curve in Fig. 13."
+
+This is confusing language. Fig 13 list the dashed line as "whitened". It is true though that the dotted curve gives the correct PSF for your matched filter, since it's the one that corresponds to the pre-filtered beam. The matched filter in Fourier space is B(k)N^-1(k), where the N^-1(k) is your pre-whitening step (dividing by the power spectrum of the noise). The B(k) is the PSF before the whitening. It seems like you say this here, but it's a bit confusing with the figure labeling. Maybe it would be useful to include a simple equation like  \Phi(k) =  B(k)N^-1(k) or similar to describe your total operation?
+
++ Sec 4.3, Para 2: "Much like the reduction of a point source without any prior constraints (Fig 10c), degeneracies on scales larger than the array footprint and filter produce ripples in the map."
+
+This sentence confused me. In the source case you had two things: 1) degeneracies between your map and the common mode that introduced very large modes, which you eliminated by wiping out those scales with a filter before estimating the map. And then you found 2) that the filter was ringing and producing ripples in the map. I think you're saying you have these two problems here but the sentence, as written, made it seem like the two were somehow interacting or somehow the same thing. Maybe something more explicit like "Much like…, mapping extended emission would suffer from degeneracy between the common mode and map (if no filter were used) and, once the filter is introduced, ringing around sources.
+
++ Sec 4.3, Para 4: "By the final iteration, most of the obvious structures in the data are encompassed by the mask…"
+
+This is opposite the bright source case (example 1) in which everything but the source was masked. Since you're drawing an analogy (see previous comment) with the point source reduction, would you add a bit more description to explain why you use the "opposite" mask here?
+
++ Fig 18
+
+Why is the jackknife noise higher than the map noise at small (<25") angular scales?
+
++ Sec 4.3, Para 5: "at least a cosmetic sense"
+
+in a cosmetic sense?
+
++ Sec 4.3, Para 9: "in which the SNR threshold of 5 is again used to constrain the map"
+
+A bit confusing, esp. b/c I only found S/N=5  mentioned before in a caption. Maybe "S/N threshold is used to define the extended brightness mask and constrain the map" or something a little more explicit like this...?
+
++ Sec 4.3, Para 13 "In this case the noise… in the left panel of the third row"
+
+Would really help to give figure numbers here.
+
++ Sec 4.3, Final Paragraph: "such structures have a chance to grow"
+
+too vague -- "such structures" could be interpreted as the large scale astro structure. Maybe something like "degeneracies with the common mode have the chance to show up in the map"
