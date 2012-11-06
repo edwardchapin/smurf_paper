@@ -10,12 +10,13 @@ source $CONVERT_DIR/convert.csh > /dev/null
 source $KAPPA_DIR/kappa.csh > /dev/null
 
 set dataroot = /scuba2
+#set dataroot = /lhome/echapin/smurf_paper/data/raw
 #set msg = quiet
 set msg = verbose
 
 # extra cleaning parameters
-set clean_extra = "spikethresh=5,spikebox=50"
-#set clean_extra = ""
+#set clean_extra = "spikethresh=5,spikebox=50"
+set clean_extra = ""
 
 # where should we start?
 set onlyone = 1
@@ -123,6 +124,12 @@ echo "*** Processing $obsdate $obsnum ***"
 
 foreach lambda (s4a s4b s4c s4d s8a s8b s8c s8d)
 #foreach lambda (s4a s8d)
+#foreach lambda (s8b)
+
+    # the noise clipping level. 1 seemed to be necessary for s8b in the
+    # newer data to get a decent common-mode. For the PCA stuff this should
+    # probably be set higher, like 3 to avoid tossing too many bolometers.
+    set clip = 1
 
     echo "--- $lambda ---"
 
@@ -133,19 +140,16 @@ foreach lambda (s4a s4b s4c s4d s8a s8b s8c s8d)
     sc2concat $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
         $lambda$obsdate\_$obsnum\_con msg_filter=$msg
 
-    sc2concat $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
-        $lambda$obsdate\_$obsnum\_con msg_filter=$msg noflat
-
     echo "    Cleaning..."
 
     sc2clean $basename\_con $basename\_con_clean \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra'"' \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',noisecliplow='$clip',noisecliphigh='$clip'"' \
         msg_filter=$msg
 
     echo "    Removing common-mode..."
 
     sc2clean $basename\_con $basename\_con_nocom \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.gain_box=-999,noiseclipprecom=1"' \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.gain_box=-999,noiseclipprecom=1,noisecliplow='$clip',noisecliphigh='$clip'"' \
         msg_filter=$msg com=true
 
     echo "    Copy out QUALITY at single time slice as a mask..."

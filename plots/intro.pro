@@ -22,6 +22,8 @@ lightblue=12
 
 micron = '!7'+!gr.mu+'!6m'
 
+do_s2sro=0
+
 ; first, compare s4a, s8d, and mixtemp, and scan position ----------------------
 
 cs = 1.5
@@ -29,27 +31,22 @@ cs = 1.5
 loadct, 0
 
 if 1 then begin
-  ; cookbook uranus
-  ;obs = '20091214_00015'
-
-  ; cookbook debris disk -- paper plots for S2SRO
-  ;obs = '20100313_00029'
-  ;suffix = "_s2sro"
-
-  ; lockman
-  ;obs = '20100311_00065'
-
-  ; 2011 obs recommended by Harriet. 900" pong.
-  obs = '20111112_00038'
-  suffix = ""
+  if do_s2sro then begin
+    ; cookbook debris disk -- paper plots for S2SRO
+    obs = '20100313_00029'
+    suffix = "_s2sro"
+    fxread, datadir+'s8d'+obs+'_con_clean.fits', data850, heade
+    fxread, datadir+'s8d'+obs+'_con_nocom.fits', nocom850, header
+  endif else begin
+    ; 2011 obs recommended by Harriet. 900" pong.
+    obs = '20111112_00038'
+    suffix = ""
+    fxread, datadir+'s8b'+obs+'_con_clean.fits', data850, header
+    fxread, datadir+'s8b'+obs+'_con_nocom.fits', nocom850, header
+  endelse
 
   fxread, datadir+'s4a'+obs+'_con_clean.fits', data450, header
-  ;fxread, datadir+'s8d'+obs+'_con_clean.fits', data850, heade
-  fxread, datadir+'s8b'+obs+'_con_clean.fits', data850, header
-
   fxread, datadir+'s4a'+obs+'_con_nocom.fits', nocom450, header
-  ;fxread, datadir+'s8d'+obs+'_con_nocom.fits', nocom850, header
-  fxread, datadir+'s8b'+obs+'_con_nocom.fits', nocom850, header
 
   state = scuba2_readstate( datadir+'state_'+obs+'.tst' )
 endif
@@ -67,37 +64,37 @@ set_plot,'ps'
 device, filename='bolos_point_mix'+suffix+'.eps', /encapsulated, xsize=20., $
         ysize=30.
 
-; 20100313_00029
-;thex = 18 & they = 22
-;x450 = [ 3,10,16,thex]
-;y450 = [30,13,16,they]
-;x850 = [ 4,31,25,thex]
-;y850 = [16,20,32,they]
-;temprange = 0.1
-;offrange = 350
-;range450=[-1.6d5,1.6d5]
-;range850=[-1.8e5,1.8d5]
-;vel = 120.  ; arcsec/sec
-;prange = [1d2,1d11]
+if do_s2sro then begin
+  ; 20100313_00029
+  thex = 18 & they = 22
+  x450 = [ 3,10,16,thex]
+  y450 = [30,13,16,they]
+  x850 = [ 4,31,25,thex]
+  y850 = [16,20,32,they]
+  temprange = 0.1
+  offrange = 350
+  range450=[-0.14,0.14]
+  range850=[-0.07,0.07]
+  vel = 120.  ; arcsec/sec
+endif else begin
+  ; 20111112_00038
+  thex = 13 & they = 14
+  x450 = [13,25,21,thex]
+  y450 = [11,24,28,they]
+  x850 = [19,25,28,thex]
+  y850 = [19,11,25,they]
+  temprange = 0.225
+  offrange = 800
+  range450=[-0.02,0.02]
+  range850=[-0.055,0.055]
+  vel = 190.  ; arcsec/sec
+endelse
 
-; 20111112_00038
-thex = 17 & they = 4
-x450 = [13,24,16,thex]
-y450 = [11,24, 9,they]
-x850 = [ 7,23, 3,thex]
-y850 = [ 5,15,30,they]
-temprange = 0.225
-offrange = 800
-range450=[-4.5d4,4.5d4]
-range850=[-4.5d4,4.5d4]
-vel = 190.  ; arcsec/sec
-prange = [1d2,1d11]
-
-
-psd450psf = 1d7
-ref450=2d5
-psd850psf = 1d8
-ref850=1d5
+prange = [1d-10,5d-3]
+psd450psf = 1d-5
+ref450=1d-7
+psd850psf = 1d-5
+ref850=1d-8
 
 b450 = data450[thex,they,*]
 b850 = data850[thex,they,*]
@@ -234,8 +231,8 @@ xyouts, 0.85, pos[3]-0.04, '450'+micron, charsize=cs, charthick=!p.thick, $
 ;dy = 0.03
 
 ; new draft
-xt = 0.6
-yt = 0.85
+xt = 0.35
+yt = 0.9
 dx = 0.025
 dy = 0.025
 
