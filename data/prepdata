@@ -15,12 +15,12 @@ set dataroot = /scuba2
 set msg = verbose
 
 # extra cleaning parameters
-#set clean_extra = "spikethresh=5,spikebox=50"
-set clean_extra = ""
+set clean_extra = "spikethresh=5"
+#set clean_extra = ""
 
 # where should we start?
 set onlyone = 1
-goto intro
+#goto pca
 
 
 
@@ -91,7 +91,7 @@ if ( $onlyone == 1 ) goto finish
 
 
 
-# the following outputs are used by intro.pro and spca2band.pro ----------------
+# the following outputs are used by intro.pro ----------------------------------
 
 intro:
 
@@ -124,11 +124,10 @@ echo "*** Processing $obsdate $obsnum ***"
 
 foreach lambda (s4a s4b s4c s4d s8a s8b s8c s8d)
 #foreach lambda (s4a s8d)
-#foreach lambda (s8b)
 
     # the noise clipping level. 1 seemed to be necessary for s8b in the
-    # newer data to get a decent common-mode. For the PCA stuff this should
-    # probably be set higher, like 3 to avoid tossing too many bolometers.
+    # newer data to get a decent common-mode.
+
     set clip = 1
 
     echo "--- $lambda ---"
@@ -143,13 +142,13 @@ foreach lambda (s4a s4b s4c s4d s8a s8b s8c s8d)
     echo "    Cleaning..."
 
     sc2clean $basename\_con $basename\_con_clean \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',noisecliplow='$clip',noisecliphigh='$clip'"' \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',noisecliphigh='$clip'"' \
         msg_filter=$msg
 
     echo "    Removing common-mode..."
 
     sc2clean $basename\_con $basename\_con_nocom \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.gain_box=-999,noiseclipprecom=1,noisecliplow='$clip',noisecliphigh='$clip'"' \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',compreprocess=1,com.gain_box=-999,noiseclipprecom=1,noisecliphigh='$clip'"' \
         msg_filter=$msg com=true
 
     echo "    Copy out QUALITY at single time slice as a mask..."
@@ -171,6 +170,54 @@ end
 echo "    Getting JCMTState..."
 
 jcmtstate2cat s4a$obsdate\_$obsnum\_con > state_$obsdate\_$obsnum.tst
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+# the following outputs are used by pca2band.pro -------------------------------
+
+pca:
+
+# 2011 obs recommended by Harriet. 900" pong.: new data for paper
+set obsdate = 20111112
+set obsnum = 00038
+set subfile = "000[12345]".sdf # "001[345]".sdf
+
+echo "*** Processing $obsdate $obsnum ***"
+
+foreach lambda (s4a s8b)
+
+    # Higher clipping levels here than in previous section to get a nicer
+    # map of the full focal plane
+    set clip = 3
+
+    echo "--- $lambda ---"
+
+    set basename = $lambda$obsdate\_$obsnum
+
+    echo "    Cleaning..."
+
+    # Note a trick here: setting filt_edgehigh=0.001 doesn't actually do any
+    # filtering, but it does apply gap-filling to remove most of the big spikes
+    # and step residuals, making the PCA analysis look cleaner.
+
+    sc2clean $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+        $basename\_con_clean_pca \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,'$clean_extra',noisecliphigh='$clip',filt_edgehigh=0.001"' \
+        msg_filter=$msg
+
+    ndfcopy "$basename\_con_clean_pca(,,1000)" mask_pca_$lambda comp=qual trim \
+        trimwcs msg_filter=$msg
+
+    echo "    Convert to FITS..."
+
+    ndf2fits $basename\_con_clean_pca \
+        \!$basename\_con_clean_pca.fits msg_filter=$msg
+
+    ndf2fits mask_pca_$lambda \!mask_pca_$lambda.fits msg_filter=$msg
+
+end
 
 if ( $onlyone == 1 ) goto finish
 

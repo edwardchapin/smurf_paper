@@ -33,11 +33,11 @@ day2sec = 24d*3600d
 if 0 then begin
 
   ; load bolo data and mask
-  fxread, datadir+subarr850+obs+'_con_clean.fits', data8, head8
-  fxread, datadir+subarr450+obs+'_con_clean.fits', data4, head4
+  fxread, datadir+subarr850+obs+'_con_clean_pca.fits', data8, head8
+  fxread, datadir+subarr450+obs+'_con_clean_pca.fits', data4, head4
 
-  fxread, datadir+'mask_'+subarr850+'.fits', mask8, mhead4
-  fxread, datadir+'mask_'+subarr450+'.fits', mask4, mhead4
+  fxread, datadir+'mask_pca_'+subarr850+'.fits', mask8, mhead4
+  fxread, datadir+'mask_pca_'+subarr450+'.fits', mask4, mhead4
 
   state = scuba2_readstate( datadir+'state_'+obs+'.tst' )
   t = state.rts_end
@@ -121,6 +121,8 @@ if 0 then begin
     for j=i, n-1 do begin
       c[i,j] = correlate(newdata[xg[i],yg[i],*], newdata[xg[j],yg[j],*], $
                          /covariance)
+
+      if finite(c[i,j]) eq 0 then stop 
     endfor
 
     for j=0, i-1 do begin
@@ -276,12 +278,18 @@ print, "Doing fast maps up to component", ncomp
 !x.thick=3.
 !y.thick=3.
 
-cs = 1.5
+cs = 1.75
+cs_title = 3.0
+
+; scale factor to multiply eigenvector by (and divide eigenmap by):
+scale = sqrt(nt)
 
 for thecomp=0, ncomp-1 do begin
 
+  width_p=21
+  height_p=24
   device, filename=pre+'eigenmap'+strcompress(thecomp+1,/remove_all)+'.eps', $
-          xsize=20, ysize=27, bits_per_pixel=8, /color, $
+          xsize=width_p, ysize=height_p, bits_per_pixel=8, /color, $
           /encapsulated
 
   print, thecomp, ' / ', ncomp
@@ -319,7 +327,13 @@ for thecomp=0, ncomp-1 do begin
   ; map eigenvalues for the given mode
   eigenmap = dblarr(nxb,nyb)
   eigenmap[xg,yg] = pc[*,thecomp];/pc[*,0] ; normalized by main mode
-  eigenmap = eigenmap / 1d6 ; convert to uW from pW
+
+  ; apply scale factor (accounting for N samples in PCA normalization,
+  ; this way the eigenvectors should have an RMS of 1).
+  eigenmap = eigenmap  / scale
+
+  ; convert to fW
+  eigenmap = eigenmap * 1000d
 
   i = where(eigenmap ne 0, complement=j)
 
@@ -334,11 +348,12 @@ for thecomp=0, ncomp-1 do begin
 
   lambda = ['450','850']+micron
 
-  cb = 0.595      ; bottom of component line plots
-  ch = 0.145      ; height of component line plots
-  csp = 0.065     ; space between component line plots
-  width = 0.355
-  xoff = 0.14
+  cb = 0.555      ; bottom of component line plots
+  ch = 0.15       ; height of component line plots
+  csp = 0.083     ; space between component line plots
+  width = 0.355   ; width of SINGLE subarray in eigenvalue map
+  bottom = 0.08   ; bottom of the eignenvalue map
+  xoff = 0.135    ; left side of the plot
 
 
   labels=strarr(30)+' '
@@ -348,16 +363,18 @@ for thecomp=0, ncomp-1 do begin
   pos = [xoff,cb+ch+csp,xoff+2*width,cb+csp+2*ch]
 
   ; time series
-  plot, t, eof[thecomp,*], xstyle=1, ystyle=1, pos=pos, $
-        ytitle='Eigenvector', charsize=cs, charthick=!p.thick, $
-        xtitle='Time (s)', yrange=[-0.025,0.025]
+  eof_scaled = eof[thecomp,*]*scale
 
-  xyouts, (pos[0]+pos[2])/2., 0.965, 'Component'+strcompress(thecomp+1), $
-    charsize=cs*2, charthick=!p.thick, /normal, alignment=0.5
+  plot, t, eof_scaled, xstyle=1, ystyle=1, pos=pos, $
+        ytitle='Eigenvector', charsize=cs, charthick=!p.thick, $
+        xtitle='Time (s)', yrange=[-3.5,3.5]
+
+  xyouts, (pos[0]+pos[2])/2., 0.960, 'Component'+strcompress(thecomp+1), $
+    charsize=cs_title, charthick=!p.thick, /normal, alignment=0.5
 
   ; power spectra
   box = round(0.1/df)        ; width of boxcar in Hz / freq. step size
-  ft = fft(eof[thecomp,*])
+  ft = fft(eof_scaled)
   p = (abs(ft)^2d)/df
 
   pos = [xoff,cb,xoff+2*width,cb+ch]
@@ -368,9 +385,10 @@ for thecomp=0, ncomp-1 do begin
     xrange=[0.1,max(freq)]
 
   ; eigenmap
+  map_height = (width*width_p)*(40./32.)/height_p
   for i=0, 1 do begin
 
-    pos = [xoff+width*i,0.06,xoff+width*[i+1],0.53]
+    pos = [xoff+width*i,bottom,xoff+width*[i+1],bottom+map_height]
 
     plot,[0],[0], xrange=[0,nx], yrange=[0,ny], pos=pos, $
          xstyle=5, ystyle=5, $; title=lambda[i], $
@@ -382,8 +400,7 @@ for thecomp=0, ncomp-1 do begin
     tvlct, r, g, b
 
     map = eigenmap[i*nx:(i+1)*nx-1,*]
-    ind = where(map eq 0)
-    ;map[ind] = minval
+    ind = where(map eq 0,complement=good)
 
     themap = bytscl( map, min=minval, max=maxval, top=254 )
     themap[ind] = 255
@@ -391,7 +408,7 @@ for thecomp=0, ncomp-1 do begin
     tvscale, themap, /noint, minval=0, maxval=255, pos=pos
 
     cbar, minval, maxval, pos, 0.01, 0.02, $
-          title='!7'+!gr.lambda+'!6'+' (!7'+!gr.mu+'!6W)', cs=cs
+          title='!7'+!gr.lambda+'!6'+' (fW)', cs=cs
 
     loadct, 0
     axis, xaxis=0, xrange=[0,nx], xstyle=1, charthick=3., xtitle = 'Column', $
@@ -409,36 +426,32 @@ for thecomp=0, ncomp-1 do begin
     xyouts, 1, 37, lambda[i], charsize=cs, charthick=!p.thick*5., color=255
     xyouts, 1, 37, lambda[i], charsize=cs, charthick=!p.thick, color=0
 
-    if( i eq 0 ) then begin
-      d = pc[0:n_elements(xg4)-1,thecomp]
-    endif else begin
-      d = pc[n_elements(xg4):n_elements(xg)-1,thecomp]
-    endelse
+    m = mean(map[good])
+    sig = sqrt( mean(map[good]^2d) )
 
-    m = mean(d) / 1d6                 ; convert to uW
-    sig = sqrt( mean(d^2d) ) / 1d6    ; convert to uW
-
-    xyouts, 1,33, '!7'+!gr.lambda+'!6 = '+string(m,format='(F6.3)')+ ' !7' + $
-      !gr.mu + '!6W', $
+    xyouts, 1,33, '!7'+!gr.lambda+'!6='+string(m,format='(F6.3)')+ ' fW', $
       charsize=cs, charthick=!p.thick*5., color=255
 
-    plots, [1,2], 34.5*[1,1], thick=!p.thick*5, color=255
+    plots, [1,2], 35.5*[1,1], thick=!p.thick*5, color=255
 
-    xyouts, 1,31, '!7'+!gr.lambda+'!6!drms!n = '+ $
-      string(sig,format='(F6.3)')+ ' !7' + $
-      !gr.mu + '!6W', $
+    xyouts, 1,30, '!7'+!gr.lambda+'!6!drms!n='+ $
+      string(sig,format='(F6.3)')+ ' fW', $
       charsize=cs, charthick=!p.thick*5., color=255
 
-    xyouts, 1,33, '!7'+!gr.lambda+'!6 = '+string(m,format='(F6.3)')+ ' !7' + $
-      !gr.mu + '!6W', $
+    xyouts, 1,33, '!7'+!gr.lambda+'!6='+string(m,format='(F6.3)')+ ' fW', $
       charsize=cs, charthick=!p.thick, color=0
-    plots, [1,2], 34.5*[1,1]
+    plots, [1,2], 35.5*[1,1]
 
-    xyouts, 1,31, '!7'+!gr.lambda+'!6!drms!n = '+ $
-      string(sig,format='(F6.3)')+ ' !7' + $
-      !gr.mu + '!6W', $
+    xyouts, 1,30, '!7'+!gr.lambda+'!6!drms!n='+ $
+      string(sig,format='(F6.3)')+ ' fW', $
       charsize=cs, charthick=!p.thick, color=0
   endfor
+
+  ; border around the box
+  plots, [0,1], [0,0], thick=!p.thick, /normal
+  plots, [1,1], [0,1], thick=!p.thick, /normal
+  plots, [1,0], [1,1], thick=!p.thick, /normal
+  plots, [0,0], [1,0], thick=!p.thick, /normal
 
   device, /close
 
