@@ -20,7 +20,7 @@ set clean_extra = "spikethresh=5"
 
 # where should we start?
 set onlyone = 1
-#goto pca
+goto intro
 
 
 
@@ -122,8 +122,9 @@ set subfile = "000[12345]".sdf # "001[345]".sdf
 
 echo "*** Processing $obsdate $obsnum ***"
 
-foreach lambda (s4a s4b s4c s4d s8a s8b s8c s8d)
+#foreach lambda (s4a s4b s4c s4d s8a s8b s8c s8d)
 #foreach lambda (s4a s8d)
+foreach lambda (s4a s8b)
 
     # the noise clipping level. 1 seemed to be necessary for s8b in the
     # newer data to get a decent common-mode.
@@ -165,7 +166,21 @@ foreach lambda (s4a s4b s4c s4d s8a s8b s8c s8d)
 
     ndf2fits mask_$lambda \!mask\_$lambda.fits msg_filter=$msg
 
+    echo "    Calculating EXT model..."
+
+    makemap $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" junk \
+        method=iterate \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,numiter=1,exportndf=ext"' \
+        msg_filter=$msg
+
+    rm junk.sdf
+
+    echo "    Convert to FITS..."
+    
+    ndf2fits $basename\_000\?_con_ext \!$basename\_con_ext.fits
 end
+
+
 
 echo "    Getting JCMTState..."
 
