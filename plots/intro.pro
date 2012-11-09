@@ -22,7 +22,7 @@ lightblue=12
 
 micron = '!7'+!gr.mu+'!6m'
 
-do_s2sro=1
+do_s2sro=0
 
 ; first, compare s4a, s8d, and mixtemp, and scan position ----------------------
 
@@ -35,16 +35,19 @@ if 1 then begin
     ; cookbook debris disk -- paper plots for S2SRO
     obs = '20100313_00029'
     suffix = "_s2sro"
-    fxread, datadir+'s8d'+obs+'_con_clean.fits', data850, heade
+    fxread, datadir+'s8d'+obs+'_con_ext.fits', extcor850, header
+    fxread, datadir+'s8d'+obs+'_con_clean.fits', data850, header
     fxread, datadir+'s8d'+obs+'_con_nocom.fits', nocom850, header
   endif else begin
     ; 2011 obs recommended by Harriet. 900" pong.
     obs = '20111112_00038'
     suffix = ""
+    fxread, datadir+'s8b'+obs+'_con_ext.fits', extcor850, header
     fxread, datadir+'s8b'+obs+'_con_clean.fits', data850, header
     fxread, datadir+'s8b'+obs+'_con_nocom.fits', nocom850, header
   endelse
 
+  fxread, datadir+'s4a'+obs+'_con_ext.fits', extcor450, header
   fxread, datadir+'s4a'+obs+'_con_clean.fits', data450, header
   fxread, datadir+'s4a'+obs+'_con_nocom.fits', nocom450, header
 
@@ -62,7 +65,7 @@ set_plot,'ps'
 !y.thick=!p.thick
 
 device, filename='bolos_point_mix'+suffix+'.eps', /encapsulated, xsize=20., $
-        ysize=30.
+        ysize=37.5
 
 if do_s2sro then begin
   ; 20100313_00029
@@ -102,6 +105,11 @@ b850 = data850[thex,they,*]
 nc450 = nocom450[thex,they,*]
 nc850 = nocom850[thex,they,*]
 
+; calculate line-of-sight tau. We have the per-bolo extinction correction.
+
+tau450 = alog(extcor450[thex,they,*])
+tau850 = alog(extcor850[thex,they,*])
+
 ; common mode
 
 com450 = b450 - nc450
@@ -117,13 +125,13 @@ xr = 0.99
 yscl = 0.93
 yoff = 0.06
 
-yt = 0.21
+yt = 0.16
 xt = 0.03
 xrange = [min(t),max(t)]
 
 label = strarr(30)+' '
 
-pos = [xl,0.75*yscl+yoff,xr, 1.0*yscl+yoff]
+pos = [xl,0.80*yscl+yoff,xr, 1.0*yscl+yoff]
 plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='!6Power (pW)',ystyle=1,$
       charthick=!p.thick,xrange=xrange,yrange=range450
 oplot, t, nc450, color=128
@@ -134,7 +142,7 @@ axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
 xyouts, pos[0]+xt, pos[1]+yt, '450'+micron, charsize=cs, $
         charthick=!p.thick, /normal
 
-pos = [xl,0.5*yscl+yoff,xr, 0.75*yscl+yoff]
+pos = [xl,0.6*yscl+yoff,xr, 0.80*yscl+yoff]
 plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='!6Power (pW)',/noerase,$
       ystyle=1, charthick=!p.thick,xrange=xrange,yrange=range850
 oplot, t, nc850, color=128
@@ -145,7 +153,7 @@ axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
 xyouts, pos[0]+xt, pos[1]+yt, '850'+micron, charsize=cs, $
         charthick=!p.thick, /normal
 
-pos = [xl,0.25*yscl+yoff,xr, 0.5*yscl+yoff]
+pos = [xl,0.4*yscl+yoff,xr, 0.6*yscl+yoff]
 m = state.sc2_mixtemp
 m = m-mean(m)
 plot, t, m*1d3, xstyle=5, charsize=cs, pos=pos, ystyle=1,$
@@ -156,7 +164,20 @@ axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
 xyouts, pos[0]+xt, pos[1]+yt, 'Mixing Chamber', charsize=cs,$
         charthick=!p.thick, /normal
 
-pos = [xl,0.+yoff,xr, 0.25*yscl+yoff]
+pos = [xl,0.2*yscl+yoff,xr, 0.4*yscl+yoff]
+
+plot, t, tau450, xstyle=5, charsize=cs, pos=pos, ystyle=1,$
+      ytitle='Opacity', /noerase, charthick=!p.thick
+axis, xaxis=0, xstyle=1, xrange=xrange, xtickname=label
+axis, xaxis=1, xstyle=1, xrange=xrange, xtickname=label
+
+plots, pos[0]+xt+[0,0.05], pos[1]+yt*[1.0,1.0]+0.006, /normal
+
+xyouts, pos[0]+xt+0.06, pos[1]+yt, '!7'+!gr.tau+'!6!d450!n', $
+  charsize=cs, charthick=!p.thick, /normal
+
+
+pos = [xl,0.0+yoff,xr, 0.2*yscl+yoff]
 plot, t, state.daz, xstyle=5, charsize=cs, pos=pos, $
       ytitle='Offset (arcsec)', /noerase, charthick=!p.thick, $
       yrange=[-offrange,offrange], ystyle=1
@@ -173,7 +194,6 @@ xyouts, pos[0]+xt+0.06, pos[1]+yt, '!7'+!gr.delta+'!6Azimuth', charsize=cs, $
 
 xyouts, pos[0]+xt+0.56, pos[1]+yt, '!7'+!gr.delta+'!6Elevation', charsize=cs, $
         charthick=!p.thick, /normal
-
 
 device, /close
 
