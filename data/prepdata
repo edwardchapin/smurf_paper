@@ -101,9 +101,9 @@ intro:
 #set subfile = "000[23]"
 
 # Wayne's debris disk from cookbook -- use this for paper!!!
-#set obsdate = 20100313
-#set obsnum = 00029
-#set subfile = "000[12345]".sdf # "001[345]".sdf
+set obsdate = 20100313
+set obsnum = 00029
+set subfile = "000[12345]".sdf # "001[345]".sdf
 
 # Some Lockman data
 #set obsdate = 20100311
@@ -116,15 +116,15 @@ intro:
 #set subfile = "000[345]"
 
 # 2011 obs recommended by Harriet. 900" pong.: new data for paper
-set obsdate = 20111112
-set obsnum = 00038
-set subfile = "000[12345]".sdf # "001[345]".sdf
+#set obsdate = 20111112
+#set obsnum = 00038
+#set subfile = "000[12345]".sdf # "001[345]".sdf
 
 echo "*** Processing $obsdate $obsnum ***"
 
 #foreach lambda (s4a s4b s4c s4d s8a s8b s8c s8d)
-#foreach lambda (s4a s8d)
-foreach lambda (s4a s8b)
+foreach lambda (s4a s8d)
+#foreach lambda (s4a s8b)
 
     # the noise clipping level. 1 seemed to be necessary for s8b in the
     # newer data to get a decent common-mode.
@@ -170,7 +170,7 @@ foreach lambda (s4a s8b)
 
     makemap $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" junk \
         method=iterate \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,numiter=1,exportndf=ext"' \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,numiter=1,exportndf=ext,downsampscale=0,downsampfreq=0"' \
         msg_filter=$msg
 
     rm junk.sdf
