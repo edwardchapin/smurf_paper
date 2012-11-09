@@ -22,7 +22,7 @@ lightblue=12
 
 micron = '!7'+!gr.mu+'!6m'
 
-do_s2sro=0
+do_s2sro=1
 
 ; first, compare s4a, s8d, and mixtemp, and scan position ----------------------
 
@@ -124,7 +124,7 @@ xrange = [min(t),max(t)]
 label = strarr(30)+' '
 
 pos = [xl,0.75*yscl+yoff,xr, 1.0*yscl+yoff]
-plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='Power (pW)', ystyle=1, $
+plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='!6Power (pW)',ystyle=1,$
       charthick=!p.thick,xrange=xrange,yrange=range450
 oplot, t, nc450, color=128
 oplot, t, b450
@@ -135,7 +135,7 @@ xyouts, pos[0]+xt, pos[1]+yt, '450'+micron, charsize=cs, $
         charthick=!p.thick, /normal
 
 pos = [xl,0.5*yscl+yoff,xr, 0.75*yscl+yoff]
-plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='Power (pW)', /noerase, $
+plot, [0], [0], xstyle=5, charsize=cs, pos=pos, ytitle='!6Power (pW)',/noerase,$
       ystyle=1, charthick=!p.thick,xrange=xrange,yrange=range850
 oplot, t, nc850, color=128
 oplot, t, b850
