@@ -299,7 +299,8 @@ $KAPPA_DIR/sub ff bk out=resid
 
 $KAPPA_DIR/gdset epsfcol_l
 $KAPPA_DIR/gdclear
-$KAPPA_DIR/picdef mode=a xpic=2 ypic=1 nooutline prefix=a
+$KAPPA_DIR/picdef mode=cc aspect=2.7 nooutline
+$KAPPA_DIR/picdef current=yes mode=a xpic=2 ypic=1 nooutline prefix=a
 
 $KAPPA_DIR/ndfcopy resid'(24,30,3380:3460)' aaa
 $KAPPA_DIR/wcsframe aaa pixel
@@ -308,7 +309,7 @@ $KAPPA_DIR/linplot aaa style="'colour=black,width=3,label(1)=Time sample index,l
 mv pgplot.ps lhs1.ps
 
 setenv SMF_THREADS 1
-echo 984 | $SMURF_DIR/fixsteps resid fixed
+echo 984 | $SMURF_DIR/fixsteps resid fixed meanshift=no config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis"'
 $KAPPA_DIR/wcsframe fixed pixel
 $KAPPA_DIR/linplot fixed'(24,30,)' style="'colour=red,width=3'" noclear
 mv pgplot.ps lhs2.ps
@@ -332,7 +333,7 @@ $KAPPA_DIR/linplot bbb style="'colour=blue,width=3'" noclear align
 mv pgplot.ps rhs2.ps
 
 setenv SMF_THREADS 1
-echo 230 | $SMURF_DIR/fixsteps resid fixed
+echo 230 | $SMURF_DIR/fixsteps resid fixed meanshift=no config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis"'
 $KAPPA_DIR/wcsframe fixed pixel
 $KAPPA_DIR/linplot fixed'(6,7,)' style="'colour=red,width=3'" noclear align
 mv pgplot.ps rhs3.ps
