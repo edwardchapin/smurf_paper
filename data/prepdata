@@ -258,16 +258,26 @@ $KAPPA_DIR/sub s8a20110907_00029_0023_ff s8a20110907_00029_0023_bk \
                out=s8a20110907_00029_0023_res
 
 #  Produce the plot as an eps file (pgplot.ps) in portrait mode.
+echo "majticklen=0" > sty.tmp
+echo "minticklen=0" >> sty.tmp
+echo "border=1" >> sty.tmp
+echo "LabelUnits=0" >> sty.tmp
+echo "NumLab=0" >> sty.tmp
+echo "DrawTitle=0" >> sty.tmp
+echo "Label(1)=Focal plane Y position" >> sty.tmp
+echo "Label(2)=Focal plane X position" >> sty.tmp
+
 $KAPPA_DIR/clinplot s8a20110907_00029_0023_res nx=8 ny=8 ybot=-0.02 ytop=0.02 \
-                    axes=no key=no device=epsf_p
+                    axes=yes key=no device=epsf_p style=^sty.tmp
 
 #  Convert the eps file to a pdf (com.pdf)
 epstopdf pgplot.ps
 mv pgplot.pdf com.pdf
 
 # Clean up.
-rm pgplot.ps s8a20110907_00029_0023_ff.sdf out=s8a20110907_00029_0023_cl.sdf \
-             s8a20110907_00029_0023_bk.sdf s8a20110907_00029_0023_res.sdf
+rm pgplot.ps s8a20110907_00029_0023_ff.sdf s8a20110907_00029_0023_cl.sdf \
+             s8a20110907_00029_0023_bk.sdf s8a20110907_00029_0023_res.sdf \
+             sty.tmp
 
 if ( $onlyone == 1 ) goto finish
 
