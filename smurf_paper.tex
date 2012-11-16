@@ -1040,7 +1040,14 @@ they are multiplied by the flatfield correction \citep[see Section~2.1
 in][]{dempsey2012}. Next, a series of configurable data cleaning and
 filtering procedures are applied; these include the removal of large
 glitches that may hinder the iterative solution from converging, or
-simply tasks that do not need to be iterated.
+simply tasks that do not need to be iterated. All of the data that are
+flagged as bad are ignored when estimating the map. As an example, for
+the 450\,\micron\ scan of Uranus that will be presented in
+Section~\ref{sec:point}: 31.00\% of the data (1587/5120 bolometers)
+are flagged due to data acquisition problems (dead or deactivated
+bolometers, or non-linear flatfields); 0.12\% of the data are flagged
+due to steps (including a small region about the steps); and 0.83\% if
+the data are flagged because the telescope was stationary.
 
 \subsubsection{Time-series down-sampling and map pixel size}
 \label{sec:downsamp}
@@ -1339,7 +1346,7 @@ be useful for particular data sets.
 
 \end{enumerate}
 
-\subsubsection{Additional bad bolometer rejection}
+\subsubsection{Additional data rejection}
 \label{sec:flagbadbol}
 
 Despite the cleaning operations described in the previous sections,
@@ -1353,13 +1360,30 @@ other pre-processing steps have been run (identical to the measurement
 in Section~\ref{sec:noi}). Despite having significant low-frequency
 noise (and possibly bright astronomical source) contamination, this
 higher-frequency portion of the PSD is generally quite
-clean. Furthermore, even if there is contamination, the purpose of
-this measurement is to identify outliers, rather than provide a
-meaningful absolute measurement of a given bolometer's white noise
-level. Both high and low (e.g., due to an incorrect and very small
-flatfield correction being applied) outliers from the centre of the
-logarithm (to reduce the impact of outliers) of the bolometer noise
-distribution are flagged.
+flat. Furthermore, even if there is contamination, the purpose of this
+measurement is to identify outliers, rather than provide a meaningful
+absolute measurement of a given bolometer's white noise level. Both
+high and low (e.g., due to an incorrect and very small flatfield
+correction being applied) outliers from the centre of the logarithm
+(to reduce the impact of outliers) of the bolometer noise distribution
+are flagged.
+
+Finally, data that are taken while the telescope is either moving
+extremely slowly, or extremely fast, are flagged and ignored when
+estimating the map. When the telescope is moving slowly, astronomical
+signals appear at low frequencies in the bolometer data that are
+dominated by $1/f$ noise (in the extreme case of no motion, the
+bolometers have zero sensitivity). When the telescope is moving
+significantly faster than 600\,arcsec\,s$^{-1}$, both the thermal
+response of the bolometers, and the anti-aliasing filter in the
+readout electronics (Section~\ref{sec:bolos}) can significantly
+distort signals.  The default allowable range of speed is
+30--1000\,arcsec\,s$^{-1}$, which primarily rejects short periods when
+the telescope was stationary prior to commencing the scan pattern
+(generally speaking the speed is constant once the scan begins),
+although the scan speed can briefly exceed the upper limit, even for a
+requested speed of 600\,arcsec, if the pointing system is having
+trouble keeping-up for large-area scans at high elevation.
 
 %-------------------------------------------------
 \subsection{Iterative model calculation}
@@ -1456,6 +1480,12 @@ $\mathbf{e}_i(t)$] are inverted immediately prior to the start of a
 new iteration to preserve the units of the data. The iterative
 solution will thus converge, barring degeneracies between model
 components.
+
+Additional flagging of data to be ignored in the map occurs during the
+iterations. For the example of the 450\,\micron\ Uranus scan in
+Section~\ref{sec:point}: an additional 55 spikes are detected using
+the map-based despiker ($1.2\times10^{-6}$ \% of the data); and 0.72\%
+of the data are flagged as outliers compared to the common-mode.
 
 The full set of model components available, and the parameters that
 control them, are described in the following
