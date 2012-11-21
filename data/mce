@@ -1,0 +1,89 @@
+#!/bin/tcsh
+#+
+# Check the effect of the MCE filtering on point sources
+
+source $SMURF_DIR/smurf.csh > /dev/null
+source $CONVERT_DIR/convert.csh > /dev/null
+source $KAPPA_DIR/kappa.csh > /dev/null
+source $HDSTOOLS_DIR/hdstools.csh > /dev/null
+
+setenv ADAM_USER "adam_mce"
+
+set dataroot = /home/echapin/scuba2/smurf_paper/data/raw
+
+set lambda = s8b
+set fwhm=14.5
+set pixsize=2
+
+#set lambda = s4a
+#set fwhm=7.5
+#set pixsize=2
+
+
+#set msg = quiet
+set msg = normal
+#set msg = verbose
+#set msg = debug
+
+set onlyone = 0
+
+
+
+# 2011 obs recommended by Harriet. 900" pong.: new data for paper
+set obsdate = 20111112
+set obsnum = 00038
+set subfile = "000[12345]".sdf
+
+set basename = $lambda$obsdate\_$obsnum
+set map = mce_$basename
+
+# make the map
+makemap  $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+    $map method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1"' \
+    pixsize=$pixsize msg_filter=$msg
+
+
+
+# create a Gaussian of the correct size
+ndftrace $map > /dev/null
+set mapdim = (`parget dims ndftrace`)
+
+creframe like=$map mode=fl mean=0 out=temp
+chpix in=temp out=temp2 section=\"0,0\" newval=1
+set npix = `calc exp="'pa/pb'" pa=$fwhm pb=$pixsize`
+gausmooth in=temp2 out=temp fwhm=$npix box=\"$mapdim[1],$mapdim[2]\"
+stats temp > /dev/null
+set max = `parget maximum stats`
+cdiv temp $max psf
+
+stats $map comp=error > /dev/null
+set minerr = `parget minimum stats`
+set scale = `calc exp="'pa*pb'" pa=$minerr pb=1000`
+
+ndftrace $map > /dev/null
+set lbound = (`parget lbound ndftrace`)
+set ubound = (`parget ubound ndftrace`)
+
+ndf2fits psf \!psf.fits > /dev/null
+
+# add a bright scaled version of the Gaussian to some real data to estimate
+# the filtering effect of map-making
+
+echo scale is $scale
+
+# make the map with source added
+
+makemap $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+    $map\_fake method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,fakemap=psf,fakescale='$scale'"' \
+    pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
+    ubnd=\[$ubound[1],$ubound[2]\] \
+
+# make the map with source added and apply MCE filtering
+
+makemap $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+    $map\_fake_mce method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,fakemap=psf,fakemce=1,fakescale='$scale'"' \
+    pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
+    ubnd=\[$ubound[1],$ubound[2]\] \
