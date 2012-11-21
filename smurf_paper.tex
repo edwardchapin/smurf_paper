@@ -484,15 +484,25 @@ modes, see Section~5 in \citet{holland2012} and also
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.49\linewidth]{bolos_point_mix_s2sro}
-\includegraphics[width=0.49\linewidth]{bolos_point_mix}
+
+\begin{minipage}[h]{0.495\linewidth}
+\textbf{(a) S2SRO} \\
+
+\includegraphics[width=\linewidth]{bolos_point_mix_s2sro}
+\end{minipage}
+\begin{minipage}[h]{0.495\linewidth}
+\textbf{(b) fully-commissioned} \\
+
+\includegraphics[width=\linewidth]{bolos_point_mix}
+\end{minipage}
+
 \caption{A comparison between single bolometer time-series in each of
   the 450 and 850\,\micron\ bands with the mixing chamber temperature,
   the line-of-sight 450\,\micron\ opacity derived from the water
   vapour monitor, and azimuth/elevation pointing offsets, before and
   after upgrading the instrument. The grey signals over-plotted in the
   top two panels show the residual time-series after removing the
-  common-mode signals.  Left: data taken during the S2SRO period,
+  common-mode signals.  (a) Data taken during the S2SRO period,
   observation 29 on 20100313. There is a strong correlation between
   the bolometers and the roughly $\sim$25\,s oscillation in the
   fridge, but only a minor correlation with the opacity and telescope
@@ -500,61 +510,70 @@ modes, see Section~5 in \citet{holland2012} and also
   that most of the low-frequency signal is common to all of the
   bolometers; and (ii) the non-correlated, and predominantly white
   noise at 450\,\micron\ is significantly larger than at
-  850\,\micron. Right: data taken with the fully-commissioned
-  instrument, observation 38 on 20111112. Unlike the S2SRO data, there
-  is no strong signal produced by variations in the fridge
-  temperature. The 450\,\micron\ data have minimal correlated
-  low-frequency noise (as evidenced by the lack of a difference
-  between the raw and common-mode subtracted signals), although the
-  850\,\micron\ data show a common signal correlated with the opacity
-  and telescope motion (note that this scan has a significantly larger
-  amplitude than the S2SRO data set), mostly likely caused by a
-  combination of changing airmass (anti-correlated with opacity), and
-  magnetic field pickup (see Section~\ref{sec:magpickup} and
+  850\,\micron. (b) Data taken with the fully-commissioned instrument,
+  observation 38 on 20111112. Unlike the S2SRO data, there is no
+  strong signal produced by variations in the fridge temperature. The
+  450\,\micron\ data have minimal correlated low-frequency noise (as
+  evidenced by the lack of a difference between the raw and
+  common-mode subtracted signals), although the 850\,\micron\ data
+  show a common signal correlated with the opacity and telescope
+  motion (note that this scan has a significantly larger amplitude
+  than the S2SRO data set), mostly likely caused by a combination of
+  changing airmass (anti-correlated with opacity), and magnetic field
+  pickup (see Section~\ref{sec:magpickup} and
   Fig.~\ref{fig:magpickup}).}
 \label{fig:bolos_mix}
 \end{figure*}
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.49\linewidth]{pspec_s2sro}
-\includegraphics[width=0.49\linewidth]{pspec}
-\caption{Bolometer power spectral densities for the same two data sets
-  (before and after upgrades) used in Fig.~\ref{fig:bolos_mix}. The
-  PSDs have been boxcar smoothed with a width of 0.1\,Hz to reduce the
-  noise slightly and clarify some features. Four of the most sensitive
-  bolometers have been selected at each wavelength, and the
-  flat-fielded and step-corrected (but otherwise raw) PSDs are shown
-  as coloured dotted lines (the blue signals are for the same time
-  series as those shown in Fig.~\ref{fig:bolos_mix}).  The solid black
-  lines are the PSDs of the common-mode signals at each wavelength,
-  and the solid coloured lines show the PSDs of the bolometers once
-  the common-mode is removed.  Finally, the dashed black lines show
-  the spectral shape produced by a point source given the scan speeds
-  for the two observations (120\,arcsec\,s$^{-1}$ in the left-hand
-  plot, and 190\,arcsec\,s$^{-1}$ in the right-hand plot); for
-  reference, the top horizontal axes shows the conversion from
-  frequency to angular scale. Horizontal dotted lines at $2 \times
-  10^5$ and $1 \times 10^5$\,pW\,Hz$^{-1}$ at 450 and 850\,\micron,
-  respectively, are provided as a visual reference for the white-noise
-  levels. In addition to $1/f$ and white noise components, and line
-  features, all of the PSDs exhibit the gradual roll-off of the
-  anti-aliasing filter just below the Nyquist frequency.  Left: for
-  the S2SRO data there are broad line features in the PSDs at both
-  wavelengths above $\sim$35\,Hz.  At lower frequencies, the bolometer
-  signals exhibit clear $1/f$ knees at approximately 1 and 2\,Hz at
-  450 and 850\,\micron. Common-mode subtraction removes most of the
-  correlated fridge oscillation signal, lowering the $1/f$ knees to
-  approximately 0.2 and 0.7\,Hz at 450 and 850\,\micron,
-  respectively. Right: data from the fully-commissioned instrument
-  tend to have lower $1/f$ knees, and fewer line features. The
-  remaining low-frequency noise, now that the fridge oscillations have
-  been removed, is considerably more independent from bolometer to
-  bolometer than in the S2SRO data (note the larger spread in the
-  dotted lines at low frequencies compared to the left-hand plot,
-  particularly at 450\,\micron). Finally, this example shows that the
-  white noise performance is in fact similar for the two subarrays
-  (s4a and s8b) that were used both before and after the upgrades.}
+
+\begin{minipage}[h]{0.495\linewidth}
+\textbf{(a) S2SRO} \\
+
+\includegraphics[width=\linewidth]{pspec_s2sro}
+\end{minipage}
+\begin{minipage}[h]{0.495\linewidth}
+\textbf{(b) fully-commissioned} \\
+
+\includegraphics[width=\linewidth]{pspec}
+\end{minipage}
+
+\caption{Bolometer power spectral densities (PSDs) for the same two
+  data sets (before and after upgrades) used in
+  Fig.~\ref{fig:bolos_mix}. The PSDs have been boxcar smoothed with a
+  width of 0.1\,Hz to reduce the noise slightly and clarify some
+  features. Four of the most sensitive bolometers have been selected
+  at each wavelength, and the flat-fielded and step-corrected (but
+  otherwise raw) PSDs are shown as coloured dotted lines (the blue
+  signals are for the same time series as those shown in
+  Fig.~\ref{fig:bolos_mix}).  The solid black lines are the PSDs of
+  the common-mode signals at each wavelength, and the solid coloured
+  lines show the PSDs of the bolometers once the common-mode is
+  removed.  Finally, the dashed black lines show the spectral shape
+  produced by a point source given the scan speeds for the two
+  observations (120\,arcsec\,s$^{-1}$ in (a), and
+  190\,arcsec\,s$^{-1}$ in (b); for reference, the top horizontal axes
+  shows the conversion from frequency to angular scale. Horizontal
+  dotted lines at $10^{-7}$ and $10^{-8}$\,pW\,Hz$^{-1}$ at 450 and
+  850\,\micron, respectively, are provided as a visual reference for
+  the white-noise levels. In addition to $1/f$ and white noise
+  components, and line features, all of the PSDs exhibit the gradual
+  roll-off of the anti-aliasing filter just below the Nyquist
+  frequency.  (a) For the S2SRO data, particularly at 450\,\micron,
+  there are broad line features in the PSDs at both wavelengths above
+  $\sim$35\,Hz.  At lower frequencies, the bolometer signals exhibit
+  clear $1/f$ knees at approximately 2 and 3\,Hz at 450 and
+  850\,\micron. Common-mode subtraction removes most of the correlated
+  fridge oscillation signal, lowering the $1/f$ knees to approximately
+  0.6 and 1.0\,Hz at 450 and 850\,\micron, respectively. (b) Data from
+  the fully-commissioned instrument tend to have lower $1/f$ knees,
+  and fewer line features. For this example, the improvement is most
+  striking at 450\,micron\ where the PSD is approximately two
+  orders-of-magnitude lower in the fully-commissioned data at
+  0.1\,Hz. The white noise performance, however, is similar for the
+  two subarrays (s4a and s8b) that were used both before and after the
+  upgrades.}
 \label{fig:pspec}
 \end{figure*}
 
@@ -571,10 +590,10 @@ the focal plane itself, it is certainly correlated with the
 temperature of the detectors), and the telescope pointing, for two
 data sets, before and after the upgrades that followed S2SRO.
 
-In the S2SRO data (left panel), observation 29 on 20100313, both
-bolometers share significant long-timescale structure ($\gsim10$\,s)
-that appears to be related to variations in the fridge base
-temperature, although the similarity is clearly greater at
+In the S2SRO data (Fig.~\ref{fig:bolos_mix}a), observation 29 on
+20100313, both bolometers share significant long-timescale structure
+($\gsim10$\,s) that appears to be related to variations in the fridge
+base temperature, although the similarity is clearly greater at
 850\,\micron. In this particular case, the total power in the
 fluctuations at 450\,\micron, are comparable to those at
 850\,\micron. Such behaviour might be expected if there is a
@@ -595,22 +614,21 @@ noticeable long-timescale variations. The white noise is greater at
 to 850\,\micron.
 
 Data from the fully commissioned instrument, observation 38 on
-20111112, are shown in the right panel of
-Fig.~\ref{fig:bolos_mix}. Having solved the fridge oscillation
-problem, these data no longer exhibit a correlation with the mixing
-chamber (however, note that variations are still seen in the mixing
-chamber signal; such variations do not necessarily reflect changes in
-the focal plane temperature). There is minimal correlated
-low-frequency noise in these 450\,\micron\ data (note that there is
-almost no difference once the common-mode has been subtracted). The
-850\,\micron\ channel, however, exhibits a more significant signal
-that is obviously correlated with the telescope motion. It is also
-correlated amongst many of the detectors, and common-mode removal
-corrects it to a large extent. Part of the reason that this is seen
-here, and not in the S2SRO data set shown, is that the amplitude of
-the scan pattern is larger. Most of this ``scan-synchronous'' noise is
-attributed to magnetic field pickup, as described in
-Section~\ref{sec:magpickup}.
+20111112, are shown in Fig.~\ref{fig:bolos_mix}b. Having solved the
+fridge oscillation problem, these data no longer exhibit a correlation
+with the mixing chamber (however, note that variations are still seen
+in the mixing chamber signal; such variations do not necessarily
+reflect changes in the focal plane temperature). There is minimal
+correlated low-frequency noise in these 450\,\micron\ data (note that
+there is almost no difference once the common-mode has been
+subtracted). The 850\,\micron\ channel, however, exhibits a more
+significant signal that is obviously correlated with the telescope
+motion. It is also correlated amongst many of the detectors, and
+common-mode removal corrects it to a large extent. Part of the reason
+that this is seen here, and not in the S2SRO data set shown, is that
+the amplitude of the scan pattern is larger. Most of this
+``scan-synchronous'' noise is attributed to magnetic field pickup, as
+described in Section~\ref{sec:magpickup}.
 
 Next, in Fig.~\ref{fig:pspec} we produce power spectral density (PSD)
 plots for four of the most sensitive bolometers from both focal
@@ -651,23 +669,23 @@ each bolometer time series and removed as in Fig.~\ref{fig:bolos_mix},
 and the resulting PSDs are shown as solid coloured lines.  For
 reference, the top horizontal axes have been converted to angular
 scale assuming the scan speeds of each observation
-(120\,arcsec\,s$^{-1}$ in the left-hand plot, and
-190\,arcsec\,s$^{-1}$ in the right-hand plot). The power spectra of
+(120\,arcsec\,s$^{-1}$ in Fig.~\ref{fig:pspec}a, and
+190\,arcsec\,s$^{-1}$ in Fig.~\ref{fig:pspec}b). The power spectra of
 unresolved point-sources are also shown as dashed lines in each band
 (arbitrarily normalised), showing that the smallest features
 resolvable by the telescope are only minimally affected by the excess
 noise in the line features at these scan speeds (this may not be the
 case at higher scan speeds).
 
-In the S2SRO data (left-hand panel of Fig.~\ref{fig:pspec}), the
-low-frequency noise is very correlated between the detectors (note the
-tight scatter in the dotted coloured lines, and their resemblance to the
-common-mode), due to it being dominated by the fridge
-oscillations. Common-mode subtraction is very effective, reducing the
-$1/f$ knees in both wavelengths by about a factor of 5.
+In the S2SRO data (Fig.~\ref{fig:pspec}a), the low-frequency noise is
+very correlated between the detectors (note the tight scatter in the
+dotted coloured lines, and their resemblance to the common-mode), due
+to it being dominated by the fridge oscillations. Common-mode
+subtraction is very effective, reducing the $1/f$ knees in both
+wavelengths by about a factor of 5.
 
-Raw data from the fully-commissioned instrument (right-hand panel of
-Fig.~\ref{fig:pspec}) generally have less significant $1/f$ noise as
+Raw data from the fully-commissioned instrument
+(Fig.~\ref{fig:pspec}b) generally have less significant $1/f$ noise as
 compared with the S2SRO data, and it is considerably less correlated
 amongst detectors (larger spread in the dotted coloured lines,
 particularly noticeable in these 450\,\micron\ data), leading to a
@@ -786,9 +804,8 @@ atmosphere) that might appear in both wavelengths, from other noise
 sources that are restricted to single subarrays (such as readout
 noise). In Fig.~\ref{fig:pca} we show the results for a combined
 analysis of the s4a and s8b subarrays for the first $\sim$100\,s of
-the same observation that was used in the right-hand
-(fully-commissioned) panels of Figs.~\ref{fig:bolos_mix} and
-\ref{fig:pspec}. The 12 most significant components are shown (ranked
+the same observation that was used in Figs.~\ref{fig:bolos_mix}b and
+\ref{fig:pspec}b. The 12 most significant components are shown (ranked
 by the mean eigenvalues across all working bolometers in both
 bands). The top and middle panels for each component show the
 time-series and PSDs of the normalised eigenvectors. The bottom panels
@@ -800,15 +817,14 @@ calculated separately at each wavelength also shown).
 The majority of the correlated signal at both wavelengths in
 Fig.~\ref{fig:pca} is clearly produced by Components~1 and 2. In both
 cases, the eigenvector time-series exhibit a roughly periodic signal
-that resembles the scan pattern in the right-hand panel of
-Fig.~\ref{fig:bolos_mix}. While these correlated signals also clearly
-appear at both wavelengths, referring to the maps of eigenvalues, they
-are considerably stronger at 850\,\micron\ (consistent with the visual
-appearance of the bolometer signals in Fig.~\ref{fig:pca}). Also note
-that the PSDs for these eigenvectors exhibit nearly a pure $1/f$
-signature with almost no line features, or a white-noise plateau
-(suggesting that these are high-\snr\ measurements of a purely
-low-frequency drift).
+that resembles the scan pattern in Fig.~\ref{fig:bolos_mix}b. While
+these correlated signals also clearly appear at both wavelengths,
+referring to the maps of eigenvalues, they are considerably stronger
+at 850\,\micron\ (consistent with the visual appearance of the
+bolometer signals in Fig.~\ref{fig:pca}). Also note that the PSDs for
+these eigenvectors exhibit nearly a pure $1/f$ signature with almost
+no line features, or a white-noise plateau (suggesting that these are
+high-\snr\ measurements of a purely low-frequency drift).
 
 \begin{figure*}
 \centering
@@ -816,8 +832,8 @@ low-frequency drift).
 \caption{The first nine components from a principal component
   analysis, ranked by the mean eigenvalues of combined 450 (s4a
   subarray) and 850\,\micron\ (s8b subarray) time-series bolometer
-  data, for the same observation as that used in the right-hand panels
-  of Figs.~\ref{fig:bolos_mix} and \ref{fig:pspec}. For each component
+  data, for the same observation as that used in
+  Figs.~\ref{fig:bolos_mix}b and \ref{fig:pspec}b. For each component
   the top plot shows the time-series of the eigenvectors normalised by
   their \rms, the middle plot its PSD, and the bottom coloured panels
   the eigenvalues for the bolometers at each wavelength (the
@@ -826,13 +842,13 @@ low-frequency drift).
   eigenvalues for the bolometers in each subarray are also shown. Most
   of the correlated $1/f$ signal is encapsulated in Component~1, and
   appears to be dominated by scan-synchronous noise (compare with the
-  scan pattern in the right-hand panel of
-  Fig.~\ref{fig:bolos_mix}). Some of this signal also appears in
-  Component~3. Component~2 is another $1/f$ signal that is dominant in
-  the 850\,\micron\ subarray. Most of the remaining components consist
-  of weaker $1/f$ noise and line features predominantly above
-  $\sim$30\,Hz. The eigenvalue maps show correlated patterns along
-  columns suggesting pickup in their common amplifier chains.}
+  scan pattern in Fig.~\ref{fig:bolos_mix}b). Some of this signal also
+  appears in Component~3. Component~2 is another $1/f$ signal that is
+  dominant in the 850\,\micron\ subarray. Most of the remaining
+  components consist of weaker $1/f$ noise and line features
+  predominantly above $\sim$30\,Hz. The eigenvalue maps show
+  correlated patterns along columns suggesting pickup in their common
+  amplifier chains.}
 \label{fig:pca}
 \end{figure*}
 
@@ -931,10 +947,10 @@ now ported to native C, or at least have a C interface. It was
 therefore decided to develop SMURF in C as well (rather than C++, for
 example, which would have required adding further dependencies to
 Starlink), although we have taken an object-oriented approach. For
-example, all of the data for a given noise model are encapsulated in a
-C structure, and there is a standard interface for all functions that
-handle models (member data and functions for the class,
-respectively). In this way it is easy to extend SMURF with new
+example, all of the data for a given signal component model are
+encapsulated in a C structure, and there is a standard interface for
+all functions that handle models (member data and functions for the
+class, respectively). In this way it is easy to extend SMURF with new
 models. Parallelisation is incorporated in the most time-consuming
 low-level routines using threads (e.g., performing Fast Fourier
 Transforms, re-gridding the data), usually handling either independent
@@ -1128,18 +1144,22 @@ usually raised when making maps of bright point sources.
 \label{sec:steps}
 
 \begin{figure*}
-\centering
+\raggedright
+\textbf{(a) large step} \hspace{7.3cm} \textbf{(b) small steps}\\
+
+\vspace{0.2cm}
+
 \includegraphics[width=\linewidth]{steps1}
-\caption{Examples of steps in time-series data. Steps occur with a wide
-range of heights from the large steps shown on the left to the small
-steps shown on the right. Large steps are often followed by a brief
-``over-shoot'' as shown on the left. In both plots, the black curve is
-the uncorrected time-series, and the red curve is the corrected time
-series. Samples close to a step are omitted in the corrected time-series.
-In the right hand plot, the blue curve is the uncorrected time-series for
-a nearby bolometer. The similarity between the red and blue curves shows
-that the step correction is performing well.
-}
+\caption{Examples of steps in time-series data. Steps occur with a
+wide range of heights from the large steps shown in (a) to the small
+steps shown in (b). Large steps are often followed by a brief
+``over-shoot'' as shown in (a) which is ringing caused by the
+anti-aliasing filter. In both plots, the black curve is the
+uncorrected time-series, and the red curve is the corrected time
+series. Samples close to a step are omitted in the corrected
+time-series.  In (b) the blue curve is the uncorrected time-series for
+a nearby bolometer. The similarity between the red and blue curves
+shows that the step correction is performing well.  }
 \label{fig:steps1}
 \end{figure*}
 
@@ -1154,16 +1174,15 @@ corresponding to the paths of individual bolometers over the sky.
 Steps occur with a wide range of heights and shapes. The ratio of step
 height to noise can vary from less than 10 to several hundred. Some
 steps occur over a single sample, such as the step close to sample
-5000 in the right-hand plot of Fig.~\ref{fig:steps1}, but others
-happen more gradually, such as the step close to sample 5300. In
-addition, a step can be preceded or followed by a short period of
-instability, as is visible at the bottom of the step in the left hand
-plot of Fig.~\ref{fig:steps1} (this is probably due to the response of
-the \scuba\ anti-aliasing filter; the sudden large step occurs prior
-to the 200\,Hz re-sampling). Further problems are caused by steps that
-occur close together in time, such as the large downward step followed
-by a smaller upward step close to sample 5000 in the right hand plot
-of Fig.~\ref{fig:steps1}.
+5000 in Fig.~\ref{fig:steps1}b, but others happen more gradually, such
+as the step close to sample 5300. In addition, a step can be preceded
+or followed by a short period of instability, as is visible at the
+bottom of the step in Fig.~\ref{fig:steps1}a (this is probably due to
+the response of the \scuba\ anti-aliasing filter; the sudden large
+step occurs prior to the 200\,Hz re-sampling). Further problems are
+caused by steps that occur close together in time, such as the large
+downward step followed by a smaller upward step close to sample 5000
+in Fig.~\ref{fig:steps1}b.
 
 Detecting and correcting such a wide variety of steps reliably has
 proved to be a challenge. In outline, the following stages are
@@ -1802,10 +1821,13 @@ Sections~\ref{sec:examples}.
 \label{sec:noi}
 
 The primary purpose of the noise component, \model{NOI}, is to measure
-the white noise levels of each bolometer [$\mathbf{n}^\mathrm{w}_i(t)$
-in Eq.~\ref{eq:noise}]. The measurement generally occurs once all of
-the other models have been fit and removed. This noise may then be
-used to estimate weights for the data in subsequent iterations.
+the white noise levels of each bolometer, which is approximated with a
+single (non-time varying) variance, $\sigma_i^{\mathbf{w}2}$. This
+value is then used to calculate weights for map estimation,
+$\mathbf{w}_i = 1/\sigma_i^{\mathbf{w}2}$. The measurement generally
+occurs once all of the other models have been fit and removed [i.e.,
+once $\mathbf{n}^\mathrm{w}_i(t)$ from Eq.~\ref{eq:noise} is
+isolated].
 
 First, the bolometer PSDs are calculated as in Eq.~\ref{eq:psd}. An
 average white noise level is then measured from 2 to 10\,Hz, a
@@ -1922,58 +1944,51 @@ case).
 \label{sec:converge}
 %-------------------------------------------------
 
-The map-maker will halt if the convergence criteria have been
-met. Presently there are two numerical tests that may be performed by
-SMURF, or alternatively, a fixed number of iterations may be
-specified. The first numerical test is an approximate check of the
-change in reduced chi-squared, $\chi^2_\mathrm{r}$. The standard
-deviations, $\sigma_i$, are measured for each of the residual
-bolometer signals once the modelled signal components have been
-removed. In the early iterations, the residual signals usually contain
-both white noise, and other long-timescale features. However, once the
-solution has converged, this signal should look approximately
-white. Once the white noise, $\mathbf{n}^\mathrm{w}_i(t)$, has been
-measured from the bolometer PSDs in \model{NOI}
-(Section~\ref{sec:noi}), $\chi^2_\mathrm{r}$ is calculated as $(1/N)
-\sum_i \sigma^2_i / \mathbf{n}^\mathrm{w}_i(t)$, where $i$ runs over
-the $N$ bolometers. In other words, it is the average ratio between
-the measured time-series bolometer variances and their white-noise
-levels measured between 2 and 10\,Hz. Note that this expression does
-not account for the degrees of freedom. Clearly there are a large
-number of parameters in the model, which will ``fit-out'' some of the
-uncorrelated white noise, and potentially bias this estimate of
-$\chi^2_\mathrm{r}$ low. One approach would be to keep track of the
-degrees of freedom, and therefore provide a correction, as in
-\citet{kovacs2008}. However, note that we are only using this quantity
-as a convergence test, and its value is not important in an absolute
-sense. Furthermore, the reference white noise values are calculated
-only once in SMURF (Section~\ref{sec:noi}), and the number of model
-parameters are fixed, so the value of $\chi^2_\mathrm{r}$ should
-decrease monotonically if the solution is behaving well. The
-convergence criterion is met if the change in subsequent values of
-$\chi^2_\mathrm{r}$ is smaller than the requsted threshold, which is
-set to $10^{-3}$ by default.
+The map-maker will halt after a user-specified number of iterations,
+or once some convergence criterion has been achieved. Presently two
+numerical quantities are tracked after each iteration: the change in
+reduced chi-squared, $\chi^2_\mathrm{r}$; and the change in the
+map. While convergence in $\chi^2_\mathrm{r}$ is not, ultimately, a
+good indicator of when the solution should be stopped, we discuss its
+calculation and properties first as an introduction to the problem of
+model degeneracies.
 
-It was immediately found in the analysis of \scuba\ data that the
-$\chi^2_\mathrm{r}$ test described above is not a sufficient stopping
-criterion. The reason for this is that various components of the model
-are, under normal circumstances, highly degenerate. One simple example
-is the degeneracy between large-scale astronomical structures (larger
-than the array footprint), and the common-mode rejection step
-(\model{COM}), which will be illustrated in
-Section~\ref{sec:point}. Since the flatness of the residual only
-reflects the ability of the model to fit the shape of the bolometer
-time-series, it does not necessarily correlate with convergence of the
-most important model component: the map. Indeed, examination of the
-map after large numbers of iterations (e.g., $>10$), shows the
-presence of large-scale structures that are anti-correlated with
-structures in other model components. For this reason, a second
-map-based convergence test was added.
+The bolometer residual variances, $\sigma^2_i$, are measured once the
+modelled signal components have been removed. In the early iterations,
+the residuals contain both white noise, and other long-timescale
+features. However, when the solution has converged, this signal should
+look white. Taking the component of bolometer variances due to white
+noise, $\sigma_i^{\mathbf{w}2}$ (measured from the bolometer PSDs in
+\model{NOI}, Section~\ref{sec:noi}), $\chi^2_\mathrm{r}$ is calculated
+as $(1/N) \sum_i \sigma^2_i / \sigma_i^{\mathbf{w}2}$, where $i$ runs
+over the $N$ bolometers. In other words, it is the average ratio
+between the measured time-series bolometer variances and their
+white-noise levels measured between 2 and 10\,Hz, and should tend to a
+value of $\sim$1 if the low-frequency noise (and any bright
+astronomical signals) have been successfully removed. However, this
+expression does not account for the degrees of freedom in the
+model. Clearly there are a large number of parameters that will
+``fit-out'' some of the uncorrelated white noise, and bias this
+estimate of $\chi^2_\mathrm{r}$ low. Indeed, for a converged map,
+values near $\sim$0.85 are common, depending primarily on the fraction
+of the total bandwidth that has been removed by high-pass filtering
+(Section~\ref{sec:flt}). Regardless of the normalisation, once the
+model parameterisation has been chosen, this quantity should converge
+to some fixed value.
 
-The map-based convergence statistic, $M_\mathrm{c}$, is the average
-absolute change in the value of map pixels between subsequent
-iterations, normalised by the map pixel uncertainties (square root of
-Eq.~\ref{eq:varmap}), or
+Practically speaking, $\chi^2_\mathrm{r}$ tends to converge before the
+map due to model degeneracies. One simple example is the degeneracy
+between large-scale astronomical structures (larger than the array
+footprint), and the common-mode rejection step (\model{COM}), which
+will be illustrated in Section~\ref{sec:point}. In this case, there is
+a significant space of maps with spurious large-scale structures that
+are anti-correlated with features in the common-mode, and the solution
+is free to wander this space while producing flat residuals.
+
+Instead, we typically use a map-based convergence statistic,
+$M_\mathrm{c}$, the average absolute change in the value of map pixels
+between subsequent iterations, normalised by the map pixel
+uncertainties (square root of Eq.~\ref{eq:varmap}), or
 %
 \begin{equation}
 M^j_\mathrm{c} = \frac{1}{N} \sum_i \frac{| \mathbf{m}(x_j,y_j) -
@@ -1981,50 +1996,52 @@ M^j_\mathrm{c} = \frac{1}{N} \sum_i \frac{| \mathbf{m}(x_j,y_j) -
 \end{equation}
 %
 where $i$ runs over the $N$ map pixels, and $j$ enumerates the
-iterations. The convergence criterion is met once this average change
-is smaller than some threshold. Experimentally we found that a value
-of 0.05 gives good results (on average, map pixels change by 5\% of
-the estimated map RMS in subsequent iterations).  This provides good
-correspondence with what we would choose ``by eye'', and letting the
+iterations. Experimentally we found that a change in this quantity
+$<$0.05 (on average, map pixels change by $<$5\% of the estimated map
+RMS in subsequent iterations) is a good point to stop, providing
+correspondence with what we would choose ``by eye''. Letting the
 solver run for many more iterations in several test cases yields
 insignificant differences.
 
-A major source of divergence is correlation between \model{COM} and
-\model{FLT}. Since \model{FLT} usually consists of a high-pass filter
-following the application of \model{COM}, \model{COM} is completely
-free to grow any large-scale structure at frequencies below the chosen
-filter edge. While such structure does not appear in the map (as it is
-removed by \model{FLT}), we found that the solution could be made to
-converge significantly faster by ``re-mixing'' \model{COM} and
-\model{FLT} at the start of each iteration. In practice, at the start
-of each iteration, the previous iterations of each model are both
-added back into the residual immediately prior to re-calculating
-\model{COM}. In this way, truly common-mode signals, even at
-low-frequencies, do not leak into \model{FLT}.
+Another major source of divergence is correlation between \model{COM}
+and \model{FLT}. Since \model{FLT} usually consists of a high-pass
+filter following the application of \model{COM}, \model{COM} is
+completely free to grow any large-scale structure at frequencies below
+the chosen filter edge. While such structure does not appear in the
+map (as it is removed by \model{FLT}), we found that the solution
+could be made to converge significantly faster by ``re-mixing''
+\model{COM} and \model{FLT}. Immediately prior to the calculation of
+\model{COM}, the values of \model{COM} and \model{FLT} from the
+previous iteraion are added back into the residual simultaneously. In
+this way, truly common-mode signals, even at low-frequencies, do not
+leak into \model{FLT}.
 
-The most serious cause of divergence is the degeneracy between
-low-frequency signal that is removed, and large-scale structures in
-the map. For example, by subtracting the common-mode signal, the map
-is free to grow large-scale structures that exceed the angular scale
-of the array footprint. Our approach as been to constrain regions of
-the map devoid of sources to a value of zero for all but the final
-iteration in the \model{AST} model (Section~\ref{sec:ast}). Such
-regions are either user-defined in advance, or can be determined from
-the data using a cut on \snr. This technique is explored considerably
-in the examples from Sections~\ref{sec:point} and \ref{sec:extended}.
+In order to control the degeneracy between low-frequency signal that
+is removed, and large-scale structures in the map, we have developed a
+simple system for constraining regions of the map devoid of sources to
+a value of zero for all but the final iteration in the \model{AST}
+model (Section~\ref{sec:ast}). Such regions are either user-defined in
+advance, or can be determined from the data using a cut on \snr. This
+technique is explored considerably in the examples in
+Sections~\ref{sec:point} and \ref{sec:extended}.
 
 %------------------------------------------------------------------------------
 \section{Examples}
 \label{sec:examples}
 %------------------------------------------------------------------------------
 
-In this section three different common types of data are reduced: a
-bright point source, Uranus (Section~\ref{sec:point}); a blind survey
-of high-redshift galaxies in the Lockman Hole
-(Section~\ref{sec:cosmo}); and a map of a bright extended star-forming
-region in our Galaxy, M17 (Section~\ref{sec:extended}). In each case,
-variations on the default algorithm from Section~\ref{sec:algorithm}
-are described.
+While most of the steps described in the Section~\ref{sec:algorithm}
+for reducing data with SMURF are applicable to all data sets, there is
+no ``default'' reduction that provides good results for a wide range
+of source \snr\ and angular scales. However, SMURF does have a small
+number of configurations with variations on these baseline parameters
+that are applicable to most common types of data. In this section we
+illustrate the differences bewteen these configurations with the
+following examples: a bright point source, Uranus
+(Section~\ref{sec:point}); a blind survey of high-redshift galaxies in
+the Lockman Hole (Section~\ref{sec:cosmo}); and a map of a bright
+extended star-forming region in our Galaxy, M17
+(Section~\ref{sec:extended}).
 
 %-------------------------------------------------
 \subsection{Known point source}
@@ -2090,7 +2107,7 @@ solution is unconstrained on such large scales.
 Attacking the problem of streaks, a simple method of removing residual
 (un-correlated) sources of low-frequency noise is to apply a high-pass
 filter after the common-mode removal. A third reduction of the data
-uses the default map-making parameters, as described in
+uses the baseline map-making parameters, as described in
 Section~\ref{sec:algorithm}, which adds the \model{FLT} model to
 accomplish this task immediately prior to map estimation. We set the
 filter edge based on an angular scale of 200\,arcsec, which, given the
@@ -2252,10 +2269,10 @@ The first step, map generation, is different from that described in
 Section~\ref{sec:point} in two key ways. Since the locations of
 sources are unknown \emph{a priori}, a map constraint is not
 employed. Large-scale diverging structures in the map must be
-mitigated, and the method used in this example (the default processing
-in SMURF) is to apply a high-pass filter to the data once, as a
-pre-processing step. The iterative solution is then run using only
-\model{COM}, \model{EXT}, \model{AST}, and \model{NOI}. In other
+mitigated, and the method used in this example (the baseline
+processing in SMURF) is to apply a high-pass filter to the data once,
+as a pre-processing step. The iterative solution is then run using
+only \model{COM}, \model{EXT}, \model{AST}, and \model{NOI}. In other
 words, there is no information in the bolometer signals below some
 cutoff frequency, and residual correlated high-frequency noise above
 the cutoff is only removed through iterative common-mode
@@ -2288,13 +2305,14 @@ However, the way this filter affects point-sources is measurable
 \includegraphics[width=\linewidth]{lockman_psf}
 \caption{Slice through the angular response to an ideal Gaussian point
   source (solid line) along the R.A. axis following map-making using
-  the default blank-field processing with SMURF (dotted line), and
-  upon application of the whitening filter (dashed line). The ``map
-  filtered'' response is produced by adding the ideal Gaussian to the
-  real data near the centre of the Lockman Hole map, and re-reducing
-  the data. The resulting dotted line gives the expected shape of a
-  source in panel (a) from Fig.~\ref{fig:lockman_maps}. Applying the
-  whitening filter (reciprocal of the solid orange line in
+  the blank-field processing configuration with SMURF (dotted line),
+  and upon application of the whitening filter (dashed line). The
+  ``map filtered'' response is produced by adding the ideal Gaussian
+  to the real data near the centre of the Lockman Hole map, and
+  re-reducing the data. The resulting dotted line gives the expected
+  shape of a source in panel (a) from
+  Fig.~\ref{fig:lockman_maps}. Applying the whitening filter
+  (reciprocal of the solid orange line in
   Fig.~\ref{fig:lockman_pspec}) to the dotted line gives the whitened
   line (dashed) , which is the expected shape of a source in panel (b)
   from Fig.~\ref{fig:lockman_maps}. Finally, cross-correlating the
@@ -2516,11 +2534,11 @@ papers and references therein for examples.
 logarithmically scaled between $-$0.0003\,pw (white) and +0.01\,pW
 (black). Iteration numbers are given in the corner of each
 panel. Panels (a) and (b) show the results for a reduction using the
-default parameters (the solution halted after reaching the default
-map-based convergence criterion in 17 iterations). Panel (a) also
-depicts the array footprint (position angle indicative of the start of
-the observation), and a 300\,arcsec line shows the spatial scale
-corresponding to the default \model{FLT} high-pass filter. Similar to
+baseline parameters (the solution halted after reaching the map-based
+convergence criterion in 17 iterations). Panel (a) also depicts the
+array footprint (position angle indicative of the start of the
+observation), and a 300\,arcsec line shows the spatial scale
+corresponding to the \model{FLT} high-pass filter. Similar to
 Fig.~\ref{fig:pointmaps}c, the high-pass filtering introduces ringing
 around bright sources. Panels (c) and (d) show the ``bright extended''
 reduction, in which a zero-mask is created iteratively from all of the
@@ -2549,7 +2567,7 @@ the 850\,\micron\ array. It is a rotating PONG scan covering a
 diameter of 0.375\,deg, with a scan speed of 300\,arcsec\,s$^{-1}$,
 and a transverse spacing of 180\,arcsec, taking 37.5\,min to complete.
 
-The default reduction of these data is shown in the top panels of
+The baseline reduction of these data is shown in the top panels of
 Fig.~\ref{fig:m17}, after 2 iterations (the first map estimated after
 the noise weights have been measured) and 17 iterations (when the map
 has converged), which uses iterative common-mode subtraction and
@@ -2589,7 +2607,7 @@ transfer function of SMURF (same intensity scale as
 Fig.~\ref{fig:m17}). For each column, a different high-pass filter
 edge scale was adopted (indicated in the top panels). First (top) row:
 average of two halves of the data analysed independently, using the
-default configuration. The data have had added to them synthetic
+baseline configuration. The data have had added to them synthetic
 signal within a 600\,arcsec diameter circle (south of M17) created as
 a realisation of noise from a $P(k) \propto k^{-3}$ angular power
 spectrum multiplied by the PSF, subtracting the minimum to make it
@@ -2612,37 +2630,52 @@ reductions.}
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.49\linewidth]{pspec_m17_default}
-\includegraphics[width=0.49\linewidth]{cor_pspec_m17_default}
+\begin{minipage}[h]{0.495\linewidth}
+\textbf{(a) baseline reduction PSD} \\
+
+\includegraphics[width=\linewidth]{pspec_m17_default}
+\end{minipage}
+\begin{minipage}[h]{0.495\linewidth}
+\textbf{(b) baseline reduction transfer function} \\
+
+\includegraphics[width=\linewidth]{cor_pspec_m17_default}
+\end{minipage}
 \caption{Angular PSDs for the region of the M17 map in
-Fig.~\ref{fig:m17_jk} containing synthetic data, using the default
-configuration. Left: raw PSDs for the input (noiseless) simulated data
+Fig.~\ref{fig:m17_jk} containing synthetic data, using the baseline
+configuration. (a) Raw PSDs for the input (noiseless) simulated data
 (thick black line), the signal (average of each half) PSDs (thin solid
 lines), and noise PSDs estimated from the jackknives (dashed
 lines). Vertical dotted lines indicate the high-pass filter scales:
 150\,arcsec (red); 300\,arcsec (orange); 600\,arcsec (green); and
-900\,arcsec (blue). PSDs are also colour-coded by filter scale. Right:
-since the input PSD is known, it is possible to measure the transfer
+900\,arcsec (blue). PSDs are also colour-coded by filter scale. (b)
+Since the input PSD is known, it is possible to measure the transfer
 function of the map-maker as the ratio between the difference of the
 output map signal PSDs and jackknife PSDs, and the input PSDs, giving
 the thin coloured lines (linear vertical axis shown on right of
-plot). The remaining lines are as in the left panel, but now corrected
-by the transfer function. This plot shows that increasing the filter
-scale improves the \snr\ at intermediates scales
-($\sim$200--600\,arcsec), although the \snr\ worsens at smaller scales
-($\lsim$200\,arcsec).}
+plot). The remaining lines are as in (a), but now corrected by the
+transfer function. This plot shows that increasing the filter scale
+improves the \snr\ at intermediates scales ($\sim$200--600\,arcsec),
+although the \snr\ worsens at smaller scales ($\lsim$200\,arcsec).}
 \label{fig:m17_def_ps}
 \end{figure*}
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.49\linewidth]{pspec_m17_bright_extended}
-\includegraphics[width=0.49\linewidth]{cor_pspec_m17_bright_extended}
+\begin{minipage}[h]{0.495\linewidth}
+\textbf{(a) bright extended reduction PSD} \\
+
+\includegraphics[width=\linewidth]{pspec_m17_bright_extended}
+\end{minipage}
+\begin{minipage}[h]{0.495\linewidth}
+\textbf{(b) bright extended reduction transfer function} \\
+
+\includegraphics[width=\linewidth]{cor_pspec_m17_bright_extended}
+\end{minipage}
 \caption{Lines have same meaning as in Fig.~\ref{fig:m17_def_ps},
 except now using the bright extended configuration. This configuration
 has resulted in an improved transfer function and \snr\ at large
 angular scales. Also note that increasing the filter scale does not
-have as large an impact on the small-scale noise as in the default
+have as large an impact on the small-scale noise as in the baseline
 configuration, although it is still noticeably larger up to scales of
 about 60\,arcsec.}
 \label{fig:m17_be_ps}
@@ -2685,7 +2718,7 @@ signal to zero between radii of 300 and 400 arcsec.
 
 The first row of Fig.~\ref{fig:m17_jk} shows the total signal image
 averaging the maps made of each independent half of the data, for the
-default configuration (inverse-variance weighting has been used). The
+baseline configuration (inverse-variance weighting has been used). The
 columns show reductions using 150, 300, 600, and 900\,arcsec filter
 edges. The synthetic data are clearly seen as the circular region
 south of M17. As the filter scale is increased, the size of the
@@ -2714,7 +2747,7 @@ increased, more of the extended structure in M17 is reproduced in the
 map, as evidenced by the blue and red contours (masks generated from
 the first and second halves of the data, respectively). The masking
 does a generally good job of suppressing the largest-scale ripples
-that are produced by the default reduction. However, the noise away
+that are produced by the baseline reduction. However, the noise away
 from regions of bright emission does increase noticeably (mottled
 appearance) --- due to residual $1/f$ noise following common-mode
 removal that has a knee at a frequency above the filter edge. With
@@ -2724,13 +2757,13 @@ allowed to vary freely in the solution.
 
 Next, we analyse the angular power spectral densities (PSDs) of the
 maps to understand the signal and noise properties of the map-maker in
-the region of synthetic sources, as a function of filter scale. The
-left panel of Fig.~\ref{fig:m17_def_ps} shows the raw PSDs for the
-input synthetic signal (thick black line), the output map signals
-(thin solid lines), and the jackknife maps (dashed lines). Colours
-encode the filter scales used: 150\,arcsec (red); 300\,arcsec
-(orange); 600\,arcsec (green); and 900\,arcsec (blue). Note that, with
-the exception of the synthetic data, we only plot the PSDs down to the
+the region of synthetic sources, as a function of filter scale. In
+Fig.~\ref{fig:m17_def_ps}a we show the raw PSDs for the input
+synthetic signal (thick black line), the output map signals (thin
+solid lines), and the jackknife maps (dashed lines). Colours encode
+the filter scales used: 150\,arcsec (red); 300\,arcsec (orange);
+600\,arcsec (green); and 900\,arcsec (blue). Note that, with the
+exception of the synthetic data, we only plot the PSDs down to the
 second-lowest spatial frequency bin of
 $1.875\times10^{-3}$\,arcsec$^{-1}$, or 533\,arcsec, due to the fact
 that the smallest is very poorly sampled, and therefore noisy. As the
@@ -2757,16 +2790,16 @@ $P_\mathrm{S}(k)$ (i.e., $G(k)$ is assumed to be $\le$1). As expected,
 the larger the scale of the filter, the lower the spatial frequency at
 which the map transfer function falls. We then correct the map and
 jackknife PSDs by dividing by $G(k)$ to produce the thick solid, and
-dashed lines in the right panel of Fig.~\ref{fig:m17_def_ps}. This
-shows us that, even though the raw noise in the left panel is lower at
-small scales when a smaller-scale filter is used (e.g., the red dashed
+dashed lines in Fig.~\ref{fig:m17_def_ps}b. This shows us that, even
+though the raw noise in Fig.~\ref{fig:m17_def_ps}a is lower at small
+scales when a smaller-scale filter is used (e.g., the red dashed
 line), once we correct for the transfer function, we actually win in a
 \snr\ sense at large scales using the larger-scale filter (the
 corrected noise is lower), as would be expected.
 
 These tests are then repeated using the bright extended reduction, in
 Fig.~\ref{fig:m17_be_ps}. The most obvious improvement with this
-reduction over the default reduction is that the transfer functions
+reduction over the baseline reduction is that the transfer functions
 fall more slowly at large angular scales, accompanied by a slower
 increase in noise; in other words, there is greatly improved \snr\ at
 large angular scales (an obvious conclusion given the appearence of
@@ -2777,7 +2810,7 @@ is about the largest scale that should be recoverable, given the size
 of the array footprint and the fact that we use common-mode rejection.
 Another interesting feature of these reductions is that the increase
 in small-scale noise as the filter edge is increased is not as drastic
-as in the default reduction, and the \snr\ improves at scales
+as in the baseline reduction, and the \snr\ improves at scales
 $\gsim$60\,arcsec.
 
 One case in which the \snr\ is worse using the bright extended
@@ -2913,12 +2946,13 @@ and reporting anomalies; in particular Antonio Chrysostomou and
 Jessica Dempsey.  We also thank Mark Halpern, Matthew Hasselfield, and
 Gaelen Marsden for many useful discussions; observers who provided
 helpful feedback, especially David Nutter and Todd McKenzie; and
-Mandana Amiri for consultations regarding the SCUBA-2 Multi-Channel
-Electronics.  We acknowledge the contributions of Dennis Kelly, Alex
-van Engelen and Jennifer Balfour for early investigations related to
-SMURF; and Mark Thompson, Craig Walther and S\'{e}verin Gaudet for
-being on the Critical Design Review panel. Finally, we thank Per
-Friberg and Gary Davis for their helpful comments on the manuscript.
+Mandana Amiri and Dan Bintley for consultations regarding the SCUBA-2
+Multi-Channel Electronics.  We acknowledge the contributions of Dennis
+Kelly, Alex van Engelen and Jennifer Balfour for early investigations
+related to SMURF; and Mark Thompson, Craig Walther and S\'{e}verin
+Gaudet for being on the Critical Design Review panel. Finally, we
+thank Per Friberg and Gary Davis for their helpful comments on the
+manuscript.
 
 
 %------------------------------------------------------------------------------
