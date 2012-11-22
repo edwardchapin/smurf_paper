@@ -22,10 +22,10 @@ set dataroot = /scuba2
 set msg = verbose
 #set msg = normal
 
-set onlyone = 0
+set onlyone = 1
 #goto map_bright_extended
 #goto map_default
-#goto respmap
+goto respmap
 #goto fake
 #goto jk
 
@@ -88,9 +88,14 @@ foreach sub ( $allsub )
     hcopy resp_$sub.data_array slice_$sub.data_array
 end
 
+echo Runnign wcsmosaic...
 wcsmosaic slice_s8\* ref=! out=m17_resp_fplane method=nearest accept
+
+echo running wcsalign...
 wcsalign m17_resp_fplane out=m17_resp_fplane_align method=nearest \
     ref=m17_default accept
+
+echo running ndf2fits...
 ndf2fits m17_resp_fplane_align \!m17_resp_fplane_align.fits
 
 if ( $onlyone == 1 ) goto finish
@@ -193,6 +198,7 @@ set lbnd_ref = (`parget lbound ndftrace`)
 # the power spectrum of the input
 cp m17_default.sdf temp.sdf
 hcopy m17_fakemap.data_array temp.data_array
+
 sc2mapfft temp\($lbnd1\:$ubnd1,$lbnd2\:$ubnd2\) pspec_m17_fakemap azavpspec
 ndf2fits pspec_m17_fakemap \!pspec_m17_fakemap.fits
 
@@ -215,7 +221,7 @@ foreach f ( 150 300 600 900 )
 
         echo making $sum...
 
-        wcsmosaic $srcmap\_half\*_$f out=$sum method=nearest variance accept
+        wcsmosaic $srcmap\_half\*_$f out=$sum method=nearest variance=false accept
 
         ndf2fits $jk \!$jk.fits > /dev/null
         ndf2fits $sum \!$sum.fits > /dev/null
