@@ -9,48 +9,110 @@ source $HDSTOOLS_DIR/hdstools.csh > /dev/null
 
 setenv ADAM_USER "adam_mce"
 
-set dataroot = /home/echapin/scuba2/smurf_paper/data/raw
+set dataroot = /scuba2
+#set dataroot = /jcmtdata/raw/scuba2
+#set dataroot = /home/echapin/scuba2/smurf_paper/data/raw
 
-set lambda = s8b
-set fwhm=14.5
-set pixsize=2
-
-#set lambda = s4a
-#set fwhm=7.5
+#set subarr = s8b
+#set fwhm=14.5
 #set pixsize=2
 
+set subarr = s4a
+set fwhm=7.5
+set pixsize=1.0
+
+# set these to something if adding signal to a calibrator map so that
+# the fake source doesn't land on the calibrator (set to 0 otherwise)
+set xpsf=0
+set ypsf=0
 
 #set msg = quiet
-set msg = normal
-#set msg = verbose
+#set msg = normal
+set msg = verbose
 #set msg = debug
 
+
+# 2011 obs recommended by Harriet. 900" pong.: new data for paper (no bright source)
+#set obsdate = 20111112
+#set obsnum = 00038
+#set subfile = "000[12345]".sdf
+
+
+# Nice short Uranus map, but slow speed
+#set obsdate = 20111017
+#set obsnum = 00026
+#set subfile = "????".sdf
+#set xpsf=-20
+#set ypsf=-20
+
+# Fast OMC1 map (600 arcsec/s)
+#set obsdate = 20110204
+#set obsnum = 00033
+#set subfile = "????".sdf
+#set xpsf=-100
+#set ypsf=-100
+
+# Fast DR21 (470 arcsec/s)
+set obsdate = 20110909
+set obsnum = 00014
+set subfile = "????".sdf
+set xpsf=-100
+set ypsf=+100
+
+
+
+
+
+set basename = $subarr$obsdate\_$obsnum
+set map = mce_$basename
+
+
+# broken because we always need first map to get PSF dims
+#goto fake_mce
 set onlyone = 0
 
 
-
-# 2011 obs recommended by Harriet. 900" pong.: new data for paper
-set obsdate = 20111112
-set obsnum = 00038
-set subfile = "000[12345]".sdf
-
-set basename = $lambda$obsdate\_$obsnum
-set map = mce_$basename
-
 # make the map
-makemap  $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+
+map:
+
+echo
+echo
+echo --- making original map ---
+echo
+echo
+
+makemap  $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
     $map method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis"' \
     pixsize=$pixsize msg_filter=$msg
 
+if ( $onlyone == 1 ) goto finish
 
+echo
+echo
+echo --- making original map, devonvolve MCE response ---
+echo
+echo
+
+map_decon:
+
+makemap  $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
+    $map\_decon method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,deconvmce=1"' \
+    pixsize=$pixsize msg_filter=$msg
+
+if ( $onlyone == 1 ) goto finish
 
 # create a Gaussian of the correct size
+
+psf:
+
 ndftrace $map > /dev/null
 set mapdim = (`parget dims ndftrace`)
 
 creframe like=$map mode=fl mean=0 out=temp
-chpix in=temp out=temp2 section=\"0,0\" newval=1
+chpix in=temp out=temp2 section=\"$xpsf,$ypsf\" newval=1
 set npix = `calc exp="'pa/pb'" pa=$fwhm pb=$pixsize`
 gausmooth in=temp2 out=temp fwhm=$npix box=\"$mapdim[1],$mapdim[2]\"
 stats temp > /dev/null
@@ -67,23 +129,69 @@ set ubound = (`parget ubound ndftrace`)
 
 ndf2fits psf \!psf.fits > /dev/null
 
+if ( $onlyone == 1 ) goto finish
+
 # add a bright scaled version of the Gaussian to some real data to estimate
 # the filtering effect of map-making
 
-echo scale is $scale
+echo
+echo --- scale is $scale -----------------------------------------------------
+echo
 
 # make the map with source added
 
-makemap $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+echo
+echo
+echo --- making map with fake source, but no MCE response applied to it ---
+echo
+echo
+
+fake:
+
+makemap $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
     $map\_fake method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,fakemap=psf,fakescale='$scale'"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,fakemap=psf,fakescale='$scale'"' \
     pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
-    ubnd=\[$ubound[1],$ubound[2]\] \
+    ubnd=\[$ubound[1],$ubound[2]\]
+
+if ( $onlyone == 1 ) goto finish
 
 # make the map with source added and apply MCE filtering
 
-makemap $dataroot/$lambda/$obsdate/$obsnum/$basename\_"$subfile" \
+echo
+echo
+echo --- making map with fake source, and applying MCE response to it ---
+echo
+echo
+
+fake_mce:
+
+makemap $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
     $map\_fake_mce method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,itermap=1,fakemap=psf,fakemce=1,fakescale='$scale'"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,fakemap=psf,fakemce=1,fakescale='$scale'"' \
     pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
-    ubnd=\[$ubound[1],$ubound[2]\] \
+    ubnd=\[$ubound[1],$ubound[2]\]
+
+if ( $onlyone == 1 ) goto finish
+
+# make the map with source added and apply MCE filtering, and finally deconvolve
+
+echo
+echo
+echo --- making map with fake source, and applying MCE response to it ---
+echo
+echo
+
+fake_mce_decon:
+
+makemap $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
+    $map\_fake_mce_decon method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,fakemap=psf,fakemce=1,deconvmce=1,fakescale='$scale'"' \
+    pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
+    ubnd=\[$ubound[1],$ubound[2]\]
+
+if ( $onlyone == 1 ) goto finish
+
+
+
+finish:
