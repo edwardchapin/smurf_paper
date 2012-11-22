@@ -18,7 +18,7 @@ lightblue=12
 ; default reduction showing ripples at different iteration numbers
 
 iter = ['02', '17','02','63']
-labels = ["!6(a) default", "(b) default", "(c) bright extended", $
+labels = ["!6(a) baseline", "(b) baseline", "(c) bright extended", $
           "(d) bright extended"]
 
 badval=-1000
@@ -183,26 +183,28 @@ dyplot = 1./4.
 for i=0, nscale-1 do begin
 
   ; default
+  fxread, datadir+'m17_default_'+scale[i]+'_jk.fits', $
+    map_de_jk, header
+  badjk = where( finite(map_de_jk) eq 0 )
+  if badjk[0] ne -1 then map_de_jk[badjk] = badval
+
   fxread, datadir+'m17_default_'+scale[i]+'_sum.fits', $
     map_de_sum, header
   bad = where( finite(map_de_sum) eq 0 )
   if bad[0] ne -1 then map_de_sum[bad] = badval
-
-  fxread, datadir+'m17_default_'+scale[i]+'_jk.fits', $
-    map_de_jk, header
-  bad = where( finite(map_de_jk) eq 0 )
-  if bad[0] ne -1 then map_de_jk[bad] = badval
+  if badjk[0] ne -1 then map_de_sum[badjk] = badval
 
   ; bright extended
+  fxread, datadir+'m17_bright_extended_'+scale[i]+'_jk.fits', $
+    map_be_jk, header
+  badjk = where( finite(map_be_jk) eq 0 )
+  if badjk[0] ne -1 then map_be_jk[badjk] = badval
+
   fxread, datadir+'m17_bright_extended_'+scale[i]+'_sum.fits', $
     map_be_sum, header
   bad = where( finite(map_be_sum) eq 0 )
   if bad[0] ne -1 then map_be_sum[bad] = badval
-
-  fxread, datadir+'m17_bright_extended_'+scale[i]+'_jk.fits', $
-    map_be_jk, header
-  bad = where( finite(map_be_jk) eq 0 )
-  if bad[0] ne -1 then map_be_jk[bad] = badval
+  if badjk[0] ne -1 then map_be_sum[badjk] = badval
 
   fxread, datadir+'m17_bright_extended_half1_'+scale[i]+'_qmask.fits', $
     qual_be_1, header
@@ -210,6 +212,10 @@ for i=0, nscale-1 do begin
   fxread, datadir+'m17_bright_extended_half2_'+scale[i]+'_qmask.fits', $
     qual_be_2, header
 
+  if badjk[0] ne -1 then begin
+      qual_be_1[badjk] = 1
+      qual_be_2[badjk] = 1
+  endif
 
   ; default sum
   pos = [dxplot*i,1-dyplot,dxplot*(i+1),1.]
@@ -272,12 +278,12 @@ for i=0, nscale-1 do begin
 endfor
 
 
-labels = ['Default Average','Default Jackknife','Bright Extended Average', $
+labels = ['Baseline Average','Baseline Jackknife','Bright Extended Average', $
           'Bright Extended Jackknife']
 cs = 0.666
 ys = 0.01
 xm = 0.00
-
+ 
 for i=0, 3 do begin
   xyouts, xm, 1-i*dyplot-ys, labels[i], /normal, charsize=cs, $
     charthick=thick
@@ -339,26 +345,25 @@ for i=0, n_elements(type)-1 do begin
     xtitle="!6angular scale (arcsec)", charsize=cs*2, $
     /xlog, charthick=thick
 
-
-  xl = 0.6
-  yl = 0.7
+  xl = 0.53
+  yl = 0.68
   ys = 0.04
   xt = 0.06
 
   plots, xl+[0.,0.05], yl*[1.,1.], thick=thick*4, /normal
-  xyouts, xl+xt, yl-0.002, "input signal PSD", /normal, charsize=cs*1.5, $
+  xyouts, xl+xt, yl-0.002, "input signal PSD", /normal, charsize=cs*1.75, $
     charthick=thick
 
   plots, xl+[0.,0.05], (yl-1*ys)*[1.,1.], thick=thick*2, /normal
   xyouts, xl+xt, yl-1*ys-0.002, "map PSDs", /normal, $
-    charsize=cs*1.5, charthick=thick
+    charsize=cs*1.75, charthick=thick
 
   plots, xl+[0.,0.05], (yl-2*ys)*[1.,1.], thick=thick*2, linestyle=2, /normal
   xyouts, xl+xt, yl-2*ys-0.002, "jackknife PSDs", /normal, $
-    charsize=cs*1.5, charthick=thick
+    charsize=cs*1.75, charthick=thick
 
   plots, xl+[0.,0.05], (yl-3*ys)*[1.,1.], thick=thick, linestyle=1, /normal
-  xyouts, xl+xt, yl-3*ys-0.002, "filter edges", /normal, charsize=cs*1.5, $
+  xyouts, xl+xt, yl-3*ys-0.002, "filter edges", /normal, charsize=cs*1.75, $
     charthick=thick
 
   device,/close
@@ -425,26 +430,26 @@ for i=0, n_elements(type)-1 do begin
   endfor
 
 
-  xl = 0.57
-  yl = 0.7
+  xl = 0.53
+  yl = 0.68
   ys = 0.04
   xt = 0.06
 
   plots, xl+[0.,0.05], yl*[1.,1.], thick=thick*2, /normal
-  xyouts, xl+xt, yl-0.002, "corrected map PSDs", /normal, charsize=cs*1.5, $
+  xyouts, xl+xt, yl-0.002, "corrected map PSDs", /normal, charsize=cs*1.75, $
     charthick=thick
 
   plots, xl+[0.,0.05], (yl-ys)*[1.,1.], thick=thick*2, linestyle=2, /normal
   xyouts, xl+xt, yl-ys-0.002, "corrected jackknife PSDs", /normal, $
-    charsize=cs*1.5, charthick=thick
+    charsize=cs*1.75, charthick=thick
 
   plots, xl+[0.,0.05], (yl-2*ys)*[1.,1.], thick=thick, linestyle=1, /normal
-  xyouts, xl+xt, yl-2*ys-0.002, "filter edges", /normal, charsize=cs*1.5, $
+  xyouts, xl+xt, yl-2*ys-0.002, "filter edges", /normal, charsize=cs*1.75, $
     charthick=thick
 
   plots, xl+[0.,0.05], (yl-3*ys)*[1.,1.], thick=1, /normal
   xyouts, xl+xt, yl-3*ys-0.002, "transfer functions", /normal, $
-    charsize=cs*1.5, charthick=thick
+    charsize=cs*1.75, charthick=thick
 
 
   device, /close
