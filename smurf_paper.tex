@@ -1556,13 +1556,13 @@ faint extended structure.  The purpose of the \model{COM} and
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{com}
-\caption{A selection of typical bolometer time-series after
-flatfielding and removal of a constant baseline. Each sub-plot shows
-the power from a single bolometer over a 30 second period.
-The lower and upper vertical limits of each plot are -0.02 pW and +0.02
-pW respectively. It can be seen that most bolometers exhibit a common
-time variation overlaid with other features. Empty squares indicate the
-locations of broken bolometers.}
+\caption{A selection of bolometer time-series from a representative
+region of the focal plane after flatfielding and removal of a constant
+baseline. Each sub-plot shows the power from a single bolometer over a
+30\,s interval.  The lower and upper vertical limits of each plot are
+$-0.02$\,pW and $+0.02$\,pW, respectively. It can be seen that most
+bolometers exhibit a common time variation overlaid with other
+features. Empty squares indicate the locations of broken bolometers.}
 \label{fig:com}
 \end{figure}
 
@@ -1970,11 +1970,10 @@ expression does not account for the degrees of freedom in the
 model. Clearly there are a large number of parameters that will
 ``fit-out'' some of the uncorrelated white noise, and bias this
 estimate of $\chi^2_\mathrm{r}$ low. Indeed, for a converged map,
-values near $\sim$0.85 are common, depending primarily on the fraction
-of the total bandwidth that has been removed by high-pass filtering
-(Section~\ref{sec:flt}). Regardless of the normalisation, once the
-model parameterisation has been chosen, this quantity should converge
-to some fixed value.
+values in the range $\sim$0.85--0.95 are common, depending on the
+precise configuration parameters. Regardless of the normalisation,
+once the model parameterisation has been chosen, this quantity should
+converge to some fixed value.
 
 Practically speaking, $\chi^2_\mathrm{r}$ tends to converge before the
 map due to model degeneracies. One simple example is the degeneracy
@@ -2030,10 +2029,10 @@ Sections~\ref{sec:point} and \ref{sec:extended}.
 \label{sec:examples}
 %------------------------------------------------------------------------------
 
-While most of the steps described in the Section~\ref{sec:algorithm}
-for reducing data with SMURF are applicable to all data sets, there is
-no ``default'' reduction that provides good results for a wide range
-of source \snr\ and angular scales. However, SMURF does have a small
+While most of the steps described in Section~\ref{sec:algorithm} for
+reducing data with SMURF are applicable to all data sets, there is no
+``default'' reduction that provides good results for a wide range of
+source \snr\ and angular scales. However, SMURF does have a small
 number of configurations with variations on these baseline parameters
 that are applicable to most common types of data. In this section we
 illustrate the differences bewteen these configurations with the
@@ -2134,7 +2133,7 @@ This example illustrates the need for constraints in the map solution
 in many situations. For calibrators (and other previously known
 bright, compact sources), a good, simple prior is to constrain the map
 to a value of zero away from the known locations of emission (part of
-the \model{AST} model calculation, Section~\ref{sec:ast}). In
+the \model{AST} model calculation, Section~\ref{sec:ast}).  In
 Fig.~\ref{fig:pointmaps}d, a solution is produced in an identical
 manner to Fig.~\ref{fig:pointmaps}c, but now setting the map
 explicitly to zero beyond a radius of 60\,arcsec from the location of
@@ -2143,10 +2142,19 @@ final iteration. In this case, the map converges after 6 iterations,
 and the ringing has been effectively removed. Since the map is now
 flat away from the source, and constrained to a value of zero, it is
 appropriate for performing aperture photometry directly, with no need
-for an additional reference annulus. This approach to constrained
-map-making is similar to that employed for poorly cross-linked scans
-of compact (though resolved) sources by \citet{wiebe2009} using BLAST
-data.
+for an additional reference annulus.
+
+The reason this prior works is simple to understand if the bolometer
+data are thought of as providing useful differential measurements up
+to scales corresponding to the filter edge. In this example, the
+bolometers retain information on brightness differences up to
+200\,arcsec scales. Since the map is constrained to zero to within
+60\,arcsec of the peak of Uranus (well within 200\,arcsec), the
+solution is then able to accurately reconstruct the differential peak
+intensity of Uranus with respect to this constrained background.  This
+approach to map-making is similar to that employed for poorly
+cross-linked scans of compact (though resolved) sources by
+\citet{wiebe2009} using BLAST data.
 
 \begin{figure*}
 \centering
@@ -2654,7 +2662,7 @@ output map signal PSDs and jackknife PSDs, and the input PSDs, giving
 the thin coloured lines (linear vertical axis shown on right of
 plot). The remaining lines are as in (a), but now corrected by the
 transfer function. This plot shows that increasing the filter scale
-improves the \snr\ at intermediates scales ($\sim$200--600\,arcsec),
+improves the \snr\ at intermediate scales ($\sim$200--600\,arcsec),
 although the \snr\ worsens at smaller scales ($\lsim$200\,arcsec).}
 \label{fig:m17_def_ps}
 \end{figure*}
