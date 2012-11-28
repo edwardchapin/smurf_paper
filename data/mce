@@ -36,7 +36,8 @@ set msg = verbose
 #set obsdate = 20111112
 #set obsnum = 00038
 #set subfile = "000[12345]".sdf
-
+#set xpsf=-20
+#set ypsf=-20
 
 # Nice short Uranus map, but slow speed
 #set obsdate = 20111017
@@ -49,15 +50,25 @@ set msg = verbose
 #set obsdate = 20110204
 #set obsnum = 00033
 #set subfile = "????".sdf
+#set subfile = "000[123456789]".sdf
 #set xpsf=-100
 #set ypsf=-100
 
 # Fast DR21 (470 arcsec/s)
 set obsdate = 20110909
 set obsnum = 00014
-set subfile = "????".sdf
+#set subfile = "????".sdf
+set subfile = "000[123456789]".sdf
 set xpsf=-100
 set ypsf=+100
+
+
+
+# amount to delay signals when cleaning
+set cleandel=0.0029
+
+# amount to delay fake signals (normally -cleandel)
+set fakedel=-0.0029
 
 
 
@@ -67,9 +78,10 @@ set basename = $subarr$obsdate\_$obsnum
 set map = mce_$basename
 
 
-# broken because we always need first map to get PSF dims
-#goto fake_mce
 set onlyone = 0
+#goto map
+#goto psf
+#goto fake
 
 
 # make the map
@@ -89,18 +101,34 @@ makemap  $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
 
 if ( $onlyone == 1 ) goto finish
 
-echo
-echo
-echo --- making original map, devonvolve MCE response ---
-echo
-echo
-
 map_decon:
 
-makemap  $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
-    $map\_decon method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,deconvmce=1"' \
-    pixsize=$pixsize msg_filter=$msg
+echo
+echo
+echo --- making original map, devonvolve MCE response, range of delays ---
+echo
+echo
+
+rm delayfiles.txt
+
+foreach del (-0.010 -0.008 -0.006 -0.004 -0.002 +0.000 +0.002 +0.004 +0.006 +0.008 +0.010)
+
+    echo
+    echo "Delay of $del seconds"
+    echo
+
+    set fname = `echo $del | tr '.' '_'`
+
+    makemap  $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
+        $map\_decon$fname method=iterate \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,deconvmce=1,delay='$del'"' \
+        pixsize=$pixsize msg_filter=$msg
+
+
+    ndf2fits $map\_decon$fname \!$map\_decon$fname.fits
+
+    echo $map\_decon$fname.fits >> delayfiles.txt
+end
 
 if ( $onlyone == 1 ) goto finish
 
@@ -117,11 +145,12 @@ set npix = `calc exp="'pa/pb'" pa=$fwhm pb=$pixsize`
 gausmooth in=temp2 out=temp fwhm=$npix box=\"$mapdim[1],$mapdim[2]\"
 stats temp > /dev/null
 set max = `parget maximum stats`
-cdiv temp $max psf
+cdiv temp $max temp2
 
 stats $map comp=error > /dev/null
 set minerr = `parget minimum stats`
 set scale = `calc exp="'pa*pb'" pa=$minerr pb=1000`
+cmult temp2 $scale psf
 
 ndftrace $map > /dev/null
 set lbound = (`parget lbound ndftrace`)
@@ -131,26 +160,24 @@ ndf2fits psf \!psf.fits > /dev/null
 
 if ( $onlyone == 1 ) goto finish
 
-# add a bright scaled version of the Gaussian to some real data to estimate
-# the filtering effect of map-making
-
-echo
-echo --- scale is $scale -----------------------------------------------------
-echo
 
 # make the map with source added
 
+fake:
+
 echo
 echo
-echo --- making map with fake source, but no MCE response applied to it ---
+echo --- map with fake source, no MCE response applied, no delay ---
 echo
 echo
 
-fake:
+ndftrace $map > /dev/null
+set lbound = (`parget lbound ndftrace`)
+set ubound = (`parget ubound ndftrace`)
 
 makemap $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
     $map\_fake method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,fakemap=psf,fakescale='$scale'"' \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,fakemap=psf"' \
     pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
     ubnd=\[$ubound[1],$ubound[2]\]
 
@@ -158,17 +185,21 @@ if ( $onlyone == 1 ) goto finish
 
 # make the map with source added and apply MCE filtering
 
-echo
-echo
-echo --- making map with fake source, and applying MCE response to it ---
-echo
-echo
-
 fake_mce:
 
+echo
+echo
+echo --- map with fake source, applying MCE response, delayed ---
+echo
+echo
+
+ndftrace $map > /dev/null
+set lbound = (`parget lbound ndftrace`)
+set ubound = (`parget ubound ndftrace`)
+
 makemap $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
-    $map\_fake_mce method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,fakemap=psf,fakemce=1,fakescale='$scale'"' \
+    $map\_fake_mce_del method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,fakedelay='$fakedel',fakemap=psf,fakemce=1"' \
     pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
     ubnd=\[$ubound[1],$ubound[2]\]
 
@@ -176,17 +207,21 @@ if ( $onlyone == 1 ) goto finish
 
 # make the map with source added and apply MCE filtering, and finally deconvolve
 
-echo
-echo
-echo --- making map with fake source, and applying MCE response to it ---
-echo
-echo
-
 fake_mce_decon:
 
+echo
+echo
+echo --- map with fake source, applying MCE response, delayed, corrected ---
+echo
+echo
+
+ndftrace $map > /dev/null
+set lbound = (`parget lbound ndftrace`)
+set ubound = (`parget ubound ndftrace`)
+
 makemap $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
-    $map\_fake_mce_decon method=iterate \
-    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,fakemap=psf,fakemce=1,deconvmce=1,fakescale='$scale'"' \
+    $map\_fake_mce_del_decon method=iterate \
+    config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis,delay='$cleandel',fakemap=psf,fakedelay='$fakedel',fakemce=1,deconvmce=1"' \
     pixsize=$pixsize msg_filter=$msg ref=$map lbnd=\[$lbound[1],$lbound[2]\] \
     ubnd=\[$ubound[1],$ubound[2]\]
 
