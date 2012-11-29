@@ -445,7 +445,7 @@ caused by a half-sample offset due to the synchronization between the
 pointing and bolometer data, yields a net lag of approximately
 4.5\,ms. There are also line features in the spectra that are thought
 to be produced primarily at frequencies far above the final 200\,Hz
-sample rate, and are aliased to lower frequencies during the
+sample rate, which are aliased to lower frequencies during the
 multiplexed readout stage before they can be removed by the
 anti-aliasing filter.
 
@@ -1398,6 +1398,37 @@ although the scan speed can briefly exceed the upper limit, even for a
 requested speed of 600\,arcsec, if the pointing system is having
 trouble keeping-up for large-area scans at high elevation.
 
+
+\subsubsection{Impact of lags}
+\label{sec:lags}
+
+In principle, the effects of the bolometer thermal response,
+anti-aliasing filter, and data acquisition lags should be accounted
+for; together they produce a net lag in the bolometer signals of about
+4.5\,ms (Section~\ref{sec:bolos}). This can be modelled by convolving
+the ``pure'' bolometer signals with a single system response
+function. Similarly, this effect could be removed using de-convolution
+as a pre-processing step. The impact of this lag is primarily a
+reduction in point-source sensitivity since scans at different
+position angles will detect the source at slightly different positions
+(and therefore reduce the peak signal once averaged together). This
+attenuation is most significant at 450\,\micron\ given the smaller
+beam size, and at the greatest scan speeds. For reference, at a speed
+of 150\,arcsec\,s$^{-1}$ (typical for CV daisies of calibrators and
+deep fields) the attenuation is a negligible $<$1\% at 850\,\micron,
+and $\sim$1\% at 450\,\micron. However, at the maximum speed of
+600\,arcsec\,s$^{-1}$ (for the largest, and typically shallowest
+maps), this attenuation grows to about 5\% and 15\% at 850 and
+450\,\micron, respectively. It is unlikely that this response has had
+a significant impact on observations taken to date, since such scans
+have been used primarily for shallow cosmology fields for which only
+the 850\,\micron\ data are expected to be useful, or Galactic fields
+of extended structures (which are less sensitive to this effect). In
+the present Starlink \textsc{kapuahi} release there is no option to
+de-convolve the system response. However, it is presently being added
+and should be present in future releases.
+
+
 %-------------------------------------------------
 \subsection{Iterative model calculation}
 \label{sec:components}
@@ -1443,21 +1474,6 @@ excess of the white noise level, that is either uncorrelated from
 bolometer-to-bolometer, or at least does not have a simple correlation
 relationship that would lead to it being included in
 $\mathbf{n}^\mathrm{c}(t)$.
-
-In principle there are two other effects that could be included in
-this model. First, signals detected by the bolometers (inside the
-brackets of Eq.~\ref{eq:model}) should be convolved with the thermal
-response function, $\exp(-t/\tau)$, where $\tau=1$\,ms. Second, the
-final signals should be convolved with the response of the
-anti-aliasing filter. In practice, the combined effect of these two
-filters is to introduce a lag of $\sim$7\,ms, and only minimal
-attentuation of a point source (at most 3\% for the smaller
-450\,\micron\ PSF at the maximum scan speed of 600\,arcsec). For all
-of the maps described in this paper, their impact is therefore
-negligible. The current version of SMURF (part of the Starlink
-\textsc{kapuahi} release) does not attempt to de-convolve these
-effects, although the next version will likely include an optional
-pre-processing step to perform this task.
 
 During pre-processing, the map-maker divides by $f_i$ once. Then, in
 each iteration, the map-maker models and removes
@@ -2898,7 +2914,7 @@ independent portions of the data), we have demonstrated that we can
 effectively recover angular scales up to the order of the array
 footprint (approximately 5\,arcmin).
 
-For maps of faint point sources, a single (non-iterative) high-pass
+For maps of faint point-sources, a single (non-iterative) high-pass
 filter at the start of the reduction produces maps that are nearly
 white-noise limited and linear (i.e., the response does not depend on
 \snr). Residual large-scale noise can be removed with a whitening
