@@ -161,6 +161,9 @@ if 1 then begin
   fxread, datadir+'s4a_ast_2.fits', ast2, header
   fxread, datadir+'s4a_ast_100.fits', ast100, header
 
+  fxread, datadir+'s4a_ext_2.fits', ext2, header
+  fxread, datadir+'s4a_ext_100.fits', ext100, header
+
   state = scuba2_readstate( datadir+"state_uranus.tst" )
 endif
 
@@ -193,6 +196,10 @@ pos = [xl,0.5*yscl+yoff,xr, 1.0*yscl+yoff]
 
 c2 = (com2*gai2[bolx,boly,0])[tstart:tstart+tlen-1]
 c100 = (com100*gai100[bolx,boly,0])[tstart:tstart+tlen-1]
+
+; correct com for extinction
+c2 = c2 * ext2[bolx,boly,*]
+c100 = c100 * ext100[bolx,boly,*]
 
 a2 = (ast2[bolx,boly,*])[tstart:tstart+tlen-1]
 a100 = (ast100[bolx,boly,*])[tstart:tstart+tlen-1]
