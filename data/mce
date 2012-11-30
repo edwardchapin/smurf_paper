@@ -39,14 +39,14 @@ set msg = verbose
 #set xpsf=-20
 #set ypsf=-20
 
-# Nice short Uranus map, but slow speed
+# Nice short Uranus map, but slow speed - 150 arcsec/s
 #set obsdate = 20111017
 #set obsnum = 00026
 #set subfile = "????".sdf
 #set xpsf=-20
 #set ypsf=-20
 
-# Fast OMC1 map (600 arcsec/s)
+# Fast OMC1 map (600 arcsec/s) - garbage
 #set obsdate = 20110204
 #set obsnum = 00033
 #set subfile = "????".sdf
@@ -54,13 +54,29 @@ set msg = verbose
 #set xpsf=-100
 #set ypsf=-100
 
-# Fast DR21 (470 arcsec/s)
+# 300 arcsec/s Mars CV Daisy
+#set obsdate = 20120512
+#set obsnum = 00036
+#set subfile = "????".sdf
+#set xpsf=-20
+#set ypsf=-20
+
+# 1 deg^2 600 arcsec/s CLS map in UDS
+#set obsdate = 20120124
+#set obsnum = 00022
+#set subfile = "????".sdf
+##set subfile = "000[123456789]".sdf
+#set xpsf=0
+#set ypsf=0
+
+# Fast DR21 (470 arcsec/s) - good for optimizing delay
 set obsdate = 20110909
 set obsnum = 00014
-#set subfile = "????".sdf
+set subfile = "????".sdf
 set subfile = "000[123456789]".sdf
 set xpsf=-100
 set ypsf=+100
+
 
 
 
@@ -79,6 +95,8 @@ set map = mce_$basename
 
 
 set onlyone = 0
+set justsim = 1 # minimal execution to check effect on input sorce
+
 #goto map
 #goto psf
 #goto fake
@@ -98,6 +116,8 @@ makemap  $dataroot/$subarr/$obsdate/$obsnum/$basename\_"$subfile" \
     $map method=iterate \
     config='"^$STARLINK_DIR/share/smurf/dimmconfig_bright_extended.lis"' \
     pixsize=$pixsize msg_filter=$msg
+
+if ( $justsim == 1 ) goto psf
 
 if ( $onlyone == 1 ) goto finish
 
@@ -136,6 +156,12 @@ if ( $onlyone == 1 ) goto finish
 
 psf:
 
+echo
+echo
+echo --- Create synthetic source ---
+echo
+echo
+
 ndftrace $map > /dev/null
 set mapdim = (`parget dims ndftrace`)
 
@@ -157,6 +183,8 @@ set lbound = (`parget lbound ndftrace`)
 set ubound = (`parget ubound ndftrace`)
 
 ndf2fits psf \!psf.fits > /dev/null
+
+if ( $justsim == 1 ) goto fake_mce
 
 if ( $onlyone == 1 ) goto finish
 
