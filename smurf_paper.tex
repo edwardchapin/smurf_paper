@@ -2057,11 +2057,42 @@ extended star-forming region in our Galaxy, M17
 \label{sec:point}
 %-------------------------------------------------
 
+\begin{figure*}
+\centering
+\includegraphics[width=\linewidth]{pointmaps}
+\caption{Multiple reductions of a 450\,\micron\ CV daisy scan of
+  Uranus, all scaled between $-$0.002\,pW (white) and +0.002\,pW
+  (black). In all cases extinction correction has been applied
+  immediately after common-mode removal. (a) Reduction in which only
+  common-mode subtraction is used to suppress low-frequency noise, and
+  the reduction is forced to use 2 iterations (after the first
+  iteration an estimate of the source flux is removed, and the noise
+  is measured in the residuals to obtain appropriate weighting for the
+  second and final iteration). Circular streaks are caused by
+  independent low-frequency noise that is not removed by the
+  common-mode (Uranus peak 0.358\,pW). (b) Same as (a) but using 100
+  iterations, illustrating the degeneracy between large-scale
+  structure and the common-mode (the footprint of working bolometers
+  is also shown for reference, Uranus peak 0.358\,pW). (c) Reduction
+  in which high-pass filtering above 0.775\,Hz (corresponding to a
+  spatial scale of 200\,arcsec, as indicated) is applied after
+  common-mode removal, but before the map estimate. The map-based
+  convergence test is activated and the solution halts after 10
+  iterations, but leaving large-scale ringing due to the filter
+  (Uranus peak 0.353\,pW). (d) Same as (c), but now the region of the
+  map beyond the white dot-dashed circle is constrained to a value of
+  zero until all but the final iteration.  The map is now extremely
+  flat, there is no attenuation of the source flux compared with the
+  first two reductions, and the diffraction pattern is clearly seen
+  (Uranus peak 0.358\,pW).  }
+\label{fig:pointmaps}
+\end{figure*}
+
 The accurate measurement of positions and brightnesses of known point
 sources are necessary in real-time to establish telescope pointing
 offsets and focus. They are also necessary to measure the FCF
 (absolute calibration), and hence noise performance of the instrument
-in astronomically-useful units.  In this example we produce a
+in astronomically-useful units.  In this example we reduce a
 450\,\micron\ map of Uranus (observation 26 on 20111017), which is a
 nearly point-like source for \scuba\ that is commonly used as a
 primary flux calibrator. The CV daisy pattern was used, with a scan
@@ -2080,8 +2111,8 @@ estimated using equal weighting for all of the detectors. This
 estimate of \model{AST} is then removed from the data, and the noise
 is measured in the residuals to estimate weights for the subsequent
 and final iteration. The resulting map after these two iterations is
-shown in Fig.~\ref{fig:pointmaps}a. While the \snr\ of Uranus is
-clearly large ($\sim$250), enabling us to see the faint sidelobes
+shown in Fig.~\ref{fig:pointmaps}a. While the peak \snr\ of Uranus is
+clearly large ($\sim$160), enabling us to see the faint sidelobes
 (circle and cross pattern), the map also has obvious circular streaks
 and other large-scale ripples. The circular streaks are due to the
 fact that \model{COM} does not account for all of the low-frequency
@@ -2098,12 +2129,14 @@ gradient. The degeneracy is easy to understand if the time-domain
 behaviour of each model component is considered. The top panel of
 Fig.~\ref{fig:degeneracy} shows the residual signals for a single
 bolometer after 2 (black) and 100 (grey) iterations, which are nearly
-identical, yet the change in the estimated \model{COM} (green) and
-\model{AST} (red) signals between 2 and 100 iterations are
-large. However, it is also clear that the estimated \model{COM} and
-\model{AST} signals are complimentary. In other words, the large
-change in the \model{AST} signal is cancelled by freedom in the
-\model{COM} signal to grow with opposite sign. For comparison, the
+identical, yet the change in the estimated
+\model{COM}\footnote{\model{COM} has been multiplied by the
+time-varying extinction correction to enable direct comparison with
+\model{AST}.} (green) and \model{AST} (red) signals between 2 and 100
+iterations are large However, it is also clear that the estimated
+\model{COM} and \model{AST} signals are complimentary. In other words,
+the large change in the \model{AST} signal is cancelled by freedom in
+the \model{COM} signal to grow with opposite sign. For comparison, the
 bottom panel of Fig.~\ref{fig:degeneracy} shows the telescope pointing
 for this section of data, and the shapes of the \model{AST} and
 \model{COM} signals match the elevation component, which is aligned
@@ -2133,8 +2166,10 @@ frequency space is equivalent to a $\sinc$ function-like response in
 map space. Since the scan pattern is fairly isotropic (scans at all
 position angles), and there is a bright point-like source at the
 centre, the result is an azimuthally-symmetric $\sinc$ function-like
-pattern in the map. The gradient resulting from the degeneracy between
-the common-mode and map has been removed because the filter scale of
+pattern in the map. The peak flux has also been attenuated to
+0.353\,pW in this reduction, compared with 0.358\,pW in the first two
+reductions. The gradient resulting from the degeneracy between the
+common-mode and map has been removed because the filter scale of
 200\,arcsec (3.3\,arcmin) is smaller than the array field-of-view
 ($\sim$5\,arcmin). If it were greater, degeneracies would again begin
 to appear on those larger scales.
@@ -2149,51 +2184,28 @@ manner to Fig.~\ref{fig:pointmaps}c, but now setting the map
 explicitly to zero beyond a radius of 60\,arcsec from the location of
 Uranus (much larger than the FWHM of the main lobe), for all but the
 final iteration. In this case, the map converges after 6 iterations,
-and the ringing has been effectively removed. Since the map is now
-flat away from the source, and constrained to a value of zero, it is
-appropriate for performing aperture photometry directly, with no need
-for an additional reference annulus.
+and the ringing has been effectively removed. The attenuation from the
+previous reduction is now removed, and Uranus again has a peak value
+of 0.358\,pW. For reference, the Uranus model distributed with
+Starlink predicts a peak brightness of 176\,Jy on this date, yielding
+an FCF of 492 Jy\,pW$^{-1}$, which is well within the typical range
+for \scuba\ of $(492 \pm 67)$\,Jy\,pW$^{-1}$ \citep[see][for
+details]{dempsey2012}. Since the map is now flat away from the source,
+and constrained to a value of zero, it is appropriate for performing
+aperture photometry directly, with no need for an additional reference
+annulus.
 
-The reason this prior works is simple to understand if the bolometer
-data are thought of as providing useful differential measurements up
-to scales corresponding to the filter edge. In this example, the
-bolometers retain information on brightness differences up to
-200\,arcsec scales. Since the map is constrained to zero to within
-60\,arcsec of the peak of Uranus (well within 200\,arcsec), the
-solution is then able to accurately reconstruct the differential peak
-intensity of Uranus with respect to this constrained background.  This
-approach to map-making is similar to that employed for poorly
-cross-linked scans of compact (though resolved) sources by
-\citet{wiebe2009} using BLAST data.
-
-\begin{figure*}
-\centering
-\includegraphics[width=\linewidth]{pointmaps}
-\caption{Multiple reductions of a 450\,\micron\ CV daisy scan of
-  Uranus, all scaled between $-$0.002\,pW (white) and +0.002\,pW
-  (black). (a) Reduction in which only common-mode subtraction is used
-  to suppress low-frequency noise, and the reduction is forced to use
-  2 iterations (after the first iteration an estimate of the source
-  flux is removed, and the noise is measured in the residuals to
-  obtain appropriate weighting for the second and final
-  iteration). Circular streaks are caused by independent low-frequency
-  noise that is not removed by the common-mode (Uranus peak
-  0.15\,pW). (b) Same as (a) but using 100 iterations, illustrating the
-  degeneracy between large-scale structure and the common-mode (the
-  footprint of working bolometers is also shown for reference, Uranus
-  peak 0.15\,pW). (c) Reduction in which high-pass filtering above
-  0.775\,Hz (corresponding to a spatial scale of 200\,arcsec, as
-  indicated) is applied after common-mode removal, but before the map
-  estimate. The map-based convergence test is activated and the
-  solution halts after 10 iterations, but leaving large-scale ringing
-  due to the filter (Uranus peak 0.27\,pW). (d) Same as (c), but now
-  the region of the map beyond the white dot-dashed circle is
-  constrained to a value of zero until all but the final iteration.
-  The map is now extremely flat, there is little attenuation of the
-  source flux, and the diffraction pattern is clearly seen (Uranus
-  peak 0.27\,pW).}
-\label{fig:pointmaps}
-\end{figure*}
+The way this prior works can be understood from the point of view of
+differential measurements. Bolometer data contain information up to
+scales corresponding to the filter edge (or the scale of the array
+footprint, whichever is smallest). In this example, the relevant scale
+is 200\,arcsec. Since the map is constrained to zero within 60\,arcsec
+of the peak of Uranus (well within 200\,arcsec), the solution is able
+to accurately reconstruct the differential peak intensity of Uranus
+with respect to this constrained background. This approach to
+map-making is similar to that employed for poorly cross-linked scans
+of compact (though resolved) sources by \citet{wiebe2009} using BLAST
+data.
 
 \begin{figure}
 \centering
