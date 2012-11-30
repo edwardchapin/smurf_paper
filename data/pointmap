@@ -26,8 +26,8 @@ set allsub = (s4a s4b s4c s4d)
 
 set basename = "$lambda"$obsdate\_$obsnum
 
-set onlyone = 0
-#goto diverge_com
+set onlyone = 1
+goto diverge_com
 
 
 
@@ -44,7 +44,7 @@ foreach numiter ( 2 100 )
 
     makemap $dataroot/"$lambda"/$obsdate/$obsnum/"$basename"\_"*" \
         uranus_com_$numiter method=iterate \
-        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,numiter='$numiter',itermap=1,exportndf=(com,gai,res,ast),modelorder=(com,gai,ast,noi)"' \
+        config='"^$STARLINK_DIR/share/smurf/dimmconfig.lis,numiter='$numiter',itermap=1,exportndf=(com,gai,ext,res,ast),modelorder=(com,gai,ext,ast,noi)"' \
         msg_filter=$msg system=azel CROTA=0 ALIGNSYS=true
 
     ndf2fits uranus_com_$numiter \!uranus_com_$numiter.fits
@@ -64,6 +64,9 @@ foreach numiter ( 2 100 )
 
         mv $sub$obsdate\_$obsnum\_0003_con_ast.sdf $sub\_ast_$numiter.sdf
         ndf2fits $sub\_ast_$numiter \!$sub\_ast_$numiter.fits
+
+        mv $sub$obsdate\_$obsnum\_0003_con_ext.sdf $sub\_ext_$numiter.sdf
+        ndf2fits $sub\_ext_$numiter \!$sub\_ext_$numiter.fits
     end
 end
 
