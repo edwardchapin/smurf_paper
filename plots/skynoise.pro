@@ -35,7 +35,7 @@ if 0 then begin
   j = where(finite(com4draw))
   com4draw=com4draw[j]
   t_interpol=loggen(rts_end[0],rts_end[n_elements(rts_end)-1], $
-                    n_elements(com4d), /linear);
+                    n_elements(com4draw), /linear);
   com4d = interpol( com4draw, t_interpol, rts_end )
 
   u = uniq(wvm_time)
@@ -62,7 +62,8 @@ yoff = 0.14
 
 pos = [xl,0*yscl+yoff,xr, 1.0*yscl+yoff]
 
-device, filename='skynoise.eps', /color, bits_per_pixel=24
+device, filename='skynoise.eps', /color, bits_per_pixel=24, $
+        xsize=20,ysize=12
 
 plot, [0], [0], xstyle=1, ystyle=5, xtitle='!6Time (s)', $
   pos=pos, charthick=!p.thick, charsize=cs, $
@@ -72,17 +73,28 @@ plot, [0], [0], xstyle=1, ystyle=5, xtitle='!6Time (s)', $
 oplot, rts_end-t0, com8b, color=red
 
 axis, yaxis=0, ystyle=1, ytitle='!6COM!d850!n (pW)', $
-  charthick=!p.thick, charsize=cs, color=red
+  charthick=!p.thick, charsize=cs
 
 axis, yaxis=1, ystyle=1, yrange=[min(com4d),max(com4d)], $
-  ytitle='!6COM!d450!n (pW)', charthick=!p.thick, charsize=cs, /save, $
-  color=blue
+  ytitle='!6COM!d450!n (pW)', charthick=!p.thick, charsize=cs, /save
 
 oplot, rts_end-t0, com4d, color=blue
 
 axis, yaxis=1, ystyle=5, yrange=[min(tau),max(tau)], /save
 
 oplot, wvm_time-t0, tau
+
+
+plots, [0.15, 0.2], 0.35*[1.,1.], color=red, /normal 
+xyouts, 0.22, 0.34, "COM!d850!N", charsize=cs, /normal, charthick=!p.thick, $
+        color=red
+
+plots, [0.15, 0.2], 0.28*[1.,1.], color=blue, /normal 
+xyouts, 0.22, 0.27, "COM!d450!N", charsize=cs, /normal, charthick=!p.thick, $
+        color=blue
+
+plots, [0.15, 0.2], 0.21*[1.,1.], /normal 
+xyouts, 0.22, 0.20, "WVM", charsize=cs, /normal, charthick=!p.thick
 
 device, /close
 

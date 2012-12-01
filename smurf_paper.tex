@@ -632,9 +632,12 @@ signal that is obviously correlated with the telescope motion. It is
 also correlated amongst many of the detectors, and common-mode removal
 corrects it to a large extent. Part of the reason that this is seen
 here, and not in the S2SRO data set shown, is that the amplitude of
-the scan pattern is larger. Most of this ``scan-synchronous'' noise is
-attributed to magnetic field pickup, as described in
-Section~\ref{sec:magpickup}. Also similar to the S2SRO data, an
+the scan pattern is larger. This ``scan-synchronous'' noise is
+attributed to a combination of magnetic field pickup, as described in
+Section~\ref{sec:magpickup}, and sky brightness variations due to
+changes in elevation (not to be confused with underlying changes in
+the atmosphere; a homogeneous atmosphere will appear brighter with
+increasing airmass). Also similar to the S2SRO data, an
 anti-correlation between the opacity and elevation is apparent.
 
 Next, in Fig.~\ref{fig:pspec} we produce power spectral density (PSD)
@@ -709,7 +712,6 @@ upgrades for these two subarrays (s4a at 450\,micron, and s8b at
 line noise features mentioned above, the larger number of working
 bolometers and field-of-view (approximately a factor of 4).
 
-
 %-------------------------------------------------
 \subsection{Magnetic field pickup}
 \label{sec:magpickup}
@@ -736,8 +738,8 @@ bolometers and field-of-view (approximately a factor of 4).
 \label{fig:magpickup}
 \end{figure}
 
-An additional noise source that is significant in only a small subset
-of the data (and more so during the S2SRO period) is magnetic field
+An additional noise source that is significant primarily for wide-area
+scans (and more so during the S2SRO period) is magnetic field
 pickup. Since the bolometer signals are ultimately detected through
 the amplification of magnetic fields, any additional changing fields
 within the instrument will also be detected.
@@ -775,6 +777,58 @@ contrast, and as expected, changes in elevation results in pickup that
 is approximately three orders-of-magnitude smaller.
 
 %-------------------------------------------------
+\subsection{Sky noise}
+\label{sec:skynoise}
+%-------------------------------------------------
+
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{skynoise}
+\caption{Illustration of the dominance of atmospheric variations on
+  long-timescales using 35\,min. of data from the fully-commissioned
+  instrument, observation 18 on 20110324. Red and blue lines show the
+  850 and 450\,micron\ common-mode signals, corresponding to the left-
+  and right- vertical axes, respectively. The black line shows the
+  line-of-sight opacity from the WVM as a proxy for atmospheric
+  emission (arbitrary scale). Bolometer baseline drifts on timescales
+  $\gsim$100\,s are clearly correlated with the atmosphere in this
+  case.}
+\label{fig:skynoise}
+\end{figure}
+
+The data shown in Figs.~\ref{fig:bolos_mix} and \ref{fig:pspec} are
+dominated at low-frequencies ($\lsim$2\,Hz) by scan-synchronous noise,
+rathern than underlying variations in the atmosphere, or ``sky
+noise''. However, only $\sim$100\,s of data were analysed. In
+Fig.~\ref{fig:skynoise}, an order-of-magnitude longer
+(fully-commissioned) data set is plotted from observation 18 on
+20110324. The common-mode signals from the 450 and 850\,\micron\ focal
+planes are compared with the line-of-sight opacity at 183\,GHz
+(1.6\,mm) from the WVM \citep[linear relationships between this
+opacity, and those at 450 and 850\,micron\ are given
+in][]{dempsey2012}. Unlike the earlier plots, it is clear that the
+bolometer baseline drifts on timescales $\gsim$100\,s are tightly
+correlated with the atmospheric opacity (especially at 850\,\micron),
+which serves as a proxy for atmospheric emission. The fact that the
+correlation between the WVM and the 450\,micron\ bolometers is weaker
+either reflects an underlying different in the atmosphere at higher
+frequencies, or the presence of some other significant low-frequency
+noise source.
+
+While the relative importance of sky noise at low-frequencies is
+highly time- and scan-pattern dependent, in general it does not have a
+major impact on map-making. Upon common-mode removal (which is an
+integral part of our map-making strategy) uncorrelated noise remains
+(e.g., solid lines in Fig~\ref{fig:pspec}). As we will see in
+Section~\ref{sec:pca} and \ref{sec:experimental}, this remaining noise
+does not have a smoothly-varying correlation pattern across the focal
+plane one might expect if it were due to resolved ``clouds'' of
+atmospheric emission. A high-pass filter above $\sim$0.1--1.0\,Hz is
+usually employed remove it (Section~\ref{sec:components}), which will
+also remove any sky noise that is not already subtracted with the
+common-mode.
+
+%-------------------------------------------------
 \subsection{Principal component analysis}
 \label{sec:pca}
 %-------------------------------------------------
@@ -782,7 +836,7 @@ is approximately three orders-of-magnitude smaller.
 A method that has been used to remove correlated noise as part of the
 map-making procedure for Bolocam and AzTEC is Principal Component
 Analysis \citep[PCA,][]{laurent2005,scott2008,perera2008}. Here we use
-PCA to explore correlated signals in \scuba\ data.
+PCA to further explore correlated signals in \scuba\ data.
 
 The basic method is as follows: (i) a covariance matrix is built up
 for all pairs $(i,j)$ of the $N$ bolometer time-series,
@@ -827,11 +881,11 @@ resembles the scan pattern in Fig.~\ref{fig:bolos_mix}b. While this
 correlated signal appears at both wavelengths, referring to the maps
 of eigenvalues, they are considerably stronger at 850\,\micron\
 (consistent with the visual appearance of the bolometer signals in
-Fig.~\ref{fig:pca}). Also note that the PSD for theis eigenvector
-exhibit nearly a pure $1/f$ signature with minimal line features, or a
-white-noise plateau (suggesting that these are high-\snr\ measurements
-of a purely low-frequency drift). Component~3 is weaker, yet also
-shows evidence of the scan-synchronous noise, combined with
+Fig.~\ref{fig:pca}). Also note that the PSD for this eigenvector
+exhibits nearly a pure $1/f$ signature with minimal line features, and
+no white-noise plateau (suggesting that these are high-\snr\
+measurements of a purely low-frequency drift). Component~3 is weaker,
+yet also shows evidence of the scan-synchronous noise, combined with
 high-frequency line features that appear primarily in columns 26, 29
 and 30 of the 450\,\micron\ subarray. Unlike Component~1, it is
 generally more dominant at 450\,\micron.
@@ -864,16 +918,16 @@ generally more dominant at 450\,\micron.
 
 Why are there two components that seem to be dominated by
 scan-synchronous noise (which is presumably a mixture of
-magnetic-field pickup and atmospheric noise)? First, the
-smoothly-varying gradients in the eigenvalue maps (primarily at
-850\,\micron) suggests that this noise has a different response across
-the focal plane; in this case the PCA has identified two orthogonal
-shapes that, when mixed in different quantities, can reproduce most of
-the signal in each bolometer. It is also likely that the atmospheric
-contribution is stronger at 450\,\micron\ (i.e., predominantly
-Component~3).
+magnetic-field pickup and brightness variations in the atmosphere)?
+First, the smoothly-varying gradients in the eigenvalue maps
+(primarily at 850\,\micron) suggests that this noise has a different
+response across the focal plane; in this case the PCA has identified
+two orthogonal shapes that, when mixed in different quantities, can
+reproduce most of the signal in each bolometer. It is also likely that
+the atmospheric contribution is stronger at 450\,\micron\ (i.e.,
+predominantly Component~3).
 
-Like Componen~1, Component~2 is a purely $1/f$ signal, with an
+Like Component~1, Component~2 is a purely $1/f$ signal, with an
 amplitude comparable to Component~3, that appears almost exclusively
 at 850\,\micron. Since it is not obviously correlated with the
 telescope motion, yet has an amplitude that varies smoothly across the
@@ -888,7 +942,7 @@ spectra, which in many cases appear at random amplitudes along columns
 (e.g. columns 15, and 26--30 at 450\,\micron\ in Component~4), or in a
 sampling of isolated bolometers (e.g. colummn 13, row 19 at
 850\,\micron\ in Component~6). The signals that appear along columns
-is probably related to magnetic-field pickup. Other sources of lines
+are probably related to magnetic-field pickup. Other sources of lines
 are thought to be aliased high-frequency noise, and also the 60\,Hz
 mains which appear in some bolometers.
 
@@ -907,12 +961,10 @@ correlation patterns along columns as expected from the common
 amplification chain, the intensities of these high-frequency signals
 appear random in the eigenvalue maps, and a simple common-mode signal
 estimated from the data for each column would not remove
-it. Regardless, the dominant noise, in all cases, is at
-low-frequencies. This conclusion is central to our data reduction
-strategy described in Section~\ref{sec:algorithm}.
-
-\subsection{Overall performance and mapping speed}
-
+it. Regardless, the dominant noise in excess of the fundamental white
+noise limit, in all cases, is at low-frequencies. This conclusion is
+central to our data reduction strategy described in
+Section~\ref{sec:algorithm}.
 
 
 %------------------------------------------------------------------------------
@@ -2344,7 +2396,7 @@ However, the way this filter affects point-sources is measurable
   Fig.~\ref{fig:lockman_maps}. Applying the whitening filter
   (reciprocal of the solid orange line in
   Fig.~\ref{fig:lockman_pspec}) to the dotted line gives the whitened
-  line (dashed) , which is the expected shape of a source in panel (b)
+  line (dashed), which is the expected shape of a source in panel (b)
   from Fig.~\ref{fig:lockman_maps}. Finally, cross-correlating the
   whitened map with this whitened PSF is an effective ``matched
   filter'' for identifying point-like sources, and this smoothed map
@@ -2449,24 +2501,32 @@ the white noise level. In theory, this residual signal is produced by
 astronomical sources, although its origin cannot be determined from
 this plot alone; nor are astronomical sources readily visible in the
 map (Fig.~\ref{fig:lockman_maps}b). To identify sources, we next apply
-a matched filter to the whitened maps.
+a ``matched filter'' to the whitened maps.
 
 For blind, high-redshift surveys, individual sources are expected to
 be un-resolved by the \scuba\ 7.5--14.5\,arcsec FWHM beams. Under this
 assumption, and also assuming that the map noise is white,
-cross-correlation between the map and the known PSF yields the
-maximum-likelihood flux density of supposed point-sources centred over
-every location in the resulting map \citep[an extremely well-known
-result throughout astronomy, see][]{stetson1987}. Peak identification
-in such smoothed maps have been used extensively in the submillimetre
-community, as both an efficient source-detection and photometric
-measurement strategy. In terms of the angular power spectrum, a
-matched filter may also be thought of as an optimal low-pass filter,
-that suppresses noise on scales smaller (and therefore at higher
-angular frequencies) than the beam. For the case at hand, the
-effective PSF for the whitened maps is given by the dotted curve in
-Fig.~\ref{fig:lockman_psf}. Maps smoothed by this shape are shown for
-the whitened signal, and jackknife maps in
+cross-correlation between the map and the known PSF, or matched
+filtering, yields the maximum-likelihood flux density of supposed
+point-sources centred over every location in the resulting map
+\citep[an extremely well-known result throughout astronomy,
+see][]{stetson1987}. Peak identification in such smoothed maps have
+been used extensively in the submillimetre community, as both an
+efficient source-detection and photometric measurement strategy. In
+terms of the angular power spectrum, a matched filter may also be
+thought of as an optimal low-pass filter, that suppresses noise on
+scales smaller (and therefore at higher angular frequencies) than the
+beam. For the case at hand, we may use this cross-correlation
+technique since the map has been whitened. However, we must first
+establish the effective shape of point sources in this map due both to
+map-making itself, and the whitening filter. We determine the effect
+of map-making by adding a synthetic (and high-\snr) point source to
+the real data, and measure its resulting shape in the map (solid and
+dotted lines in Fig.~\ref{fig:lockman_psf}, respectively). Next, the
+Fourier transform of the map filtered PSF is divided by the jackknife
+noise power spectrum to calculate the final whitened PSF (dashed line
+in Fig.~\ref{fig:lockmand_psf}). Maps smoothed by this shape are shown
+for the whitened signal, and jackknife maps in
 Figs.~\ref{fig:lockman_maps}c and f, respectively. Note that these
 images are plotted in \snr\ units, where the smooth noise maps have
 been calculated by propagating the original noise maps output by SMURF
