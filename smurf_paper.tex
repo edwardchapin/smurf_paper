@@ -181,7 +181,7 @@ the largest of a new generation of multiplexed kilopixel
 the South Pole Telescope \citep[SPT,][]{carlstrom2011} and the Atacama
 Cosmology Telescope \citep[ACT,][]{swetz2011}, both dedicated
 experiments for studying anisotropies in the Cosmic Microwave
-Backround (CMB) using similar technology, the latter of which uses the
+Background (CMB) using similar technology, the latter of which uses the
 same time-domain multiplexed readout electronics as \scuba\
 \citep{battistelli2008}.
 
@@ -222,7 +222,7 @@ bolometers due to low-frequency noise occurs more slowly than the
 crossing times for the astronomical scales of interest; and (ii) by
 offering scan patterns that cross the sky at a wide range of position
 angles. Such methods are now used by virtually all existing
-ground-based submillimetre camerass
+ground-based submillimetre cameras
 \citep[e.g.,][]{glenn1998,weferling2002,wilson2008,kovacs2008b}, in
 preference to ``chopping'' methods (where the secondary is moved
 quickly to modulate the signal) that were more appropriate for older
@@ -234,7 +234,7 @@ azimuth \citep{schaffer2011}. While this strategy limits its ability
 to recover large angular scales transverse to the scan direction, the
 anisotropic filtering in its maps can be accounted for during analysis
 to achieve SPTs focussed objectives \citep[in contrast, the similar
-ACT experiment uses cross-linking to improve its reponse to
+ACT experiment uses cross-linking to improve its response to
 large-angular scales,][]{das2011}. This approach is less practical as
 a general solution for \scuba, however, which must serve a broader
 range of scientific interests.
@@ -344,17 +344,17 @@ estimation and removal of this signal significantly lowers the $1/f$
 knee, without compromising structures on angular scales smaller than
 the array footprint. Residual independent drifts at lower frequencies
 are removed with an iterative high-pass filter. This strategy enables
-SMURF to reduce data on time scales comensurate with the observing
+SMURF to reduce data on time scales commensurate with the observing
 times (or significantly faster), on single high-end desktop
 computers. For reference, all of the data analysis in this paper was
 performed on a machine with a 64-bit 8-core central processing unit
 operating at 2.7\,GHz, and 48\,Gb of memory. SMURF has been
 successfully used as part of a real-time pipeline offering feedback to
 observers at the telescope. The pipeline is also used to generate
-near-science grade products for the JCMT Science Archive
-\citep{2011ASPC..442..203E} hosted by the Canadian Astronomy Data
-Centre (CADC). Details of the pipeline design are given in
-\citet{gibb2005} and \citet{2008AN....329..295C}.
+products for the JCMT Science Archive \citep{2011ASPC..442..203E}
+hosted by the Canadian Astronomy Data Centre (CADC). Details of the
+pipeline design are given in \citet{gibb2005} and
+\citet{2008AN....329..295C}.
 
 This paper is organised as follows. We first describe the properties
 of \scuba\ data, including a principal component analysis to reveal
@@ -382,10 +382,11 @@ release from 2012.
 
 In this section we summarise how \scuba\ works,
 (Section~\ref{sec:bolos}), give examples of typical bolometers signals
-(Section~\ref{sec:bolosignal}), and the impact of magnetic field
-pickup (Section~\ref{sec:magpickup}), and finally illustrate the use
-of principal component analysis to explore the correlated noise
-properties of \scuba\ data (Section~\ref{sec:pca}).
+(Sections~\ref{sec:bolosignal}), discuss the impacts of magnetic field
+pickup (Section~\ref{sec:magpickup}) and sky noise
+(Section~\ref{sec:skynoise}), and finally use of principal component
+analysis to explore the correlated noise properties of \scuba\ data
+(Section~\ref{sec:pca}).
 
 %--------------------------------------------------
 \subsection{Description of \scuba}
@@ -428,11 +429,11 @@ of the pixel heaters (which provide a known input power); see
 Section~2.1 in \citet{dempsey2012} and Section~5.3 in
 \citet{holland2012} for more details. Finally, the conversion to
 astronomical flux units from power involves a correction for
-atmospheric extinction \citep[primarily using the JCMT Water Vapour
-Monitor to track line-of-sight opacity variations, see Section~3
-in][]{dempsey2012}, and the application of a flux conversion factor
-(FCF) which is established from regular measurements of calibrators
-such as Uranus \citep[Section~5 in][]{dempsey2012}.
+atmospheric extinction \citep[primarily using the 183\,GHz (1.6\,mm)
+JCMT Water Vapour Monitor to track line-of-sight opacity variations,
+see Section~3 in][]{dempsey2012}, and the application of a flux
+conversion factor (FCF) which is established from regular measurements
+of calibrators such as Uranus \citep[Section~5 in][]{dempsey2012}.
 
 In addition to uncorrelated white noise, and low-frequency (and often
 correlated from bolometer to bolometer) $1/f$ drifts, bolometer power
@@ -740,9 +741,9 @@ bolometers and field-of-view (approximately a factor of 4).
 
 An additional noise source that is significant primarily for wide-area
 scans (and more so during the S2SRO period) is magnetic field
-pickup. Since the bolometer signals are ultimately detected through
-the amplification of magnetic fields, any additional changing fields
-within the instrument will also be detected.
+pickup. Since the bolometer signals are detected through the
+amplification of magnetic fields, any additional changing fields
+within the instrument will add to the noise.
 
 Example data from the 450\,\micron\ subarray s4a where pickup appears
 to be significant (observation 16 on 20100228) are shown in
@@ -798,25 +799,23 @@ is approximately three orders-of-magnitude smaller.
 
 The data shown in Figs.~\ref{fig:bolos_mix} and \ref{fig:pspec} are
 dominated at low-frequencies ($\lsim$2\,Hz) by scan-synchronous noise,
-rathern than underlying variations in the atmosphere, or ``sky
+Rather than underlying variations in the atmosphere, or ``sky
 noise''. However, only $\sim$100\,s of data were analysed. In
 Fig.~\ref{fig:skynoise}, an order-of-magnitude longer
 (fully-commissioned) data set is plotted from observation 18 on
 20110324. The common-mode signals from the 450 and 850\,\micron\ focal
-planes are compared with the line-of-sight opacity at 183\,GHz
-(1.6\,mm) from the WVM \citep[linear relationships between this
-opacity, and those at 450 and 850\,micron\ are given
-in][]{dempsey2012}. Unlike the earlier plots, it is clear that the
-bolometer baseline drifts on timescales $\gsim$100\,s are tightly
-correlated with the atmospheric opacity (especially at 850\,\micron),
-which serves as a proxy for atmospheric emission. The fact that the
-correlation between the WVM and the 450\,micron\ bolometers is weaker
-either reflects an underlying different in the atmosphere at higher
-frequencies, or the presence of some other significant low-frequency
-noise source.
+planes are compared with the (arbitrarily scaled) line-of-sight
+opacity at 183\,GHz from the WVM. Unlike the earlier plots, it is
+clear that the bolometer baseline drifts on timescales $\gsim$100\,s
+are tightly correlated with the atmospheric opacity (especially at
+850\,\micron), which serves as a proxy for atmospheric emission. The
+fact that the correlation between the WVM and the 450\,micron\
+bolometers is weaker either reflects an underlying difference in the
+atmosphere at higher frequencies, or the presence of some other
+significant low-frequency noise source.
 
 While the relative importance of sky noise at low-frequencies is
-highly time- and scan-pattern dependent, in general it does not have a
+highly time- and scan pattern-dependent, in general it does not have a
 major impact on map-making. Upon common-mode removal (which is an
 integral part of our map-making strategy) uncorrelated noise remains
 (e.g., solid lines in Fig~\ref{fig:pspec}). As we will see in
@@ -824,9 +823,9 @@ Section~\ref{sec:pca} and \ref{sec:experimental}, this remaining noise
 does not have a smoothly-varying correlation pattern across the focal
 plane one might expect if it were due to resolved ``clouds'' of
 atmospheric emission. A high-pass filter above $\sim$0.1--1.0\,Hz is
-usually employed remove it (Section~\ref{sec:components}), which will
-also remove any sky noise that is not already subtracted with the
-common-mode.
+usually employed remove this residual noise
+(Section~\ref{sec:components}), which will also remove any sky noise
+that is not already subtracted by the common-mode.
 
 %-------------------------------------------------
 \subsection{Principal component analysis}
@@ -940,7 +939,7 @@ residual noise related to the telescope motion and/or other slow
 baseline drifts. All of them also exhibit line features in their
 spectra, which in many cases appear at random amplitudes along columns
 (e.g. columns 15, and 26--30 at 450\,\micron\ in Component~4), or in a
-sampling of isolated bolometers (e.g. colummn 13, row 19 at
+sampling of isolated bolometers (e.g. column 13, row 19 at
 850\,\micron\ in Component~6). The signals that appear along columns
 are probably related to magnetic-field pickup. Other sources of lines
 are thought to be aliased high-frequency noise, and also the 60\,Hz
@@ -1085,7 +1084,9 @@ both the pre-processing stage and the iterative model components
 are calculated).  In Sections~\ref{sec:dataprep} and
 \ref{sec:components} we describe the data pre-processing steps and
 iterative algorithm in detail. Section~\ref{sec:converge} explores
-convergence tests and degeneracies between model components.
+convergence tests and degeneracies between model components. Finally,
+Section~\ref{sec:performance} summarizes the mapping performance of
+\scuba\ using SMURF.
 
 
 %-------------------------------------------------
@@ -1103,13 +1104,7 @@ in][]{dempsey2012}. Next, a series of configurable data cleaning and
 filtering procedures are applied; these include the removal of large
 glitches that may hinder the iterative solution from converging, or
 simply tasks that do not need to be iterated. All of the data that are
-flagged as bad are ignored when estimating the map. As an example, for
-the 450\,\micron\ scan of Uranus that will be presented in
-Section~\ref{sec:point}: 31.00\% of the data (1587/5120 bolometers)
-are flagged due to data acquisition problems (dead or deactivated
-bolometers, or non-linear flatfields); 0.12\% of the data are flagged
-due to steps (including a small region about the steps); and 0.83\% if
-the data are flagged because the telescope was stationary.
+flagged as bad are ignored when estimating the map.
 
 \subsubsection{Time-series down-sampling and map pixel size}
 \label{sec:downsamp}
@@ -1140,7 +1135,7 @@ $0<w_i\le1$, indicate the fractions of each $x_i$ that land within
 $y_j$. The algorithm is fast since each sample in $x_i$ need only be
 visited once. From a spectral point of view, this boxcar average is
 equivalent to applying a sinc-function low-pass filter. Such behaviour
-is desirable, since it serves as an anti-aliasing filter; most
+is desirable since it serves as an anti-aliasing filter; most
 non-white features above the Nyquist frequency in $y_j$ that could
 contaminate the output data are removed.
 
@@ -1478,7 +1473,7 @@ the 850\,\micron\ data are expected to be useful, or Galactic fields
 of extended structures (which are less sensitive to this effect). In
 the present Starlink \textsc{kapuahi} release there is no option to
 de-convolve the system response. However, it is presently being added
-and should be present in future releases.
+and will be present in future releases.
 
 
 %-------------------------------------------------
@@ -1561,12 +1556,6 @@ $\mathbf{e}_i(t)$] are inverted immediately prior to the start of a
 new iteration to preserve the units of the data. The iterative
 solution will thus converge, barring degeneracies between model
 components.
-
-Additional flagging of data to be ignored in the map occurs during the
-iterations. For the example of the 450\,\micron\ Uranus scan in
-Section~\ref{sec:point}: an additional 55 spikes are detected using
-the map-based despiker ($1.2\times10^{-6}$ \% of the data); and 0.72\%
-of the data are flagged as outliers compared to the common-mode.
 
 The full set of model components available, and the parameters that
 control them, are described in the following
@@ -1692,7 +1681,7 @@ process.
 
 Any astronomical sources that are smaller than the array size will
 contribute signal to some bolometers but not other bolometers, thus
-biassing the simple mean used to estimate the common mode. However, on
+biasing the simple mean used to estimate the common mode. However, on
 each iteration of the map-making algorithm illustrated in
 Fig.~\ref{fig:dimm}, a large fraction of the remaining astronomical
 signal is extracted from the bolometer time-series and transferred to
@@ -1892,20 +1881,20 @@ once $\mathbf{n}^\mathrm{w}_i(t)$ from Eq.~\ref{eq:noise} is
 isolated].
 
 First, the bolometer PSDs are calculated as in Eq.~\ref{eq:psd}. An
-average white noise level is then measured from 2 to 10\,Hz, a
-relatively clean region of the PSD that tends to lie above the $1/f$
-knee, but below the high-frequency line features for typical bolometer
-data (Fig.~\ref{fig:pspec}). Taking this constant level for
-$\mathbf{P}(f)$ we then calculate the expected variance of the
-time-series (in approximately 200\,Hz samples) using
-Eq.~\ref{eq:psd}. If the bolometer noise were produced purely by
-uncorrelated sources (i.e., no other long time-scale drifts), with no
-high-frequency line features, and without the attenuation at even
-higher frequencies by the anti-aliasing filter, this is the
-theoretical noise limit of the detectors. These measured variances are
-stored, and then used in subsequent iterations to weight the data
-points when calculating the map estimate (Section~\ref{sec:ast}). They
-are also used for convergence tests (Section~\ref{sec:converge}).
+average white noise level is then measured from 2 to 10\,Hz, a clean
+region of the PSD that tends to lie above the $1/f$ knee, but below
+the high-frequency line features for typical bolometer data
+(Fig.~\ref{fig:pspec}). Taking this constant level for $\mathbf{P}(f)$
+we then calculate the expected variance of the time-series (in
+approximately 200\,Hz samples) using Eq.~\ref{eq:psd}. If the
+bolometer noise were produced purely by uncorrelated sources (i.e., no
+other long time-scale drifts), with no high-frequency line features,
+and without the attenuation at even higher frequencies by the
+anti-aliasing filter, this is the theoretical noise limit of the
+detectors. These measured variances are stored, and then used in
+subsequent iterations to weight the data points when calculating the
+map estimate (Section~\ref{sec:ast}). They are also used for
+convergence tests (Section~\ref{sec:converge}).
 
 Since noise estimation is usually calculated as the final step in the
 iteration, the data at this stage have had most of the astronomical
@@ -1930,7 +1919,7 @@ weighted data points that land in each pixel (Section~\ref{sec:ast}).
   pickup and the atmosphere}
 \label{sec:experimental}
 
-Additional models exist as options, altough they are not generally
+Additional models exist as options, although they are not generally
 used: \model{DKS}, the use of dark squids as a template for removing
 magnetic field pickup; \model{TMP} which uses the azimuth of the
 telescope also as a template for magnetic field pickup; \model{SMO},
@@ -2073,7 +2062,7 @@ map (as it is removed by \model{FLT}), we found that the solution
 could be made to converge significantly faster by ``re-mixing''
 \model{COM} and \model{FLT}. Immediately prior to the calculation of
 \model{COM}, the values of \model{COM} and \model{FLT} from the
-previous iteraion are added back into the residual simultaneously. In
+previous iteration are added back into the residual simultaneously. In
 this way, truly common-mode signals, even at low-frequencies, do not
 leak into \model{FLT}.
 
@@ -2086,6 +2075,67 @@ advance, or can be determined from the data using a cut on \snr. This
 technique is explored considerably in the examples in
 Sections~\ref{sec:point} and \ref{sec:extended}.
 
+
+%-------------------------------------------------
+\subsection{Instrument and map-making performance}
+\label{sec:performance}
+%-------------------------------------------------
+
+From a scientific perspective, the most important goal of map-making
+is to efficiently use all of the available data to achieve the
+greatest sensitivity that the instrument is capable of. Generally
+speaking, only a small percentage of the data are flagged as unusable
+during map-making beyond the $\sim$69\% detector yield.  As an
+example, for the 450\,\micron\ scan of Uranus that will be presented
+in Section~\ref{sec:point}, during pre-processing: 31.00\% of the data
+(1587/5120 bolometers) are flagged due to data acquisition problems
+(dead or deactivated bolometers, or non-linear flatfields); 0.12\% of
+the data are flagged due to steps (including a small region about the
+steps, Section~\ref{sec:steps}); and 0.83\% if the data are flagged
+because the telescope was stationary
+(Section~\ref{sec:flagbadbol}). Once the iterative solution begins: 55
+spikes are detected using the map-based despiker ($1.2\times10^{-6}$
+\% of the data, Section~\ref{sec:ast}); and 0.72\% of the data are
+flagged as outliers compared to the common-mode
+(Section~\ref{sec:comgai}).
+
+
+The white noise levels of \scuba\ bolometers are measured between 2
+and 10\,Hz in the PSDs (as described in Section~\ref{sec:noi}),
+leading to noise equivalent powers (NEPs, with units W\,s$^{1/2}$) --
+the \rms\ time-series noise in a 1\,s integration \citep[see section
+3.5.2 in][]{holland2012}. The NEPs are then converted into more useful
+noise equivalent flux densities (NEFDs, with units Jy\,s$^{1/2}$)
+through multiplication by the extinction correction and the FCF. For
+an ideal scan pattern in which every bolometer spends an equal amount
+of time observing each point on the sky, the expected noise in a map
+pixel is $\mathrm{NEFD_{eff}} t^{-1/2}$, where $t$ is the integration
+time, and the effective NEFD, $\mathrm{NEFD_{eff}} = (1/\sum
+\mathrm{NEFD}_i^{-2})^{1/2}$, is the sensitivity of the entire array
+including all bolometers $i$. Experimentally it has been found that
+the map noise based on the weighted scatter of the data
+(Eq.~\ref{eq:varmap}), and the scatter of map pixels in small
+apertures, both correlate well with this expected limiting noise
+performance for maps that are larger than the array footprint (for
+smaller maps the assumption of uniform coverage is incorrect). As an
+example of observing under favourable conditions with line-of-sight
+opacities of 0.87 and 0.34 at 450 and 850\,\micron\ \citep[zenith sky
+opacities at 225\,GHz of 0.04 and 0.065 at 450 and 850\,\micron,
+respectively, at an average airmass of 1.2, from table 3
+in][]{holland2012}, the mapping speed is approximately
+$6\times10^{-5}$ and $3\times10^{-3}$\,deg$^2$\,hr$^{-1}$\,mJy$^{-2}$,
+at 450 and 850\micron, for the default pixel sizes of 2 and 4\,arcsec,
+respectively. If maps are high-pass filtered and cross-correlated with
+the PSF for the optimal extraction of point sources (see
+Section~\ref{sec:cosmo}), the mapping speeds increase to approximately
+$5\times10^{-4}$ and
+$1.5\times10^{-2}$\,deg$^2$\,hr$^{-1}$\,mJy$^{-2}$, independently of
+the chosen map pixel sizes. See the on-line \scuba\ integration time
+calculator for mapping speeds under arbitrary observing conditions
+and scan
+modes\footnote{\url{http://www.jach.hawaii.edu/jac-bin/propscuba2itc.pl}}.
+
+
 %------------------------------------------------------------------------------
 \section{Examples}
 \label{sec:examples}
@@ -2097,7 +2147,7 @@ reducing data with SMURF are applicable to all data sets, there is no
 source \snr\ and angular scales. However, SMURF does have a small
 number of configurations with variations on these baseline parameters
 that are applicable to most common types of data. In this section we
-illustrate the differences bewteen these configurations with the
+illustrate the differences between these configurations with the
 following examples: a bright point source, Uranus
 (Section~\ref{sec:point}); a blind survey of high-redshift galaxies in
 the Lockman Hole (Section~\ref{sec:cosmo}); and a map of a bright
@@ -2525,7 +2575,7 @@ the real data, and measure its resulting shape in the map (solid and
 dotted lines in Fig.~\ref{fig:lockman_psf}, respectively). Next, the
 Fourier transform of the map filtered PSF is divided by the jackknife
 noise power spectrum to calculate the final whitened PSF (dashed line
-in Fig.~\ref{fig:lockmand_psf}). Maps smoothed by this shape are shown
+in Fig.~\ref{fig:lockman_psf}). Maps smoothed by this shape are shown
 for the whitened signal, and jackknife maps in
 Figs.~\ref{fig:lockman_maps}c and f, respectively. Note that these
 images are plotted in \snr\ units, where the smooth noise maps have
@@ -2603,9 +2653,9 @@ As an additional external check, we have over-plotted orange ``$+$''
 signs at the locations of 1.4\,GHz radio sources from \citet{owen2008}
 with $S\gsim15$\,$\mu$Jy. Such radio catalogues have historically
 proven invaluable for the precise identifications of high-redshift
-submillimetre galaxies due to their relatively low surface densities
-(compared with optical catalogues, for example), and a strong
-correlation between the radio and submillimetre emission mechanisms
+submillimetre galaxies due to their low surface densities (compared
+with optical catalogues, for example), and a strong correlation
+between the radio and submillimetre emission mechanisms
 \citep[e.g.,][]{smail2000,pope2006,ivison2007,chapin2009b}. Taking a
 representative search radius of 8\,arcsec from these studies with
 similar \snr\ sources and source sizes (the same size as the blue
@@ -2621,7 +2671,7 @@ papers and references therein for examples.
 \centering
 \includegraphics[width=\linewidth]{m17}
 \caption{An 850\,\micron\ rotating PONG map of M17. Intensity is
-logarithmically scaled between $-$0.0003\,pw (white) and +0.01\,pW
+logarithmically scaled between $-$0.0003\,pW (white) and +0.01\,pW
 (black). Iteration numbers are given in the corner of each
 panel. Panels (a) and (b) show the results for a reduction using the
 baseline parameters (the solution halted after reaching the map-based
@@ -2892,7 +2942,7 @@ Fig.~\ref{fig:m17_be_ps}. The most obvious improvement with this
 reduction over the baseline reduction is that the transfer functions
 fall more slowly at large angular scales, accompanied by a slower
 increase in noise; in other words, there is greatly improved \snr\ at
-large angular scales (an obvious conclusion given the appearence of
+large angular scales (an obvious conclusion given the appearance of
 the maps in Fig.~\ref{fig:m17_jk}). In fact, using the 900\,arcsec
 filter edge, the map response is still above 80 per cent right out to
 the largest scale accurately measured in the PSDs, 533\,arcsec, which
@@ -2947,8 +2997,8 @@ This paper has described the Submillimetre User Reduction Facility
 $\sim10^4$ bolometers of the \scuba\ instrument. While similar to
 other algorithms in the literature that iteratively model and remove
 correlated noise components from the data, successively improving the
-map \citep[e.g.,][]{kovacs2008,aguirre2011,schuller2012}, we have shown
-that a relatively simpler approach provides good results for \scuba\
+map \citep[e.g.,][]{kovacs2008,aguirre2011,schuller2012}, we have
+shown that a fairly simple approach provides good results for \scuba\
 data, with reasonable computational requirements. This conclusion is
 encouraging for the development of future large-format bolometer
 arrays, for which our specific approach should be useful when even
@@ -3002,9 +3052,7 @@ for a wide variety of observations. Furthermore, the execution times
 are typically shorter than the observation lengths, and memory
 requirements for even the longest \scuba\ observations are within the
 capabilities of single, high-end desktop computers. SMURF can
-therefore provide real-time feedback at the telescope to observers,
-and it also produces nearly science-grade data products for the JCMT
-Science Archive hosted by the Canadian Astronomy Data Centre.
+therefore provide real-time feedback at the telescope to observers.
 
 One regime in which SMURF does not presently perform well is in maps
 of faint extended structures, since the zero-masking technique we have
@@ -3027,7 +3075,7 @@ The James Clerk Maxwell Telescope is operated by the Joint Astronomy
 Centre on behalf of the Science and Technology Facilities Council of
 the United Kingdom, the Netherlands Organisation for Scientific
 Research, and the National Research Council of Canada. Additional
-funds for the contruction of \scuba\ were provided by the Canada
+funds for the construction of \scuba\ were provided by the Canada
 Foundation for Innovation.  This research was supported in part by the
 Natural Sciences and Engineering Research Council of Canada.  EC
 thanks CANARIE/CANFAR for additional funding.  The authors thank the
@@ -3040,9 +3088,10 @@ Mandana Amiri and Dan Bintley for consultations regarding the SCUBA-2
 Multi-Channel Electronics.  We acknowledge the contributions of Dennis
 Kelly, Alex van Engelen and Jennifer Balfour for early investigations
 related to SMURF; and Mark Thompson, Craig Walther and S\'{e}verin
-Gaudet for being on the Critical Design Review panel. Finally, we
-thank Per Friberg and Gary Davis for their helpful comments on the
-manuscript.
+Gaudet for being on the Critical Design Review panel. We thank Per
+Friberg and Gary Davis for their helpful comments on the
+manuscript. Finally, we thank the anonymous referee for identifying
+several key areas that required clarification.
 
 
 %------------------------------------------------------------------------------
