@@ -11,10 +11,11 @@ Some of he figures (e.g., Fig. 4) are too small for comfortable reading, while o
 
 - Fig.6 has been made smaller.
 
-- Fig.9 now has axis labels and an improved caption - however, we
-  elected to leave in the "broken" bolometers as this is a fairly
-  typical portion of the focal plane (remembering that there is a ~69%
-  yield); this gives the reader a good visual sense.
+- Fig.9 is now Fig. 10, and now has axis labels and an improved
+  caption - however, we elected to leave in the "broken" bolometers as
+  this is a fairly typical portion of the focal plane (remembering
+  that there is a ~70% yield); this gives the reader a good visual
+  sense of that.
 
 Although the paper is clearly written, it is rather wordy, and I encourage you to review the text and see whether you can express it more concisely.
 
@@ -33,6 +34,10 @@ Assistant Editor's Comments:
 
 Holland et al and Dempsey et al are not yet 'in press' as they have not been accepted. Please cite these as 'submitted to MNRAS'.
 
+- in the References the "in press" has been replaced with "submitted"
+  for these two papers
+
+
 When submitting a revised version of this paper, it would be helpful if you could include the latest versions of the two companion papers as supplementary material for the referee.
 
 
@@ -48,7 +53,7 @@ Reviewer's Comments:
   careless errors (which led to incorrect units in Figs.1 & 2, and
   confusing results in Figs.11 & 20), and an ommission (impact /
   treatment of the response of the bolometers and data acquisition
-  system). Detail responses follow.
+  system). Detailed responses follow.
 
 Overall: The paper will be a useful reference for SMURF users and clearly represents a lot of work. Forgive me for only picking on the residual bits that I see need improving, but this will be the most efficient way to get to the end of this process.
 

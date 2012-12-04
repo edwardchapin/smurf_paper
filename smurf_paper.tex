@@ -112,28 +112,27 @@ with the Sub-Millimetre User Reduction Facility}
 \begin{abstract}
   The Submillimetre Common User Bolometer Array 2 (\scuba) is an
   instrument operating on the 15-m James Clerk Maxwell Telescope,
-  nominally consisting of 5120 bolometers (with a useful yield of
-  69\%) in each of two simultaneous imaging bands centred over 450 and
-  850\,\micron. The camera is operated by scanning across the sky and
-  recording data at a rate of 200\,Hz. As the largest of a new
-  generation of multiplexed kilopixel bolometer cameras operating in
-  the (sub)millimetre, \scuba\ data analysis represents a significant
-  challenge.  We describe the production of maps using the
-  Sub-Millimetre User Reduction Facility (SMURF) in which we have
-  adopted a fast, iterative approach to map-making that enables data
-  reduction on single, modern, high-end desktop computers, with
-  execution times that are typically shorter than the observing times.
-  SMURF is used in an automated setting, both at the telescope for
-  real-time feedback to observers, as well as for the production of
-  science products for the JCMT Science Archive at the Canadian
-  Astronomy Data Centre. Three detailed case studies are used to: (i)
-  explore convergence properties of the map-maker using simple prior
-  constraints (Uranus -- a point source); (ii) achieve the white-noise
-  limit for faint point-source studies (extragalactic blank-field
-  survey of the Lockman Hole); and (iii) demonstrate that our strategy
-  is capable of recovering angular scales comparable to the size of
-  the array footprint (approximately 5\,arcmin) for bright extended
-  sources (star-forming region M17).
+  nominally consisting of 5120 bolometers in each of two simultaneous
+  imaging bands centred over 450 and 850\,\micron. The camera is
+  operated by scanning across the sky and recording data at a rate of
+  200\,Hz. As the largest of a new generation of multiplexed kilopixel
+  bolometer cameras operating in the (sub)millimetre, \scuba\ data
+  analysis represents a significant challenge.  We describe the
+  production of maps using the Sub-Millimetre User Reduction Facility
+  (SMURF) in which we have adopted a fast, iterative approach to
+  map-making that enables data reduction on single, modern, high-end
+  desktop computers, with execution times that are typically shorter
+  than the observing times.  SMURF is used in an automated setting,
+  both at the telescope for real-time feedback to observers, as well
+  as for the production of science products for the JCMT Science
+  Archive at the Canadian Astronomy Data Centre. Three detailed case
+  studies are used to: (i) explore convergence properties of the
+  map-maker using simple prior constraints (Uranus -- a point source);
+  (ii) achieve the white-noise limit for faint point-source studies
+  (extragalactic blank-field survey of the Lockman Hole); and (iii)
+  demonstrate that our strategy is capable of recovering angular
+  scales comparable to the size of the array footprint (approximately
+  5\,arcmin) for bright extended sources (star-forming region M17).
 \end{abstract}
 
 
@@ -174,7 +173,7 @@ galaxies, or SMGs; the characterisation of the early stages of
 star-formation by identifying the dense, cold regions in molecular
 clouds where stars may eventually form; and identifying debris disks
 around nearby stars, helping us understand the early stages of planet
-formation.  With $10,240$ nominal detectors \citep[of which $\sim$69\%
+formation.  With $10,240$ nominal detectors \citep[of which $\sim$70\%
 work and are typically useful,][]{holland2012}, \scuba\ is presently
 the largest of a new generation of multiplexed kilopixel
 (sub)millimetre bolometer cameras, which also includes the cameras for
@@ -345,16 +344,17 @@ knee, without compromising structures on angular scales smaller than
 the array footprint. Residual independent drifts at lower frequencies
 are removed with an iterative high-pass filter. This strategy enables
 SMURF to reduce data on time scales commensurate with the observing
-times (or significantly faster), on single high-end desktop
-computers. For reference, all of the data analysis in this paper was
+times (or significantly faster), on single high-end desktop computers
+using the . For reference, all of the data analysis in this paper was
 performed on a machine with a 64-bit 8-core central processing unit
 operating at 2.7\,GHz, and 48\,Gb of memory. SMURF has been
-successfully used as part of a real-time pipeline offering feedback to
-observers at the telescope. The pipeline is also used to generate
-products for the JCMT Science Archive \citep{2011ASPC..442..203E}
-hosted by the Canadian Astronomy Data Centre (CADC). Details of the
-pipeline design are given in \citet{gibb2005} and
-\citet{2008AN....329..295C}.
+successfully used as part of a real-time pipeline \citep[based on the
+Observatory Reduction and Acquisition Control - Data Reduction system,
+or ORAC-DR,][]{gibb2005} offering feedback to observers at the
+telescope. The pipeline is also used to generate products for the JCMT
+Science Archive \citep{2011ASPC..442..203E} hosted by the Canadian
+Astronomy Data Centre (CADC). Details of the pipeline design are given
+in \citet{gibb2005} and \citet{2008AN....329..295C}.
 
 This paper is organised as follows. We first describe the properties
 of \scuba\ data, including a principal component analysis to reveal
@@ -591,7 +591,7 @@ In Fig.~\ref{fig:bolos_mix} we show sample time-series from single
 bolometers in each of the 450 and 850\,\micron\ focal planes, as well
 as variations in the mixing chamber temperature (though not located in
 the focal plane itself, it is certainly correlated with the
-temperature of the detectors), the line-of-sight atmoshperic opacity
+temperature of the detectors), the line-of-sight atmospheric opacity
 as derived from the JCMT water vapour monitor (WVM), and the telescope
 pointing, for two data sets, before and after the upgrades that
 followed S2SRO.
@@ -786,9 +786,11 @@ is approximately three orders-of-magnitude smaller.
 \centering
 \includegraphics[width=\linewidth]{skynoise}
 \caption{Illustration of the dominance of atmospheric variations on
-  long-timescales using 35\,min. of data from the fully-commissioned
+  long-timescales using 35\,min. of data taken in opaque, and
+  highly-variable weather conditions (line-of-sight 450\,\micron\
+  opacity ranging from 12 to 22) from the fully-commissioned
   instrument, observation 18 on 20110324. Red and blue lines show the
-  850 and 450\,micron\ common-mode signals, corresponding to the left-
+  850 and 450\,\micron\ common-mode signals, corresponding to the left-
   and right- vertical axes, respectively. The black line shows the
   line-of-sight opacity from the WVM as a proxy for atmospheric
   emission (arbitrary scale). Bolometer baseline drifts on timescales
@@ -797,22 +799,24 @@ is approximately three orders-of-magnitude smaller.
 \label{fig:skynoise}
 \end{figure}
 
-The data shown in Figs.~\ref{fig:bolos_mix} and \ref{fig:pspec} are
-dominated at low-frequencies ($\lsim$2\,Hz) by scan-synchronous noise,
-Rather than underlying variations in the atmosphere, or ``sky
-noise''. However, only $\sim$100\,s of data were analysed. In
-Fig.~\ref{fig:skynoise}, an order-of-magnitude longer
-(fully-commissioned) data set is plotted from observation 18 on
-20110324. The common-mode signals from the 450 and 850\,\micron\ focal
-planes are compared with the (arbitrarily scaled) line-of-sight
-opacity at 183\,GHz from the WVM. Unlike the earlier plots, it is
-clear that the bolometer baseline drifts on timescales $\gsim$100\,s
-are tightly correlated with the atmospheric opacity (especially at
-850\,\micron), which serves as a proxy for atmospheric emission. The
-fact that the correlation between the WVM and the 450\,micron\
-bolometers is weaker either reflects an underlying difference in the
-atmosphere at higher frequencies, or the presence of some other
-significant low-frequency noise source.
+The data shown in Figs.~\ref{fig:bolos_mix} and \ref{fig:pspec} were
+taken during fairly stable weather conditions (although with different
+450\,\micron\ line-of-sight opacities $\sim$0.9 and 6.5 in the S2SRO
+and post-upgrade data sets, respectively), and are dominated at
+low-frequencies ($\lsim$2\,Hz) by scan-synchronous noise, rather than
+underlying variations in the atmosphere, or ``sky noise''. However,
+only $\sim$100\,s of data were analysed. In Fig.~\ref{fig:skynoise},
+an order-of-magnitude longer (fully-commissioned) data set is plotted
+from observation 18 on 20110324, taken during more opaque, and highly
+variable weather conditions (450\,\micron\ line-of-sight opacities
+ranging from 12 to 22, scaled from the WVM data which are shown as a
+black line). Unlike the earlier plots, it is clear that the bolometer
+baseline drifts on timescales $\gsim$100\,s are tightly correlated
+with the atmospheric opacity, which serves as a proxy for atmospheric
+emission. The weaker correlation between the WVM and the 450\,micron\
+bolometers is probably due to the atmosphere being more transmissive
+at 850\micron, therefore the emission detected at 450\,\micron\ comes
+from water vapour that is closer to the telescope.
 
 While the relative importance of sky noise at low-frequencies is
 highly time- and scan pattern-dependent, in general it does not have a
@@ -822,10 +826,10 @@ integral part of our map-making strategy) uncorrelated noise remains
 Section~\ref{sec:pca} and \ref{sec:experimental}, this remaining noise
 does not have a smoothly-varying correlation pattern across the focal
 plane one might expect if it were due to resolved ``clouds'' of
-atmospheric emission. A high-pass filter above $\sim$0.1--1.0\,Hz is
-usually employed remove this residual noise
-(Section~\ref{sec:components}), which will also remove any sky noise
-that is not already subtracted by the common-mode.
+atmospheric emission. A high-pass filter with an edge frequency in the
+range $\sim$0.1--1.0\,Hz is usually employed remove this residual
+noise (Section~\ref{sec:components}), which will also remove any sky
+noise that is not already subtracted by the common-mode.
 
 %-------------------------------------------------
 \subsection{Principal component analysis}
@@ -1085,7 +1089,7 @@ are calculated).  In Sections~\ref{sec:dataprep} and
 \ref{sec:components} we describe the data pre-processing steps and
 iterative algorithm in detail. Section~\ref{sec:converge} explores
 convergence tests and degeneracies between model components. Finally,
-Section~\ref{sec:performance} summarizes the mapping performance of
+Section~\ref{sec:performance} summarises the mapping performance of
 \scuba\ using SMURF.
 
 
@@ -1438,12 +1442,12 @@ significantly faster than 600\,arcsec\,s$^{-1}$, both the thermal
 response of the bolometers, and the anti-aliasing filter in the
 readout electronics (Section~\ref{sec:bolos}) can significantly
 distort signals.  The default allowable range of speed is
-30--1000\,arcsec\,s$^{-1}$, which primarily rejects short periods when
-the telescope was stationary prior to commencing the scan pattern
-(generally speaking the speed is constant once the scan begins),
-although the scan speed can briefly exceed the upper limit, even for a
-requested speed of 600\,arcsec, if the pointing system is having
-trouble keeping-up for large-area scans at high elevation.
+30--1000\,arcsec\,s$^{-1}$. These thresholds primarily reject short
+periods when the telescope was stationary prior to commencing the scan
+pattern (generally speaking the speed is constant once the scan
+begins). The scan speed can also briefly exceed the upper limit, even
+for a requested speed of 600\,arcsec, if the pointing system is
+struggling for large-area scans at high elevation.
 
 
 \subsubsection{Impact of lags}
@@ -1702,7 +1706,7 @@ by the \model{COM} model. This places a limit on the spatial extent of
 astronomical structure that can be recovered.
 
 For this reason, the usual practice is to estimate a single
-\model{COM} model by examining data from all four sub-arrays in each
+\model{COM} model by examining data from all four subarrays in each
 waveband, since this allows spatial structure on the scale of the
 whole focal plane to be recovered. However, sometimes there is
 evidence that the common-mode differs from one array to another, and
@@ -2085,7 +2089,7 @@ From a scientific perspective, the most important goal of map-making
 is to efficiently use all of the available data to achieve the
 greatest sensitivity that the instrument is capable of. Generally
 speaking, only a small percentage of the data are flagged as unusable
-during map-making beyond the $\sim$69\% detector yield.  As an
+during map-making beyond the $\sim$70\% detector yield.  As an
 example, for the 450\,\micron\ scan of Uranus that will be presented
 in Section~\ref{sec:point}, during pre-processing: 31.00\% of the data
 (1587/5120 bolometers) are flagged due to data acquisition problems
@@ -2109,7 +2113,7 @@ noise equivalent flux densities (NEFDs, with units Jy\,s$^{1/2}$)
 through multiplication by the extinction correction and the FCF. For
 an ideal scan pattern in which every bolometer spends an equal amount
 of time observing each point on the sky, the expected noise in a map
-pixel is $\mathrm{NEFD_{eff}} t^{-1/2}$, where $t$ is the integration
+pixel is $\mathrm{NEFD_{eff}}/t^{1/2}$, where $t$ is the integration
 time, and the effective NEFD, $\mathrm{NEFD_{eff}} = (1/\sum
 \mathrm{NEFD}_i^{-2})^{1/2}$, is the sensitivity of the entire array
 including all bolometers $i$. Experimentally it has been found that
@@ -2125,14 +2129,14 @@ respectively, at an average airmass of 1.2, from table 3
 in][]{holland2012}, the mapping speed is approximately
 $6\times10^{-5}$ and $3\times10^{-3}$\,deg$^2$\,hr$^{-1}$\,mJy$^{-2}$,
 at 450 and 850\micron, for the default pixel sizes of 2 and 4\,arcsec,
-respectively. If maps are high-pass filtered and cross-correlated with
-the PSF for the optimal extraction of point sources (see
+respectively. If maps are filtered and cross-correlated with the PSF
+for the optimal extraction of point sources (see
 Section~\ref{sec:cosmo}), the mapping speeds increase to approximately
 $5\times10^{-4}$ and
-$1.5\times10^{-2}$\,deg$^2$\,hr$^{-1}$\,mJy$^{-2}$, independently of
-the chosen map pixel sizes. See the on-line \scuba\ integration time
-calculator for mapping speeds under arbitrary observing conditions
-and scan
+$1.5\times10^{-2}$\,deg$^2$\,hr$^{-1}$\,mJy$^{-2}$ in this example,
+independently of the chosen map pixel sizes. See the on-line \scuba\
+integration time calculator for mapping speeds under arbitrary
+observing conditions and scan
 modes\footnote{\url{http://www.jach.hawaii.edu/jac-bin/propscuba2itc.pl}}.
 
 
@@ -2290,7 +2294,7 @@ and the ringing has been effectively removed. The attenuation from the
 previous reduction is now removed, and Uranus again has a peak value
 of 0.358\,pW. For reference, the Uranus model distributed with
 Starlink predicts a peak brightness of 176\,Jy on this date, yielding
-an FCF of 492 Jy\,pW$^{-1}$, which is well within the typical range
+an FCF of 491 Jy\,pW$^{-1}$, which is well within the typical range
 for \scuba\ of $(492 \pm 67)$\,Jy\,pW$^{-1}$ \citep[see][for
 details]{dempsey2012}. Since the map is now flat away from the source,
 and constrained to a value of zero, it is appropriate for performing
@@ -2480,7 +2484,7 @@ resemble noise drawn from the same parent distribution as that of the
 real map. The astronomical signal, however, should be cleanly removed
 (provided that there are no strong time-varying signals, and also
 assuming that errors due to calibration between the two halves are
-insignificant). The approach we have taken to minimize systematics is
+insignificant). The approach we have taken to minimise systematics is
 to produce the two maps using odd and even scan numbers (i.e., each
 map will contain a nearly uniformly-spaced sampling of data across the
 full data set).
@@ -2905,13 +2909,19 @@ the filter scales used: 150\,arcsec (red); 300\,arcsec (orange);
 600\,arcsec (green); and 900\,arcsec (blue). Note that, with the
 exception of the synthetic data, we only plot the PSDs down to the
 second-lowest spatial frequency bin of
-$1.875\times10^{-3}$\,arcsec$^{-1}$, or 533\,arcsec, due to the fact
-that the smallest is very poorly sampled, and therefore noisy. As the
-filter edge is increased, more power is measured in the map PSDs at
-larger scales. However, much of this power is clearly produced by
-noise which appears in the jackknife PSDs. We estimate the map-maker
-transfer function as the ratio between the portion of the signal PSDs
-not produced by noise, to the input PSD, or
+$1.875\times10^{-3}$\,arcsec$^{-1}$, or 533\,arcsec, since the lowest
+is very poorly sampled, and therefore noisy. At small scales
+($\lsim$20\,arcsec) the map and jackknife PSDs flatten. However,
+unlike Fig.~\ref{fig:lockman_pspec}, these white noise levels are
+slightly larger in the jackknife maps, suggesting that the differences
+have not completely removed the astronomical signals. A strong
+possibility is that the two half-maps that go into the differences
+have not converged equally, probably due to the lack of prior
+constraints.  As the filter edge is increased, more power is measured
+in the map PSDs at larger scales. However, much of this power is
+clearly produced by noise which appears in the jackknife PSDs. We
+estimate the map-maker transfer function as the ratio between the
+portion of the signal PSDs not produced by noise, to the input PSD, or
 %
 \begin{equation}
 G(k) = \frac{P_\mathrm{M}(k) - P_\mathrm{JK}(k)}{P_\mathrm{S}(k)},
@@ -2951,7 +2961,9 @@ of the array footprint and the fact that we use common-mode rejection.
 Another interesting feature of these reductions is that the increase
 in small-scale noise as the filter edge is increased is not as drastic
 as in the baseline reduction, and the \snr\ improves at scales
-$\gsim$60\,arcsec.
+$\gsim$60\,arcsec. Finally, note that both the map and jackknife white
+noise levels (at scales $\lsim$20\,arcsec) are in excellent agreement,
+unlike the previous example.
 
 One case in which the \snr\ is worse using the bright extended
 reduction is when using a 150\,arcsec filter. Here the noise is
@@ -3090,8 +3102,9 @@ Kelly, Alex van Engelen and Jennifer Balfour for early investigations
 related to SMURF; and Mark Thompson, Craig Walther and S\'{e}verin
 Gaudet for being on the Critical Design Review panel. We thank Per
 Friberg and Gary Davis for their helpful comments on the
-manuscript. Finally, we thank the anonymous referee for identifying
-several key areas that required clarification.
+manuscript. Finally, we thank the anonymous referee for a very helpful
+review that helped to clarify several key areas of the paper.
+
 
 
 %------------------------------------------------------------------------------
