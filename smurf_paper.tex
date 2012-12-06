@@ -271,7 +271,7 @@ The best existing map-making strategies for recovering information on
 all angular scales are maximum likelihood techniques, in which the
 time-series data are expressed as a sampling of the ``true'' map of
 the sky plus noise, and then the equation is inverted to estimate the
-map as some weighted linear combination of the data that minimises the
+map as some weighted linear combination of the data that minimizes the
 variance.  The first good description of this method appears in
 \citet{janssen1992} for the production of maps from the COsmic
 Background Explorer (COBE -- the description is relevant despite the
@@ -354,7 +354,7 @@ observers at the telescope. The pipeline is also used to generate
 products for the JCMT Science Archive \citep{2011ASPC..442..203E}
 hosted by the Canadian Astronomy Data Centre (CADC).
 
-This paper is organised as follows. We first describe the properties
+This paper is organized as follows. We first describe the properties
 of \scuba\ data, including a principal component analysis to reveal
 correlated noise features, in Section~\ref{sec:data}. Next, the
 details of the SMURF algorithm (pre-processing steps and the iterative
@@ -398,7 +398,7 @@ summarise the basic concepts relevant to map-making here.
 Incoming light passes through a beam-splitter, and then bandpass
 filters, providing simultaneous illumination and wavelength definition
 of both the 450 and 850\,\micron\ focal planes. Each focal plan is
-populated by four ``subarrays'' (labeled s4a--s4d at 450\,\micron, and
+populated by four ``subarrays'' (labelled s4a--s4d at 450\,\micron, and
 s8a--s8d at 850\,\micron), each consisting of 32 columns and 40 rows
 of bolometers. The bolometers are thermal absorbers (with a response
 time constant of $\tau \sim 1$\,ms) coupled to superconducting
@@ -505,7 +505,7 @@ modes, see Section~5 in \citet{holland2012} and also
   after upgrading the instrument. The grey signals over-plotted in the
   top two panels show the residual time-series after removing the
   common-mode signals.  (a) Data taken during the S2SRO period,
-  observation 29 on 20100313. There is a strong correlation between
+  observation 29 on 2010-03-13. There is a strong correlation between
   the bolometers and the roughly $\sim$25\,s oscillation in the
   fridge, but only a minor correlation with the opacity and telescope
   motion. The nearly flat common-mode subtracted signals show: (i)
@@ -513,7 +513,7 @@ modes, see Section~5 in \citet{holland2012} and also
   bolometers; and (ii) the non-correlated, and predominantly white
   noise at 450\,\micron\ is significantly larger than at
   850\,\micron. (b) Data taken with the fully-commissioned instrument,
-  observation 38 on 20111112. Unlike the S2SRO data, there is no
+  observation 38 on 2011-11-12. Unlike the S2SRO data, there is no
   strong signal produced by variations in the fridge temperature. The
   450\,\micron\ data have minimal correlated low-frequency noise (as
   evidenced by the lack of a difference between the raw and
@@ -571,7 +571,7 @@ modes, see Section~5 in \citet{holland2012} and also
   0.6 and 1.0\,Hz at 450 and 850\,\micron, respectively. (b) Data from
   the fully-commissioned instrument tend to have lower $1/f$ knees,
   and fewer line features. For this example, the improvement is most
-  striking at 450\,micron\ where the PSD is approximately two
+  striking at 450\,\micron\ where the PSD is approximately two
   orders-of-magnitude lower in the fully-commissioned data at
   0.1\,Hz. The white noise performance, however, is similar for the
   two subarrays (s4a and s8b) that were used both before and after the
@@ -595,7 +595,7 @@ pointing, for two data sets, before and after the upgrades that
 followed S2SRO.
 
 In the S2SRO data (Fig.~\ref{fig:bolos_mix}a), observation 29 on
-20100313, both bolometers share significant long-timescale structure
+2010-03-13, both bolometers share significant long-timescale structure
 ($\gsim10$\,s) that appears to be related to variations in the fridge
 base temperature, although the similarity is clearly greater at
 850\,\micron. Note that the total power in the fluctuations at
@@ -619,7 +619,7 @@ noticeable long-timescale variations. The white noise is greater at
 to 850\,\micron.
 
 Data from the fully commissioned instrument, observation 38 on
-20111112, are shown in Fig.~\ref{fig:bolos_mix}b. Having solved the
+2011-11-12, are shown in Fig.~\ref{fig:bolos_mix}b. Having solved the
 fridge oscillation problem, these data no longer exhibit a correlation
 with the mixing chamber (however, note that variations are still seen
 in the mixing chamber signal; such variations do not necessarily
@@ -671,7 +671,7 @@ black lines in Fig.~\ref{fig:pspec} indicate the PSDs of the
 common-modes $\mathbf{c}(t)$ at each wavelength, which reproduce much
 of the low-frequency structure, as well as some of the
 higher-frequency line features. The $\mathbf{c}(t)$ otherwise drop
-substantially below the individual bolometer PSDs at high-frequency,
+substantially below the individual bolometer PSDs at high frequency,
 as expected if the bolometers are dominated by uncorrelated white
 noise in that part of the spectrum. The common-mode signals are fit to
 each bolometer time series and removed as in Fig.~\ref{fig:bolos_mix},
@@ -706,7 +706,7 @@ the S2SRO data. Furthermore, there are generally fewer line features
 in the PSDs of bolometers in the fully-commissioned
 instrument. Finally, these two data sets illustrate that the white
 noise performance (NEFD) is in fact similar before and after the
-upgrades for these two subarrays (s4a at 450\,micron, and s8b at
+upgrades for these two subarrays (s4a at 450\,\micron, and s8b at
 850\,\micron). The main improvements are a reduction in correlated and
 line noise features mentioned above, the larger number of working
 bolometers and field-of-view (approximately a factor of 4).
@@ -720,7 +720,7 @@ bolometers and field-of-view (approximately a factor of 4).
 \centering
 \includegraphics[width=\linewidth]{magpickup}
 \caption{Evidence for significant magnetic field pickup for
-  observation 16 on 20100228 at 450\,\micron\ (s4a subarray).  The top
+  observation 16 on 2010-02-28 at 450\,\micron\ (s4a subarray).  The top
   panel shows two un-flatfielded (but mean-subtracted and step
   corrected) bolometer time-series from the same column, with a 200
   sample boxcar smooth (approximately 1\,s), illustrating that they
@@ -744,7 +744,7 @@ amplification of magnetic fields, any additional changing fields
 within the instrument will add to the noise.
 
 Example data from the 450\,\micron\ subarray s4a where pickup appears
-to be significant (observation 16 on 20100228) are shown in
+to be significant (observation 16 on 2010-02-28) are shown in
 Fig.~\ref{fig:magpickup}. The time-series for two bolometers in the
 same column (not flatfielded) show that there is a strong signal with
 a similar shape, but opposite signs. This behaviour is seen across the
@@ -787,7 +787,7 @@ is approximately three orders-of-magnitude smaller.
   long-timescales using 35\,min. of data taken in highly-variable
   weather conditions (line-of-sight 450\,\micron\ opacity ranging from
   3.6 to 7.7) from the fully-commissioned instrument, observation 18
-  on 20110324. Red and blue lines show the 850 and 450\,\micron\
+  on 2011-03-24. Red and blue lines show the 850 and 450\,\micron\
   common-mode signals, corresponding to the left- and right- vertical
   axes, respectively. The black line shows the line-of-sight opacity
   from the WVM as a proxy for atmospheric emission (arbitrary
@@ -800,32 +800,32 @@ The data shown in Figs.~\ref{fig:bolos_mix} and \ref{fig:pspec} were
 taken during fairly stable weather conditions (although with different
 450\,\micron\ line-of-sight opacities $\sim$0.9 and 6.5 in the S2SRO
 and post-upgrade data sets, respectively), and are dominated at
-low-frequencies ($\lsim$2\,Hz) by scan-synchronous noise, rather than
+low frequencies ($\lsim$2\,Hz) by scan-synchronous noise, rather than
 underlying variations in the atmosphere, or ``sky noise''. However,
 only $\sim$100\,s of data were analysed. In Fig.~\ref{fig:skynoise},
 an order-of-magnitude longer (fully-commissioned) data set is plotted
-from observation 18 on 20110324, during highly variable weather
+from observation 18 on 2011-03-24, during highly variable weather
 conditions (450\,\micron\ line-of-sight opacities ranging from 3.6 to
 7.7, scaled from the WVM data which are shown as a black line). Unlike
 the earlier plots, it is clear that the bolometer baseline drifts on
 timescales $\gsim$100\,s are tightly correlated with the atmospheric
 opacity, which serves as a proxy for atmospheric emission. The weaker
-correlation between the WVM and the 450\,micron\ bolometers is
+correlation between the WVM and the 450\,\micron\ bolometers is
 probably due to the atmosphere being more transmissive at 850\micron,
 therefore the emission detected at 450\,\micron\ comes from water
 vapour that is closer to the telescope.
 
-While the relative importance of sky noise at low-frequencies is
+While the relative importance of sky noise at low frequencies is
 highly time- and scan pattern-dependent, in general it does not have a
 major impact on map-making. Upon common-mode removal (which is an
 integral part of our map-making strategy) uncorrelated noise remains
-(e.g., solid lines in Fig~\ref{fig:pspec}). As we will see in
+(e.g., solid lines in Fig.~\ref{fig:pspec}). As we will see in
 Section~\ref{sec:pca} and \ref{sec:experimental}, this remaining noise
 does not have a smoothly-varying correlation pattern across the focal
-plane one might expect if it were due to resolved ``clouds'' of
+plane as one might expect if it were due to resolved ``clouds'' of
 atmospheric emission. A high-pass filter with an edge frequency in the
-range $\sim$0.1--1.0\,Hz is usually employed remove this residual
-noise (Section~\ref{sec:components}), which will also remove any sky
+range $\sim$0.1--1.0\,Hz is usually employed to remove this residual
+noise (Section~\ref{sec:components}), and will also remove any sky
 noise that is not already subtracted by the common-mode.
 
 %-------------------------------------------------
@@ -865,8 +865,8 @@ sources that are restricted to single subarrays (such as readout
 noise). In Fig.~\ref{fig:pca} we show the results for a combined
 analysis of the s4a and s8b subarrays for the first $\sim$100\,s of
 the same observation that was used in Figs.~\ref{fig:bolos_mix}b and
-\ref{fig:pspec}b. The 9 most significant components are shown (ranked
-by the mean eigenvalues across all working bolometers in both
+\ref{fig:pspec}b. The nine most significant components are shown
+(ranked by the mean eigenvalues across all working bolometers in both
 bands). The top and middle panels for each component show the
 time-series and PSDs of the normalised eigenvectors. The bottom panels
 are maps indicating the eigenvalues (amplitudes) of the component
@@ -918,7 +918,7 @@ generally more dominant at 450\,\micron.
 
 Why are there two components that seem to be dominated by
 scan-synchronous noise (which is presumably a mixture of
-magnetic-field pickup and brightness variations in the atmosphere)?
+magnetic field pickup and brightness variations in the atmosphere)?
 First, the smoothly-varying gradients in the eigenvalue maps
 (primarily at 850\,\micron) suggests that this noise has a different
 response across the focal plane; in this case the PCA has identified
@@ -931,8 +931,8 @@ Like Component~1, Component~2 is a purely $1/f$ signal, with an
 amplitude comparable to Component~3, that appears almost exclusively
 at 850\,\micron. Since it is not obviously correlated with the
 telescope motion, yet has an amplitude that varies smoothly across the
-850\,\micron\ subarray, it may represent the PCAs attempt to reproduce
-some non-linear response to magnetic-field and/or atmospheric pickup
+850\,\micron\ subarray, it may represent the PCA's attempt to reproduce
+some non-linear response to magnetic field and/or atmospheric pickup
 
 The remaining, weaker, Components~4--9 share some common
 features. They all have some degree of $1/f$ noise, suggesting further
@@ -942,7 +942,7 @@ spectra, which in many cases appear at random amplitudes along columns
 (e.g. columns 15, and 26--30 at 450\,\micron\ in Component~4), or in a
 sampling of isolated bolometers (e.g. column 13, row 19 at
 850\,\micron\ in Component~6). The signals that appear along columns
-are probably related to magnetic-field pickup. Other sources of lines
+are probably related to magnetic field pickup. Other sources of lines
 are thought to be aliased high-frequency noise, and also the 60\,Hz
 mains which appear in some bolometers.
 
@@ -2083,22 +2083,21 @@ Sections~\ref{sec:point} and \ref{sec:extended}.
 
 From a scientific perspective, the most important goal of map-making
 is to efficiently use all of the available data to achieve the
-greatest sensitivity that the instrument is capable of. Generally
-speaking, only a small percentage of the data are flagged as unusable
-during map-making beyond the $\sim$70\% detector yield.  As an
-example, for the 450\,\micron\ scan of Uranus that will be presented
-in Section~\ref{sec:point}, during pre-processing: 31.00\% of the data
-(1587/5120 bolometers) are flagged due to data acquisition problems
-(dead or deactivated bolometers, or non-linear flatfields); 0.12\% of
-the data are flagged due to steps (including a small region about the
-steps, Section~\ref{sec:steps}); and 0.83\% if the data are flagged
-because the telescope was stationary
-(Section~\ref{sec:flagbadbol}). Once the iterative solution begins: 55
-spikes are detected using the map-based despiker ($1.2\times10^{-6}$
-\% of the data, Section~\ref{sec:ast}); and 0.72\% of the data are
-flagged as outliers compared to the common-mode
+greatest sensitivity to astrononomical sources that the instrument is
+capable of. Generally speaking, only a small percentage of the data
+are flagged as unusable during map-making beyond the $\sim$70\%
+detector yield.  As an example, for the 450\,\micron\ scan of Uranus
+that will be presented in Section~\ref{sec:point}, during
+pre-processing: 31\% of the data (1587/5120 bolometers) are flagged
+due to data acquisition problems (dead or deactivated bolometers, or
+non-linear flatfields); 0.12\% of the data are flagged due to steps
+(including a small region about the steps, Section~\ref{sec:steps});
+and 0.83\% if the data are flagged because the telescope was
+stationary (Section~\ref{sec:flagbadbol}). Once the iterative solution
+begins: 55 spikes are detected using the map-based despiker
+($1.2\times10^{-6}$ \% of the data, Section~\ref{sec:ast}); and 0.72\%
+of the data are flagged as outliers compared to the common-mode
 (Section~\ref{sec:comgai}).
-
 
 The white noise levels of \scuba\ bolometers are measured between 2
 and 10\,Hz in the PSDs (as described in Section~\ref{sec:noi}),
@@ -2195,7 +2194,7 @@ sources are necessary in real-time to establish telescope pointing
 offsets and focus. They are also necessary to measure the FCF
 (absolute calibration), and hence noise performance of the instrument
 in astronomically-useful units.  In this example we reduce a
-450\,\micron\ map of Uranus (observation 26 on 20111017), which is a
+450\,\micron\ map of Uranus (observation 26 on 2011-10-17), which is a
 nearly point-like source for \scuba\ that is commonly used as a
 primary flux calibrator. The CV daisy pattern was used, with a scan
 speed of 155 arcsec\,sec$^{-1}$. We perform several different
@@ -2356,10 +2355,10 @@ $\sim8.5$\,hours of data taken in 36 separate scans (average
 15\,min. each) spread over February and March 2010. Each scan is a
 360\,arcsec rotating PONG pattern, with a scan speed of
 240\,arcsec\,s$^{-1}$, covering an area of about 50\,arcmin$^2$. The
-full list of dates and observation numbers includes: 20100218, 63, 64,
-65, 70, 71, 72, 90, 91, 92, 97, 98, 99; 20100220, 111, 112, 113, 118,
-128, 129, 130; 20100303, 61, 62, 64, 69, 70, 72, 73, 74, 75; 20100309,
-87, 88, 90, 91; and 20100311, 59, 64, 65, 72. These observations
+full list of dates and observation numbers includes: 2010-02-18, 63, 64,
+65, 70, 71, 72, 90, 91, 92, 97, 98, 99; 2010-02-20, 111, 112, 113, 118,
+128, 129, 130; 2010-03-03, 61, 62, 64, 69, 70, 72, 73, 74, 75; 2010-03-09,
+87, 88, 90, 91; and 2010-03-11, 59, 64, 65, 72. These observations
 represent about 80 per cent of the total data taken as part of the
 project; the remaining observations were dropped due to problems
 keeping the arrays properly tuned during S2SRO, and were easily
@@ -2480,7 +2479,7 @@ resemble noise drawn from the same parent distribution as that of the
 real map. The astronomical signal, however, should be cleanly removed
 (provided that there are no strong time-varying signals, and also
 assuming that errors due to calibration between the two halves are
-insignificant). The approach we have taken to minimise systematics is
+insignificant). The approach we have taken to minimize systematics is
 to produce the two maps using odd and even scan numbers (i.e., each
 map will contain a nearly uniformly-spaced sampling of data across the
 full data set).
@@ -2702,7 +2701,7 @@ term in the calculation of such filters.
 %-------------------------------------------------
 
 In this final example, we analyse a map of M17 which contains bright,
-extended emission. The data are from observation 11 on 20110531 using
+extended emission. The data are from observation 11 on 2011-05-31 using
 the 850\,\micron\ array. It is a rotating PONG scan covering a
 diameter of 0.375\,deg, with a scan speed of 300\,arcsec\,s$^{-1}$,
 and a transverse spacing of 180\,arcsec, taking 37.5\,min to complete.
@@ -2735,8 +2734,8 @@ brightest peaks are set to zero (outside the red contours). However,
 as the solution progresses, the negative bowls around the bright
 sources are slowly reduced and the mask ``grows'' out from the
 brightest areas. By the final iteration, most of the obvious
-structures in the data are excluded in the the mask, negative bowling
-is significantly reduced, and the brightest regions are more extended.
+structures in the data are excluded in the mask, negative bowling is
+significantly reduced, and the brightest regions are more extended.
 
 
 \begin{figure*}
