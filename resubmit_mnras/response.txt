@@ -1,4 +1,24 @@
-Draft of my answers preceded by "-":
+
+To whom it may concern,
+
+We would like to thank the thorough reviewer for identifying several
+areas that needed clarification, and perhaps more importantly, three
+careless errors (which led to incorrect units in Figs.1 & 2, and
+confusing results in Figs.11 & 20), and an omission (impact /
+treatment of the response of the bolometers and data acquisition
+system).
+
+We have provided a version of the manuscript processed with
+"latexdiff" to highlight all of the differences between the original
+submitted (removed text in red) and the newly resubmitted version
+(added text in blue) with the supplementary material
+(diff_submission_resubmission.pdf). In addition, the new versions of
+the companion papers, Holland et al. (scuba2_general_paper.pdf), and
+Dempsey et al. (sc2calib_final.pdf), have also been provided.
+
+Detailed responses to the editor's and referee's comments are
+provided below, preceded by "-".
+
 
 
 
@@ -6,16 +26,15 @@ Scientific Editor's Comments:
 
 Some of he figures (e.g., Fig. 4) are too small for comfortable reading, while others (e.g., Fig. 6) are unnecessarily large. In Fig. 9, the axes need to be explained and labelled (at least the time range); I'm not sure why you include broken bolometers as "typical" - the space could be better used! In figures with many panels, it helps to label the panels (a), (b), etc. and refer to the panels by label - see the instructions to authors.
 
-- Fig.4 had been modified, using a smaller number of sub-windows and a
+- Fig.4 has been modified, using a smaller number of sub-windows and a
   larger font it is now more readable.
 
 - Fig.6 has been made smaller.
 
-- Fig.9 is now Fig. 10, and now has axis labels and an improved
-  caption - however, we elected to leave in the "broken" bolometers as
-  this is a fairly typical portion of the focal plane (remembering
-  that there is a ~70% yield); this gives the reader a good visual
-  sense of that.
+- Fig.9 is now Fig. 10, and has axis labels and an improved caption -
+  however, we elected to leave in the "broken" bolometers as this is a
+  fairly typical portion of the focal plane (remembering that there is
+  a ~70% yield); this gives the reader a good visual sense of that.
 
 Although the paper is clearly written, it is rather wordy, and I encourage you to review the text and see whether you can express it more concisely.
 
@@ -47,14 +66,6 @@ When submitting a revised version of this paper, it would be helpful if you coul
 
 Reviewer's Comments:
 
-
-- We would like to thank the thorough reviewer for identfying several
-  areas that needed clarification, and perhaps more importantly, three
-  careless errors (which led to incorrect units in Figs.1 & 2, and
-  confusing results in Figs.11 & 20), and an ommission (impact /
-  treatment of the response of the bolometers and data acquisition
-  system). Detailed responses follow.
-
 Overall: The paper will be a useful reference for SMURF users and clearly represents a lot of work. Forgive me for only picking on the residual bits that I see need improving, but this will be the most efficient way to get to the end of this process.
 
 Although I appreciate the division between this paper (data processing) and others to do with the instrument etc, it would be useful from a user perspective to have some sense of number of working channels, some parametrization of survey depth as a function of time&area -- using your "white noise limit", number of bad detectors, statistics on spikes etc. A lot of material is presented in section 2 to characterize the bolometer data. It would be very useful to bring it home with an focal-plane-wide characterization summary.
@@ -65,7 +76,7 @@ In the examples it seemed like the "default" pipeline was never the correct one 
 
 - Perhaps "default" is the wrong word - in reality, the description in
   Section 3 is of the "baseline" parameters for the reduction, which
-  are then added-to for specific reduction, as in the examples from
+  are then added-to for specific reductions, as in the examples from
   section 4. The word "default" has been replaced with "baseline"
   throughout, and clarification added to the intro of Section 4 on
   example reductions.
@@ -81,7 +92,7 @@ I really think it's useful and proper to cross-reference the millimeter kilopixe
 This may be a true statement, but it neglects that very analogous arrays have been deployed in the millimeter. I'm thinking of SPT and ACT, which are arguably more similar to SCUBA2, by virtue of their kilopixel scale and multiplexed readout, than the previous generation submillimeter. SPT downsamples to 100 samp/sec. ACT writes to disk at 400 samp/sec and then downsamples to 200 samp/sec for analysis. SCUBA 2 has more pixels than either of these experiments (factor of 10 for SPT and 3 for ACT). Then again, as written the sentence is true, though maybe "data rate" would be better than "rate" which would make the claim stronger, even when including the millimeter kilopixel instruments.
 
 - Agreed, and re-worded so that SCUBA-2 is now "the largest of a new
-  generation of multiplexed kilopixel bolo cmaers"
+  generation of multiplexed kilopixel bolo cameras"
 
 + Sec 1 Para 4: "``cross-linking'',in which each portion of the map is sampled on a range of temporal time scales"
 
@@ -99,7 +110,7 @@ This would be a nice place to cite SPT (Say, http://adsabs.harvard.edu/abs/2011A
 
 This would be a nice place to cite ACT (Say, http://adsabs.harvard.edu/abs/2011ApJ...729...62D or http://adsabs.harvard.edu/abs/2012arXiv1208.0050D -- though this is not accepted).
 
-- Done (although used earlier Fowler 2010 as a reference).
+- Done (although used earlier Fowler et al. 2010 paper as a reference).
 
 + Sec 1 Para 7: "merely linear in the number of iterations needed, while using a comparable amount of memory"
 
@@ -115,7 +126,7 @@ Is the second bit true? Does the matrix inversion really take the same amount of
 
 It would be useful for SMURF/SCUBA2 users to know an example of what would qualify as "high-end". (Number of processors and amount of memory would probably be enough to give the idea.)
 
-- added a setence describing the machine used for analysis in the
+- added a sentence describing the machine used for analysis in the
   paper: 64-bit, 8 cores, 2.7GHz, 48 Gb of RAM.
 
 + Sec 2.2, 2.4, Figure 1, etc: e.g., "It is also likely that a varying atmospheric contribution is also included in these eigenvectors…"
@@ -174,7 +185,7 @@ There are enough acronyms running around this paper that it took me a while to r
 
 I didn't see any discussion of accounting for the time constants of the detectors or of the MCE anti-aliasing filter. Do you not deconvolve these as an initial step? Seems like this would give you a non-trivial transfer function at small scales if you did not…. (even if you have your nice cross-linked isotropic transfer function, you would have the unfortunate characteristic of wiping out small scale structure). Please clarify.
 
-- This was a fairly major ommission in the first version. This is an
+- This was a fairly major omission in the first version. This is an
   effect that we considered long ago, and had been ignoring due to
   early estimates that showed they should be insignificant. In fact,
   there was no special code in SMURF to handle the de-convolution of
