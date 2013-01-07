@@ -1579,7 +1579,7 @@ degeneracies, see Section~\ref{sec:converge}.
     \model{COM} & remove common-mode signal \\
     \model{GAI} & common-mode scaled to each bolometer \\
     \model{EXT} & extinction correction \\
-    \model{FLT} & Fourier transform filter \\
+    \model{FLT} & Fourier Transform filter \\
     \model{AST} & map estimate of astronomical signal \\
     \model{NOI} & noise estimation \\
     \hline
@@ -1733,7 +1733,7 @@ solution. Unlike the additive model components, it is inverted at the
 start of each iteration to preserve the amplitude of the data before
 the re-calculation of other model components.
 
-\subsubsection{\model{FLT}: Fourier transform filter}
+\subsubsection{\model{FLT}: Fourier Transform filter}
 \label{sec:flt}
 
 This model takes the FFT of the bolometer time-series data, and can
@@ -2443,14 +2443,16 @@ However, the way this filter affects point-sources is measurable
   to the real data near the centre of the Lockman Hole map, and
   re-reducing the data. The resulting dotted line gives the expected
   shape of a source in panel (a) from
-  Fig.~\ref{fig:lockman_maps}. Applying the whitening filter
-  (reciprocal of the solid orange line in
-  Fig.~\ref{fig:lockman_pspec}) to the dotted line gives the whitened
-  line (dashed), which is the expected shape of a source in panel (b)
-  from Fig.~\ref{fig:lockman_maps}. Finally, cross-correlating the
-  whitened map with this whitened PSF is an effective ``matched
-  filter'' for identifying point-like sources, and this smoothed map
-  is shown in panel (c) of Fig.~\ref{fig:lockman_maps}.}
+  Fig.~\ref{fig:lockman_maps}. Applying the whitening filter to the
+  dotted line (dividing the Fourier Transform of the map filtered
+  response by the square root of the solid orange line in
+  Fig.~\ref{fig:lockman_pspec}, and then transforming back to real
+  space) gives the whitened line (dashed), which is the expected shape
+  of a source in panel (b) from Fig.~\ref{fig:lockman_maps}. Finally,
+  cross-correlating the whitened map with this whitened PSF is an
+  effective ``matched filter'' for identifying point-like sources, and
+  this smoothed map is shown in panel (c) of
+  Fig.~\ref{fig:lockman_maps}.}
 \label{fig:lockman_psf}
 \end{figure}
 
@@ -2532,14 +2534,14 @@ in Figs.~\ref{fig:lockman_maps}(a) and (d).
 \label{fig:lockman_pspec}
 \end{figure}
 
-To suppress noise in the map, we construct a whitening filter from the
-reciprocal of the jackknife angular power spectrum (orange line in
+To suppress noise in the map, we construct a whitening filter whereby
+the Fourier Transform of the map is divided by the square root of the
+jackknife power spectrum (orange line in
 Fig.~\ref{fig:lockman_pspec}), normalised by the white-noise level
 estimated from the RMS power at angular frequencies $>
-0.1$\,arcsec$^{-1}$. The filter is applied by scaling the power
-spectrum of the map by this function, and then transforming back into
-real space. The whitened map is shown in Fig.~\ref{fig:lockman_maps}b,
-and for comparison, the jackknife map has also been whitened in
+0.1$\,arcsec$^{-1}$, and transforming back into real space. The
+whitened map is shown in Fig.~\ref{fig:lockman_maps}b, and for
+comparison, the jackknife map has also been whitened in
 Fig.~\ref{fig:lockman_maps}e. In both cases, the maps are visibly
 flatter than the non-whitened cases.
 
@@ -2562,26 +2564,27 @@ point-sources centred over every location in the resulting map
 \citep[an extremely well-known result throughout astronomy,
 see][]{stetson1987}. Peak identification in such smoothed maps have
 been used extensively in the submillimetre community, as both an
-efficient source-detection and photometric measurement strategy. In
-terms of the angular power spectrum, a matched filter may also be
-thought of as an optimal low-pass filter, that suppresses noise on
-scales smaller (and therefore at higher angular frequencies) than the
-beam. For the case at hand, we may use this cross-correlation
-technique since the map has been whitened. However, we must first
-establish the effective shape of point sources in this map due both to
-map-making itself, and the whitening filter. We determine the effect
-of map-making by adding a synthetic (and high-\snr) point source to
-the real data, and measure its resulting shape in the map (solid and
+efficient source-detection and photometric measurement strategy.  For
+the case at hand, we may use this cross-correlation technique since
+the map has been whitened. However, we must first establish the
+effective shape of point sources in this map due both to map-making
+itself, and the whitening filter. We determine the effect of
+map-making by adding a synthetic (and high-\snr) point source to the
+real data, and measure its resulting shape in the map (solid and
 dotted lines in Fig.~\ref{fig:lockman_psf}, respectively). Next, the
-Fourier transform of the map filtered PSF is divided by the jackknife
-noise power spectrum to calculate the final whitened PSF (dashed line
-in Fig.~\ref{fig:lockman_psf}). Maps smoothed by this shape are shown
-for the whitened signal, and jackknife maps in
-Figs.~\ref{fig:lockman_maps}c and f, respectively. Note that these
-images are plotted in \snr\ units, where the smooth noise maps have
-been calculated by propagating the original noise maps output by SMURF
-both through the whitening and matched filters (each of which are
-linear operations).
+Fourier Transform of the map filtered PSF is divided by the square
+root of the jackknife noise power spectrum to calculate the final
+whitened PSF (dashed line in Fig.~\ref{fig:lockman_psf}). Maps
+smoothed by this shape are shown for the whitened signal, and
+jackknife maps in Figs.~\ref{fig:lockman_maps}c and f,
+respectively. Note that these images are plotted in \snr\ units, where
+the smooth noise maps have been calculated by propagating the original
+noise maps output by SMURF both through the whitening and matched
+filters (each of which are linear operations). In terms of the angular
+power spectra, this complete process can be thought of as an optimal
+band-pass filter that has both suppressed low-frequency noise, and
+information on scales that are smaller (higher frequencies) than the
+beam.
 
 Have real astronomical sources been detected using the matched filter?
 For both the smoothed signal and jackknife maps, blue circles denote

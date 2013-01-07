@@ -1,0 +1,82 @@
+Decision Letter (MN-12-2293-MJ.R1)
+
+From:
+	
+
+kts@ras.org.uk
+
+To:
+	
+
+edward.chapin@gmail.com
+
+CC:
+	
+
+edward.chapin@gmail.com, d.berry@jach.hawaii.edu, agg@phas.ubc.ca, t.jenness@jach.hawaii.edu, tim.jenness@gmail.com, dscott@phas.ubc.ca, r.tilanus@jach.hawaii.edu, frossie@noao.edu, wayne.holland@stfc.ac.uk
+
+Subject:
+	
+
+MNRAS: MN-12-2293-MJ.R1
+
+Body:
+	
+
+Dear Dr Chapin
+
+I attach the reviewer's comments on your revised manuscript entitled "SCUBA-2: iterative map-making with the Sub-Millimetre User Reduction Facility", ref. MN-12-2293-MJ.R1, which you submitted to Monthly Notices of the Royal Astronomical Society.
+
+Some further, minor revision of your manuscript is requested before it is reconsidered for publication.
+
+You should submit your further revised version, together with your response to the reviewer's comments via the Monthly Notices ScholarOne Manuscripts site http://mc.manuscriptcentral.com/mnras .
+Enter your Author Centre, where you will find your manuscript title listed under "Manuscripts with Decisions." Under "Actions," click on "Create a Revision." Your manuscript reference will be appended to denote a revision.
+
+IMPORTANT: do not submit your revised manuscript as a new paper!
+
+You will not be able to make your revisions to the originally submitted files of the manuscript on ScholarOne Manuscripts. Instead, you must delete the original files and abstract and replace them with your revised files. Carefully proof read the resulting PDF and HTML files that are generated. If you have used a .bib file to generate your bibliography in Latex, please include this in your .tar archive along with the .bbl and .tex files; this will aid the editing and typesetting process.
+
+When submitting your revised manuscript, you will be able to respond to the comments made by the reviewer in the space provided. You should also use this space to document any changes you make to the original manuscript. In order to expedite the processing of the revised manuscript, please be as specific as possible in your response to the reviewer. It would also be very helpful if you could highlight the changed sections, e.g. by the use of colour, colour highlighting or bold typeface - this will not delay in any way the subsequent processing of your paper.
+
+Because we are trying to facilitate timely publication of manuscripts submitted to MNRAS, your revised manuscript should be uploaded promptly. If you do not submit your revision within six months, we may consider it withdrawn and request it be resubmitted as a new submission.
+
+Please note that, due to the tight schedule, any post-acceptance changes notified after the paper has gone into production (i.e. the day after the acceptance email is sent) cannot be incorporated into the paper before it is typeset. Such changes will therefore need to be made as part of the proof corrections. To avoid excessive proof corrections and the delay that these can cause, you are strongly encouraged to ensure that each version of your paper submitted to MNRAS is completely ready for publication!
+
+I look forward to receiving your revised manuscript.
+
+Regards,
+
+Keith
+
+-- 
+Dr Keith T. Smith
+
+Assistant Editor (MNRAS)
+Royal Astronomical Society
+Burlington House
+Piccadilly
+London W1J 0BQ
+
+cc: all S1M-listed co-authors.
+
+
+Reviewer's Comments:
+
+I commend the authors on a careful revision. I am happy the first review was useful. Reading through the corrections and the new revision, nearly everything makes sense to me now. The new section 3.4 gives a useful snapshot of reality to the SMURF user. The new atmosphere descriptions are also illuminating. Sorry to hear about the less than useful DKS (added text appreciated). The confusion in section 4 over the masking, filtering and degeneracies is all cleared up nicely.
+
+I had only one hang-up in the matched filter section (the history of which is reproduced and expounded on below). Given your careful attention to the first review, I'm happy to leave this to your good judgement and do not require another look (unless you request it).
+
++ Sec 4.2, Para 8: "For the case at hand, the effective PSF for the whitened maps is given by the dotted curve in Fig. 13."
+
+This is confusing language. Fig 13 list the dashed line as "whitened". It is true though that the dotted curve gives the correct PSF for your matched filter, since it's the one that corresponds to the pre-filtered beam. The matched filter in Fourier space is B(k)N^-1(k), where the N^-1(k) is your pre-whitening step (dividing by the power spectrum of the noise). The B(k) is the PSF before the whitening. It seems like you say this here, but it's a bit confusing with the figure labeling. Maybe it would be useful to include a simple equation like \Phi(k) = B(k)N^-1(k) or similar to describe your total operation?
+
+- Yes, we are essentially breaking down the typical B(k)/N^-1(k)
+matched-filter expression into two steps. We've clarified the text
+here.
+
+-- I follow this, though there may still be a confusing bit. In the added text: "Next, the Fourier transform of map filtered PSF is divided by the jackknife noise power spectrum to calculate the final whitened PSF (dashed line in Fig. 14)." In whitening the map you say "The filter is applied by scaling the power spectrum of the map by this function and then transforming back into real space." In order to retain phase information in the map, I'm guessing this sentence means you take the FT of the map and divide by the sqrt of the power spectrum of the jack knife and the transform back? The PS of such a map would in theory be white if it were all noise. If this is the case then I would have guessed that the "map filtered PSF is divided by the [sqrt of the] jackknife noise power spectrum to calculate the final whitened PSF". Taking N(k) as the power spectrum of the noise (or equivalently jackknife estimate of noise), this gives the right form of a matched filter B(k)/N(k) where a factor of 1/sqrt(N) comes from the whitening and another factor of B(k)/sqrt(N) comes from the "PSF" filtering. The only other qualm that comes to mind is that by including the 1/sqrt(N) in the PSF "matched filter" step, the claim in the text that it is an optimal *low-pass* filter is not really true. Since 1/sqrt(N) suppresses large scales for a "red" N, the matched filter is a *band-pass* filter. Said in another way, you have to start with a map with white noise to have the matched filter be a simple PSF that low-pass filters the map (presumably as would be the case in most optical datasets). One can't tag on a pre-whitening step to data with non-white noise and describe the match filter of the "whitened" map as a simple smoothing filter.
+
+Date Sent:
+	
+
+07-Jan-2013
