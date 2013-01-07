@@ -1,0 +1,41 @@
+title:
+
+SCUBA-2: iterative map-making with the Sub-Millimetre User Reduction Facility
+
+
+running head:
+
+SCUBA-2: iterative map-making with SMURF
+
+
+abstract:
+
+The Submillimetre Common User Bolometer Array 2 (SCUBA-2) is an instrument operating on the 15-m James Clerk Maxwell Telescope, nominally consisting of 5120 bolometers in each of two simultaneous imaging bands centred over 450 and 850 ¦Ìm. The camera is operated by scanning across the sky and recording data at a rate of 200 Hz. As the largest of a new generation of multiplexed kilopixel bolometer cameras operating in the (sub)millimetre, SCUBA-2 data analysis represents a significant challenge.  We describe the production of maps using the Sub-Millimetre User Reduction Facility (SMURF) in which we have adopted a fast, iterative approach to map-making that enables data reduction on single, modern, high-end desktop computers, with execution times that are typically shorter than the observing times.  SMURF is used in an automated setting, both at the telescope for real-time feedback to observers, as well as for the production of science products for the JCMT Science Archive at the Canadian Astronomy Data Centre. Three detailed case studies are used to: (i) explore convergence properties of the map-maker using simple prior constraints (Uranus -- a point source); (ii) achieve the white-noise limit for faint point-source studies (extragalactic blank-field survey of the Lockman Hole); and (iii) demonstrate that our strategy is capable of recovering angular scales comparable to the size of the array footprint (approximately 5 arcmin) for bright extended sources (star-forming region M17).
+
+
+
+Cover letter:
+
+Dear Sir/Madam,
+
+I have submitted an updated version of "SCUBA-2: iterative map-making with the Sub-Millimetre User Reduction Facility" to the main journal of Monthly Notices of the Royal Astronomical Society, addressing minor additional comments from the referee in one section.
+
+This resubmission is accompanied by two other papers that form a series:
+
+SCUBA-2: The 10000 pixel bolometer camera on the James Clerk Maxwell Telescope (lead author: Wayne Holland)
+
+SCUBA-2: On-sky calibration using submillimetre standard sources (lead author: Jessica Dempsey)
+
+
+
+sincerely,
+Edward Chapin
+
+
+
+Manuscript Details:
+
+- 32 pages
+- 1 table
+- 14 colour figures
+- 20 figures in total
