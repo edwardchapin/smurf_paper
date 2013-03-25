@@ -12,4 +12,13 @@ The Submillimetre Common User Bolometer Array 2 (SCUBA-2) is an instrument opera
 
 Comments:
 
-32 pages, 20 figures, 1 table. Accepted by MNRAS.
+Revised some terminology in section 2.5, fixed typos, updated references (to match published version in MNRAS). 32 pages, 20 figures, 1 table.
+
+
+Journal reference:
+
+Chapin E. L. et al., 2013, MNRAS, 430, 2545
+
+DOI:
+
+10.1093/mnras/stt052
