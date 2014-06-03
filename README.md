@@ -1,0 +1,1 @@
+Paper entitled "SCUBA-2: iterative map-making with the Sub-Millimetre User Reduction Facility", published in Monthly Notices of the Royal Astronomical Society. See: http://dx.doi.org/10.1093/mnras/stt052
